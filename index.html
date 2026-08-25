@@ -1,547 +1,1877 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tower of Despair - RPG</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        body {
-            background-color: #0d0e15;
-            color: #e2e8f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 10px;
-        }
-        .game-container {
-            width: 100%;
-            max-width: 420px;
-            background: #161b22;
-            border: 2px solid #30363d;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            height: 85vh;
-            max-height: 750px;
-        }
-        .screen {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-            padding: 20px;
-            overflow-y: auto;
-        }
-        .screen.active {
-            display: flex;
-        }
-        h1 {
-            color: #58a6ff;
-            font-size: 22px;
-            text-align: center;
-            margin-bottom: 15px;
-        }
-        .story-box {
-            background: #0d1117;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #58a6ff;
-            font-size: 14px;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            color: #c9d1d9;
-        }
-        .btn {
-            background: #238636;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
-            text-align: center;
-            width: 100%;
-            margin-top: auto;
-        }
-        .btn:hover { background: #2ea043; }
-        .btn-secondary { background: #1f6feb; }
-        .btn-secondary:hover { background: #388bfd; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#06090f">
+<title>TORRE:SYSTEM - ULTIMATE EDITION V4.0</title>
 
-        .top-stats {
-            background: #21262d;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            font-size: 13px;
-        }
-        .bar-container {
-            background: #30363d;
-            border-radius: 4px;
-            height: 10px;
-            width: 100%;
-            margin: 5px 0 10px 0;
-            overflow: hidden;
-        }
-        .hp-bar {
-            background: #238636;
-            height: 100%;
-            width: 100%;
-            transition: width 0.3s;
-        }
-        .enemy-box {
-            text-align: center;
-            background: #0d1117;
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid #30363d;
-            margin-bottom: 15px;
-        }
-        .enemy-emoji {
-            font-size: 50px;
-            margin-bottom: 10px;
-        }
-        .combat-log {
-            background: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            padding: 10px;
-            height: 120px;
-            overflow-y: auto;
-            font-size: 12px;
-            color: #8b949e;
-            margin-bottom: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .action-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: auto;
-        }
-        .skill-info {
-            background: #1f242c;
-            padding: 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            margin-bottom: 10px;
-            border: 1px dashed #58a6ff;
-        }
-    </style>
+<style>
+:root{
+  --bg:#06090f;
+  --panel:#0d121b;
+  --panel2:#121a26;
+  --line:#233145;
+  --text:#dce7f3;
+  --muted:#7b8c9f;
+  --green:#50fa7b;
+  --cyan:#50d9ff;
+  --blue:#5b8cff;
+  --red:#ff5570;
+  --yellow:#ffd166;
+  --purple:#bd7cff;
+  --orange:#ff9f43;
+}
+
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  min-height:100%;
+  background:var(--bg);
+  color:var(--text);
+  font-family:"Courier New",monospace;
+  image-rendering:pixelated;
+  image-rendering:crisp-edges;
+}
+
+body{min-height:100vh; overflow-x:hidden;}
+
+button{
+  font:inherit;
+  color:inherit;
+  cursor:pointer;
+  touch-action:manipulation;
+}
+
+#app{
+  width:100%;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  background:
+    radial-gradient(circle at 50% -15%,#16253c 0,#06090f 50%),
+    var(--bg);
+}
+
+.screen{
+  width:100%;
+  max-width:720px;
+  min-height:100vh;
+  padding:16px 12px 32px;
+  display:none;
+  flex-direction:column;
+  animation:screenIn .25s ease;
+}
+
+.screen.active{display:flex}
+
+@keyframes screenIn{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.logo{
+  text-align:center;
+  color:var(--cyan);
+  font-size:clamp(22px,6vw,32px);
+  font-weight:bold;
+  letter-spacing:3px;
+  text-shadow:0 0 14px #50d9ff66;
+  margin:6px 0 2px;
+}
+
+.subtitle{
+  text-align:center;
+  color:var(--muted);
+  font-size:11px;
+  margin-bottom:14px;
+  letter-spacing:1px;
+}
+
+.panel{
+  background:linear-gradient(145deg,var(--panel2),var(--panel));
+  border:2px solid var(--line);
+  border-radius:8px;
+  padding:12px 14px;
+  margin-bottom:10px;
+  box-shadow:0 6px 22px #0008;
+}
+
+.panel-title{
+  color:var(--cyan);
+  font-size:12px;
+  margin-bottom:8px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  font-weight:bold;
+}
+
+.story{
+  line-height:1.6;
+  font-size:12px;
+  color:#bac7d5;
+}
+
+.system{
+  border-color:#26536b;
+  background:#081720;
+  color:#83e7ff;
+}
+
+.input-text{
+  width:100%;
+  padding:12px;
+  background:#080d14;
+  border:2px solid var(--cyan);
+  color:var(--text);
+  font-family:inherit;
+  font-size:14px;
+  border-radius:6px;
+  text-align:center;
+  outline:none;
+  box-shadow:0 0 10px #50d9ff33;
+}
+
+.input-text:focus{
+  border-color:var(--green);
+  box-shadow:0 0 14px #50fa7b44;
+}
+
+.slot-card{
+  background:#0c121c;
+  border:2px solid var(--line);
+  border-radius:6px;
+  padding:10px 12px;
+  margin-bottom:8px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.slot-card.occupied{
+  border-color:var(--cyan);
+  background:#091622;
+}
+
+.slot-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-weight:bold;
+  font-size:12px;
+  color:var(--cyan);
+}
+
+.slot-info{
+  font-size:11px;
+  color:var(--muted);
+  line-height:1.4;
+}
+
+.slot-actions{
+  display:flex;
+  gap:5px;
+  margin-top:2px;
+}
+
+.slot-actions button{
+  flex:1;
+  min-height:34px;
+  padding:4px;
+  font-size:10px;
+  border-radius:4px;
+  border:2px solid #334256;
+  background:#131c28;
+  font-weight:bold;
+}
+
+.btn{
+  width:100%;
+  min-height:46px;
+  border:2px solid #334256;
+  border-radius:6px;
+  background:#131c28;
+  margin-top:6px;
+  padding:10px;
+  font-weight:bold;
+  font-size:12px;
+  transition:.15s;
+}
+
+.btn:active{transform:scale(.97)}
+
+.btn.primary{border-color:var(--cyan);background:#0e2935;color:#76e7ff}
+.btn.green{border-color:#2e8c48;background:#0e2418;color:var(--green)}
+.btn.red{border-color:#842e40;background:#240e15;color:#ff8295}
+.btn.yellow{border-color:#8c722e;background:#241d0e;color:var(--yellow)}
+.btn.purple{border-color:#6d3fb7;background:#180e24;color:var(--purple)}
+.btn.orange{border-color:#b76e3f;background:#24180e;color:var(--orange)}
+
+.hidden{display:none!important}
+
+/* MAPA DE EXPLORACIÓN */
+.game-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:8px;
+}
+
+.floor{
+  color:var(--cyan);
+  font-weight:bold;
+  font-size:12px;
+}
+
+.bar-wrap{margin:4px 0}
+.bar-label{
+  display:flex;
+  justify-content:space-between;
+  font-size:10px;
+  color:var(--muted);
+  margin-bottom:2px;
+}
+
+.bar{
+  height:10px;
+  background:#05080c;
+  border:2px solid #25313f;
+  overflow:hidden;
+  border-radius:3px;
+}
+
+.bar-fill{height:100%;width:100%;transition:width .3s ease}
+.hp{background:linear-gradient(90deg,#b52845,#ff5570)}
+.mp{background:linear-gradient(90deg,#2862c7,#50bfff)}
+.enemyhp{background:linear-gradient(90deg,#85243a,#ff4f63)}
+
+.map-container{
+  display:flex;
+  justify-content:center;
+  margin:8px 0;
+}
+
+.map{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:2px;
+  padding:4px;
+  background:#030508;
+  border:2px solid #183324;
+  box-shadow:inset 0 0 12px rgba(0,0,0,0.8);
+  width:100%;
+  max-width:320px;
+  aspect-ratio:1;
+}
+
+.cell{
+  aspect-ratio:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#0a120d;
+  border:1px solid #13271c;
+  font-size:13px;
+  color:#376746;
+  user-select:none;
+}
+
+.cell.explored{background:#0e2016;border-color:#1a3a27;color:#6db582}
+.cell.player{background:#173b2b;border-color:var(--green);color:#fff;font-weight:bold;box-shadow:inset 0 0 6px #50fa7b66}
+.cell.monster{background:#35151e;border-color:#602537;color:#ff758d}
+.cell.teleport{background:#152335;border-color:var(--cyan);color:var(--cyan);animation:pulseTeleport 1.5s infinite}
+.cell.item{background:#302810;border-color:var(--yellow);color:var(--yellow)}
+.cell.npc{background:#241535;border-color:var(--purple);color:var(--purple)}
+
+@keyframes pulseTeleport{
+  0%, 100% {box-shadow:inset 0 0 4px var(--cyan)}
+  50% {box-shadow:inset 0 0 12px var(--cyan)}
+}
+
+.dpad-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:4px;
+  max-width:200px;
+  margin:8px auto;
+}
+
+.dpad-btn{
+  min-height:42px;
+  background:#131c28;
+  border:2px solid #293b4f;
+  color:var(--cyan);
+  font-weight:bold;
+  font-size:16px;
+  border-radius:4px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+.dpad-btn:active{background:#1f3144}
+
+.lobby-menu{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin:10px 0;
+}
+
+.log{
+  height:105px;
+  overflow-y:auto;
+  background:#05070a;
+  border:2px solid var(--line);
+  padding:8px;
+  font-size:10px;
+  line-height:1.5;
+  color:#9aa9b8;
+  border-radius:4px;
+}
+.log p{margin:0 0 3px}
+.log .good{color:var(--green)}
+.log .bad{color:#ff7185}
+.log .info{color:var(--cyan)}
+.log .systemlog{color:var(--yellow)}
+
+.battle-scene{
+  min-height:190px;
+  border:2px solid #3c2830;
+  border-radius:6px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  background:radial-gradient(circle at 50% 30%,#2c1721 0,#110a11 40%,#040507 90%);
+  margin-bottom:8px;
+  position:relative;
+  overflow:hidden;
+}
+
+.enemy-avatar{
+  width:72px;
+  height:72px;
+  position:relative;
+  z-index:2;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:32px;
+  box-shadow:0 8px 18px rgba(0,0,0,0.7);
+  animation:float 2s ease-in-out infinite;
+}
+@keyframes float{
+  0%, 100% {transform:translateY(0)}
+  50% {transform:translateY(-6px)}
+}
+
+.action-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+}
+
+.action{
+  min-height:46px;
+  border-radius:6px;
+  border:2px solid #334154;
+  background:#131b24;
+  font-weight:bold;
+  font-size:11px;
+}
+.action.attack{border-color:#bc384e;background:#291118;color:#ff7589}
+.action.skill{border-color:#7e4fb6;background:#20142b;color:#c795ff}
+.action.defend{border-color:#366d98;background:#0f1f2c;color:#70caff}
+.action.flee{border-color:#745d31;background:#201a0f;color:#e9c56d}
+.action.potion{border-color:#2e8c48;background:#0e2418;color:var(--green)}
+.action:disabled{opacity:.35;cursor:not-allowed}
+
+.damage{
+  position:absolute;
+  font-size:22px;
+  font-weight:bold;
+  color:#fff;
+  z-index:5;
+  text-shadow:2px 2px 0 #000;
+  animation:damageFloat .6s ease forwards;
+  pointer-events:none;
+}
+@keyframes damageFloat{
+  from{opacity:1;transform:translateY(0)}
+  to{opacity:0;transform:translateY(-35px)}
+}
+
+.item-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#080d14;
+  border:1px solid var(--line);
+  padding:8px;
+  border-radius:4px;
+  margin-bottom:6px;
+  font-size:11px;
+}
+
+/* INVENTARIO Y PREVIEW DE PERSONAJE */
+.inventory-container{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:10px;
+}
+@media(min-width:520px){
+  .inventory-container{grid-template-columns:150px 1fr;}
+}
+
+.character-preview-box{
+  background:#060a10;
+  border:2px solid var(--cyan);
+  border-radius:6px;
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  justify-content:center;
+}
+
+.avatar-preview{
+  width:64px;
+  height:64px;
+  background:radial-gradient(circle at 50% 30%, #153520, #06090f);
+  border:2px solid var(--green);
+  border-radius:50%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:28px;
+  margin-bottom:6px;
+  box-shadow:0 0 10px rgba(80,250,123,0.3);
+}
+
+.equipped-slots{
+  font-size:9px;
+  color:var(--muted);
+  width:100%;
+  text-align:left;
+  margin-top:6px;
+  border-top:1px solid var(--line);
+  padding-top:4px;
+  line-height:1.4;
+}
+
+.footer{
+  margin-top:auto;
+  text-align:center;
+  color:#455263;
+  font-size:9px;
+  padding-top:10px;
+  letter-spacing:1px;
+}
+</style>
 </head>
+
 <body>
+<div id="app">
 
-<div class="game-container">
+  <!-- ================= PANTALLA 0: INICIO ================= -->
+  <section id="screenHome" class="screen active">
+    <div class="logo">▣ TORRE:SYSTEM</div>
+    <div class="subtitle">PROTOCOLO ULTIMATE // V.4.0</div>
 
-    <!-- PANTALLA 1: INTRODUCCIÓN LORE -->
-    <div id="screen-intro" class="screen active">
-        <h1>Torre de la Desesperación</h1>
-        <div class="story-box">
-            En este mundo aparecieron repentinamente <b>Torres de 100 pisos</b> habitadas por monstruos.<br><br>
-            ⏳ <b>La Regla:</b> Si un piso no se supera en <b>6 meses</b>, al cumplirse el plazo los monstruos saldrán durante 24 horas para destruir todo. El plazo se reduce cada vez más.<br><br>
-            🌍 La Torre elige a sus participantes aleatoriamente según su suerte... Y hoy, tu cama se iluminó. Fuiste seleccionado.
-        </div>
-        <button class="btn" onclick="goToStatGen()">Aceptar el Destino</button>
+    <div class="panel">
+      <div class="panel-title">> IDENTIFICACIÓN DE SUJETO</div>
+      <p class="story" style="margin-bottom:10px;">
+        Ingresa tu nombre para iniciar tu registro en el sistema de la torre.
+      </p>
+      <input type="text" id="playerNameInput" class="input-text" placeholder="Ej. Kaelen, Alex..." maxlength="16" value="Aventurero">
     </div>
 
-    <!-- PANTALLA 2: GENERACIÓN DE HABILIDAD ÚNICA -->
-    <div id="screen-stats" class="screen">
-        <h1>[SISTEMA DE LA TORRE]</h1>
-        <div class="story-box" id="system-awakening">
-            Sincronizando alma con el huésped...<br>Examinando el flujo de maná universal...
-        </div>
-        <div id="stat-result" style="display:none; margin-bottom: 20px;">
-            <p id="trait-title" style="color: #f0883e; font-weight: bold; margin-bottom: 8px; font-size: 16px;"></p>
-            <p id="passive-desc" style="font-size: 13px; color: #a5d6ff; margin-bottom: 8px;"></p>
-            <p id="active-desc" style="font-size: 13px; color: #ffa657;"></p>
-        </div>
-        <button id="btn-start-tower" class="btn btn-secondary" style="display:none;" onclick="startGameplay()">Entrar al Piso 1</button>
+    <button class="btn primary" onclick="goToSlotSelection()">
+      [ JUGAR / GESTIÓN DE PARTIDAS ]
+    </button>
+
+    <div class="footer">TORRE:SYSTEM // SELECTION PROTOCOL</div>
+  </section>
+
+  <!-- ================= PANTALLA 0.5: SLOTS DE GUARDADO ================= -->
+  <section id="screenSlots" class="screen">
+    <div class="logo">RANURAS DE MEMORIA</div>
+    <div class="subtitle">SELECCIONA UN SECTOR (1 AL 5)</div>
+
+    <div id="slotsContainer" style="margin-bottom:10px;"></div>
+
+    <button class="btn" onclick="showScreen('screenHome')">
+      [ VOLVER AL INICIO ]
+    </button>
+    <div class="footer">TORRE:SYSTEM // SAVE MANAGER</div>
+  </section>
+
+  <!-- ================= PANTALLA 1: LORE & PRÓLOGO ================= -->
+  <section id="screenLore" class="screen">
+    <div class="logo">▣ TORRE:SYSTEM</div>
+    <div class="subtitle">PRÓLOGO DE DESPERTAR</div>
+
+    <div class="panel">
+      <div class="panel-title">> REGISTRO HISTÓRICO DE LA CATÁSTROFE</div>
+      <div class="story">
+        Las torres negras surgieron simultáneamente en todo el planeta. Cada torre contiene <strong>100 pisos</strong> de peligro absoluto, jefes colosales y recompensas divinas.
+        <br><br>
+        Tienes un límite temporal implacable por piso antes de que los monstruos desaten una invasión global. El Lobby será tu base segura. Personaliza tu avatar y prepárate.
+      </div>
     </div>
 
-    <!-- PANTALLA 3: JUEGO / COMBATE Y PROGRESIÓN -->
-    <div id="screen-game" class="screen">
-        <div class="top-stats">
-            <div style="display: flex; justify-content: space-between; font-weight: bold;">
-                <span id="floor-title">Piso 1: Bosque Esmeralda</span>
-                <span id="player-lvl">Nv. 1</span>
-            </div>
-            <div style="margin-top: 5px;">PV del Jugador: <span id="player-hp-text">100/100</span></div>
-            <div class="bar-container"><div id="player-hp-bar" class="hp-bar"></div></div>
-            <div style="font-size: 12px; color: #8b949e;">Misión: <span id="quest-text">Derrotar 10 Slimes</span> (<span id="progress-text">0/10</span>)</div>
-        </div>
+    <button class="btn primary" onclick="goToCustomization()">
+      [ PROCEDER A PERSONALIZACIÓN ]
+    </button>
+    <div class="footer">TORRE:SYSTEM // LORE PROTOCOL</div>
+  </section>
 
-        <div class="enemy-box">
-            <div class="enemy-emoji" id="enemy-icon">🟢</div>
-            <h3 id="enemy-name">Slime Ácido</h3>
-            <div style="font-size: 12px; margin-top: 5px;">PV Enemigo: <span id="enemy-hp-text">30/30</span></div>
-            <div class="bar-container"><div id="enemy-hp-bar" class="hp-bar" style="background: #da3633;"></div></div>
-        </div>
+  <!-- ================= PANTALLA 1.5: PERSONALIZACIÓN DE AVATAR ================= -->
+  <section id="screenCustomization" class="screen">
+    <div class="logo">CREACIÓN DE AVATAR</div>
+    <div class="subtitle">CONFIGURA TU APARIENCIA INICIAL</div>
 
-        <div class="skill-info" id="skill-box">
-            Habilidad Activa: ⚡ <span id="active-skill-label">Golpe Relámpago</span> (Recarga: <span id="cd-text">0</span>)
-        </div>
-
-        <div class="combat-log" id="combat-log">
-            <div>[Sistema] Has sido teletransportado al Piso 1. ¡Prepárate para combatir!</div>
-        </div>
-
-        <div class="action-grid">
-            <button class="btn" onclick="playerAttack()">⚔️ Atacar</button>
-            <button class="btn btn-secondary" id="btn-active-skill" onclick="playerActiveSkill()">⚡ Usar Activa</button>
-        </div>
+    <div class="panel" style="text-align:center;">
+      <div id="customAvatarPreview" class="avatar-preview" style="margin:0 auto 10px; font-size:36px;">🛡️</div>
+      <div class="panel-title">> ELIGE TU ICONO BASE</div>
+      <div style="display:flex; justify-content:center; gap:8px; margin-bottom:12px;">
+        <button class="btn primary" style="width:50px; min-height:40px;" onclick="setAvatarIcon('🛡️')">🛡️</button>
+        <button class="btn green" style="width:50px; min-height:40px;" onclick="setAvatarIcon('⚔️')">⚔️</button>
+        <button class="btn purple" style="width:50px; min-height:40px;" onclick="setAvatarIcon('🧙‍♂️')">🧙‍♂️</button>
+        <button class="btn yellow" style="width:50px; min-height:40px;" onclick="setAvatarIcon('🗡️')">🗡️</button>
+      </div>
+      <div class="panel-title">> TÍTULO / APODO</div>
+      <input type="text" id="playerTitleInput" class="input-text" value="El Novato Prometedor" maxlength="25">
     </div>
 
-    <!-- PANTALLA 4: VICTORIA / PISO SUPERADO -->
-    <div id="screen-victory" class="screen" style="justify-content: center; text-align: center;">
-        <h1 style="color: #3fb950;">¡PISO SUPERADO!</h1>
-        <div class="story-box" id="victory-msg">
-            Has limpiado el piso con éxito. La torre se recalibra y te otorga acceso al siguiente nivel.
-        </div>
-        <button class="btn" onclick="nextFloor()">Avanzar al Siguiente Piso</button>
+    <button class="btn primary" onclick="acceptAvatarAndAwaken()">
+      [ CONFIRMAR Y DESPERTAR HABILIDAD ]
+    </button>
+  </section>
+
+  <!-- ================= PANTALLA 2: DESPERTAR ================= -->
+  <section id="screenAwakening" class="screen">
+    <div class="logo">SISTEMA</div>
+    <div class="subtitle">GENERANDO CARACTERÍSTICA ÚNICA...</div>
+
+    <div class="panel system" style="text-align:center; padding:20px;">
+      <div style="font-size:45px; margin-bottom:10px;">◈</div>
+      <div id="awakeningText" class="story">Analizando alma, potencial y arquetipo...</div>
+      <div id="traitResult" class="hidden" style="margin-top:12px;">
+        <div id="traitName" style="font-size:18px; color:var(--purple); font-weight:bold;"></div>
+        <div id="traitRank" style="display:inline-block; margin:6px 0; padding:2px 8px; border:2px solid var(--yellow); color:var(--yellow); border-radius:4px; font-size:11px;"></div>
+        <div id="traitDescription" class="story" style="font-size:11px; margin-top:6px;"></div>
+      </div>
     </div>
+
+    <button id="enterLobbyBtn" class="btn primary hidden" onclick="goToLobby()">
+      [ INGRESAR AL LOBBY SEGURO ]
+    </button>
+  </section>
+
+  <!-- ================= PANTALLA 3: LOBBY CENTRAL ================= -->
+  <section id="screenLobby" class="screen">
+    <div class="logo">LOBBY CENTRAL</div>
+    <div class="subtitle">ZONA SEGURA DEL SISTEMA</div>
+
+    <div class="panel">
+      <div class="bar-label">
+        <span id="lobbyPlayerName">AVENTURERO</span>
+        <span id="lobbyGold" style="color:var(--yellow)">0 🪙</span>
+      </div>
+      <div style="font-size:11px; color:var(--muted); margin-top:4px;">
+        Clase: <span id="lobbyClass" style="color:var(--cyan)">Novato</span> | Nivel: <span id="lobbyLevel">1</span> | SP: <span id="lobbySP" style="color:var(--green)">0</span>
+      </div>
+    </div>
+
+    <div class="lobby-menu">
+      <button class="btn green" onclick="openExplore()">
+        ⚔️ ENTRAR A LA TORRE
+      </button>
+      <button class="btn yellow" onclick="openShop()">
+        🛒 TIENDA & EQUIPO
+      </button>
+      <button class="btn purple" onclick="openInventory()">
+        🎒 INVENTARIO & ESTADO
+      </button>
+      <button class="btn orange" onclick="openTraining()">
+        ⚡ ENTRENAMIENTO & SKILLS
+      </button>
+    </div>
+
+    <button class="btn" style="margin-top:4px;" onclick="openQuests()">
+      📜 TABLÓN DE MISIONES
+    </button>
+    <button class="btn" style="margin-top:4px;" onclick="openClassChange()">
+      🏛️ CENTRO DE CLASES
+    </button>
+    <button class="btn" style="margin-top:4px;" onclick="manualSaveLobby()">
+      💾 GUARDAR PARTIDA
+    </button>
+    <button class="btn red" style="margin-top:4px; font-size:10px;" onclick="goToSlotSelection()">
+      ⚙ CAMBIAR RANURA / SALIR
+    </button>
+
+    <div class="footer">LOBBY PRINCIPAL // TORRE:SYSTEM</div>
+  </section>
+
+  <!-- ================= PANTALLA 4: TIENDA ================= -->
+  <section id="screenShop" class="screen">
+    <div class="logo">MERCADO DEL LOBBY</div>
+    <div class="subtitle">ADQUIERE EQUIPAMIENTO Y CONSUMIBLES</div>
+
+    <div class="panel">
+      <div class="panel-title">> ARMAS Y ARMADURAS DISPONIBLES</div>
+      <div id="shopEquipmentList" style="max-height:160px; overflow-y:auto; margin-bottom:8px;"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">> COMPRA DE CONSUMIBLES</div>
+      <div class="item-row">
+        <span>Pocción de Vida (+50 PV) - Costo: 30 🪙</span>
+        <button class="btn primary" style="width:auto; min-height:30px; font-size:10px;" onclick="buyItem('potion', 30, 50)">COMPRAR</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">> INVENTARIO DE MATERIALES</div>
+      <div id="inventoryLootList" style="max-height:100px; overflow-y:auto; margin-bottom:8px;"></div>
+      <button class="btn green" onclick="sellAllLoot()">[ VENDER TODO EL BOTÍN ]</button>
+    </div>
+
+    <button class="btn" onclick="showScreen('screenLobby')">[ VOLVER AL LOBBY ]</button>
+  </section>
+
+  <!-- ================= PANTALLA INVENTARIO Y EQUIPAMIENTO ================= -->
+  <section id="screenInventory" class="screen">
+    <div class="logo">INVENTARIO & ESTADO</div>
+    <div class="subtitle">GESTIONA TU EQUIPO Y VISUALIZA TU PERSONAJE</div>
+
+    <div class="inventory-container">
+      <!-- Preview del Personaje con equipo reflejado -->
+      <div class="character-preview-box">
+        <div id="invPlayerAvatar" class="avatar-preview">🛡️</div>
+        <div id="invPlayerName" style="font-weight:bold; font-size:11px; color:var(--cyan);">AVENTURERO</div>
+        <div style="font-size:10px; color:var(--muted);" id="invPlayerClass">Novato</div>
+        <div class="equipped-slots">
+          <div><b>Arma:</b> <span id="slotWeaponEquip" style="color:var(--yellow)">Ninguna</span></div>
+          <div><b>Escudo:</b> <span id="slotShieldEquip" style="color:var(--yellow)">Ninguno</span></div>
+          <div><b>Casco:</b> <span id="slotHelmetEquip" style="color:var(--yellow)">Ninguno</span></div>
+          <div><b>Armadura:</b> <span id="slotArmorEquip" style="color:var(--yellow)">Ninguna</span></div>
+          <div><b>Botas:</b> <span id="slotBootsEquip" style="color:var(--yellow)">Ningunas</span></div>
+          <div><b>Anillo:</b> <span id="slotRingEquip" style="color:var(--yellow)">Ninguno</span></div>
+        </div>
+      </div>
+
+      <!-- Lista de Objetos en Inventario -->
+      <div class="panel" style="margin-bottom:0; flex:1;">
+        <div class="panel-title">> OBJETOS DISPONIBLES</div>
+        <div id="inventoryItemsList" style="max-height:220px; overflow-y:auto;"></div>
+      </div>
+    </div>
+
+    <button class="btn" style="margin-top:10px;" onclick="showScreen('screenLobby')">[ VOLVER AL LOBBY ]</button>
+  </section>
+
+  <!-- ================= PANTALLA 5: ENTRENAMIENTO ================= -->
+  <section id="screenTraining" class="screen">
+    <div class="logo">ZONA DE ENTRENAMIENTO</div>
+    <div class="subtitle">MEJORA ESTADÍSTICAS Y HABILIDADES</div>
+
+    <div class="panel">
+      <div class="panel-title">> DISTRIBUIR PUNTOS (SP DISPONIBLES: <span id="trainingSP">0</span>)</div>
+      <button class="btn primary" onclick="upgradeStat('attack')">Aumentar Ataque Base (+4) [1 SP]</button>
+      <button class="btn primary" onclick="upgradeStat('maxHp')">Aumentar PV Máx (+30) [1 SP]</button>
+      <button class="btn primary" onclick="upgradeStat('defense')">Aumentar Defensa (+3) [1 SP]</button>
+    </div>
+
+    <div id="floor20TrainingPanel" class="panel hidden" style="border-color:var(--purple); background:#140d22;">
+      <div class="panel-title" style="color:var(--purple);">> EVOLUCIÓN DE MAESTRÍA (NIVEL 20+)</div>
+      <button class="btn purple" onclick="evolveSkillMastery()">[ EVOLUCIONAR HABILIDAD ÚNICA ]</button>
+    </div>
+
+    <button class="btn" onclick="showScreen('screenLobby')">[ VOLVER AL LOBBY ]</button>
+  </section>
+
+  <!-- ================= PANTALLA 6: MISIONES ================= -->
+  <section id="screenQuests" class="screen">
+    <div class="logo">TABLÓN DE MISIONES</div>
+    <div class="subtitle">CUMPLE OBJETIVOS PARA GANAR RECOMPENSAS</div>
+
+    <div class="panel">
+      <div class="panel-title">> MISIONES ACTIVAS</div>
+      <div id="questsList" style="font-size:11px; line-height:1.5;"></div>
+    </div>
+
+    <button class="btn" onclick="showScreen('screenLobby')">[ VOLVER AL LOBBY ]</button>
+  </section>
+
+  <!-- ================= PANTALLA 7: CAMBIO DE CLASE ================= -->
+  <section id="screenClassChange" class="screen">
+    <div class="logo">CENTRO DE CLASES</div>
+    <div class="subtitle">EVOLUCIONA TU ARQUETIPO DE COMBATE</div>
+
+    <div class="panel">
+      <div class="panel-title">> LIBROS DE CLASE EN POSESIÓN</div>
+      <div id="booksList" style="margin-bottom:10px; font-size:11px;"></div>
+    </div>
+
+    <div id="classChoicePanel" class="panel hidden">
+      <div class="panel-title">> ELECCIÓN DE CLASE BÁSICA (PISO 10)</div>
+      <button class="btn green" onclick="chooseBasicClass('Guerrero')">GUERRERO (Tanque y Daño)</button>
+      <button class="btn purple" onclick="chooseBasicClass('Mago')">MAGO (Poder Arcano)</button>
+      <button class="btn yellow" onclick="chooseBasicClass('Asesino')">ASESINO (Alta Evasión y Crítico)</button>
+    </div>
+
+    <button class="btn" onclick="showScreen('screenLobby')">[ VOLVER AL LOBBY ]</button>
+  </section>
+
+  <!-- ================= PANTALLA 8: EXPLORACIÓN DE LA TORRE ================= -->
+  <section id="screenExplore" class="screen">
+    <div class="game-header">
+      <span id="exploreTitle" class="floor">TORRE // PISO 01</span>
+      <div style="display:flex; gap:4px;">
+        <button class="btn green" style="width:auto; min-height:28px; padding:2px 8px; font-size:10px; margin:0;" onclick="usePotionExplore()">💊 <span id="explorePotionCount">0</span></button>
+        <button class="btn yellow" style="width:auto; min-height:28px; padding:2px 8px; font-size:10px; margin:0;" onclick="openTeleportModal()">🌀 TELEPORT</button>
+      </div>
+    </div>
+
+    <div class="panel" style="padding:8px 10px;">
+      <div class="bar-label">
+        <span id="explorePlayerName">PROTAGONISTA</span>
+        <span id="exploreLevelText">NV. 1</span>
+      </div>
+      <div class="bar-wrap">
+        <div class="bar-label"><span>PV</span><span id="exploreHpText">100/100</span></div>
+        <div class="bar"><div id="exploreHp" class="bar-fill hp"></div></div>
+      </div>
+    </div>
+
+    <div class="map-container">
+      <div id="mapGrid" class="map"></div>
+    </div>
+
+    <div class="dpad-grid">
+      <div></div>
+      <button class="dpad-btn" onclick="movePlayer(0, -1)">▲</button>
+      <div></div>
+      <button class="dpad-btn" onclick="movePlayer(-1, 0)">◀</button>
+      <button class="dpad-btn" onclick="movePlayer(0, 1)">●</button>
+      <button class="dpad-btn" onclick="movePlayer(1, 0)">▶</button>
+      <div></div>
+      <button class="dpad-btn" onclick="movePlayer(0, 1)">▼</button>
+      <div></div>
+    </div>
+
+    <div class="footer">USA EL D-PAD PARA NAVEGAR EL PISO</div>
+  </section>
+
+  <!-- ================= MODAL TELEPORT ================= -->
+  <section id="screenTeleport" class="screen">
+    <div class="logo">CÍRCULO DE TELETRANSPORTE</div>
+    <div class="subtitle">SELECCIONA TU DESTINO</div>
+
+    <div class="panel">
+      <div class="panel-title">> PISOS DESBLOQUEADOS</div>
+      <button class="btn green" onclick="teleportToLobby()">[ 🏠 IR AL LOBBY SEGURO ]</button>
+      <div id="floorTeleportButtons" style="margin-top:8px; display:flex; flex-direction:column; gap:5px;"></div>
+    </div>
+
+    <button class="btn" onclick="closeTeleportModal()">[ VOLVER AL PISO ]</button>
+  </section>
+
+  <!-- ================= PANTALLA 9: COMBATE ================= -->
+  <section id="screenBattle" class="screen">
+    <div class="game-header">
+      <span class="floor">COMBATE EN CURSO</span>
+      <span id="turnText" class="timer" style="color:var(--yellow); font-size:11px;">TURNO 1</span>
+    </div>
+
+    <div class="panel">
+      <div class="bar-label">
+        <span id="battlePlayerName">PROTAGONISTA</span>
+        <span id="battleHpText"></span>
+      </div>
+      <div class="bar"><div id="battleHp" class="bar-fill hp"></div></div>
+    </div>
+
+    <div id="battleSceneBox" class="battle-scene">
+      <div id="enemyAvatar" class="enemy-avatar">🦠</div>
+      <div id="enemyName" style="color:#ff7b8c; font-weight:bold; margin-top:6px; font-size:12px;">SLIME ÁCIDO</div>
+      <div id="enemyLevel" style="color:var(--muted); font-size:10px;">NV. 1</div>
+      <div style="width:75%; margin-top:8px;">
+        <div class="bar-label"><span>PV ENEMIGO</span><span id="enemyHpText"></span></div>
+        <div class="bar"><div id="enemyHp" class="bar-fill enemyhp"></div></div>
+      </div>
+    </div>
+
+    <div class="panel" style="padding:8px;">
+      <div id="combatLog" class="log"></div>
+    </div>
+
+    <div class="action-grid">
+      <button id="attackBtn" class="action attack" onclick="basicAttack()">⚔️ ATACAR</button>
+      <button id="skillBtn" class="action skill" onclick="useSkill()">⚡ HABILIDAD</button>
+      <button id="potionBattleBtn" class="action potion" onclick="usePotionBattle()">💊 POCIÓN (<span id="battlePotionCount">0</span>)</button>
+      <button class="action defend" onclick="defend()">🛡️ DEFENDER</button>
+      <button class="action flee" onclick="fleeBattle()" style="grid-column: span 2;">🏃 HUIR</button>
+    </div>
+  </section>
+
+  <!-- ================= PANTALLA 10: VICTORIA ================= -->
+  <section id="screenVictory" class="screen">
+    <div class="logo">VICTORIA</div>
+    <div style="text-align:center; font-size:60px; margin:10px 0;">🏆</div>
+
+    <div class="panel" style="text-align:center;">
+      <div class="panel-title">> RECOMPENSAS OBTENIDAS</div>
+      <p id="victoryRewardText" class="story" style="margin-bottom:10px;"></p>
+    </div>
+
+    <button class="btn primary" onclick="returnToExploreMap()">[ CONTINUAR EXPLORANDO ]</button>
+    <button class="btn yellow" onclick="teleportToLobby()">[ VOLVER AL LOBBY ]</button>
+  </section>
 
 </div>
 
 <script>
-    let player = {
-        hp: 100,
-        maxHp: 100,
-        atk: 15,
-        floor: 1,
-        traitName: "",
-        passiveDesc: "",
-        activeName: "",
-        activeDesc: "",
-        activeCD: 0,
-        cdMax: 3,
-        bonusType: ""
-    };
+"use strict";
 
-    let enemy = {
-        name: "Slime Ácido",
-        emoji: "🟢",
-        hp: 30,
-        maxHp: 30,
-        atk: 8
-    };
+const TRAITS = [
+  { name:"Ojos de la Verdad", rank:"S", passive:"Ataque Base +10", skill:"Corte Crítico", skillDescription:"Inflige 300% de daño.", cooldown:3, type:"damage", multiplier:3.0, apply(p){p.attack+=10;} },
+  { name:"Regeneración del Fénix", rank:"A", passive:"Recupera 15 PV al vencer enemigos.", skill:"Llama Curativa", skillDescription:"Restaura 45 PV.", cooldown:4, type:"heal", heal:45, apply(p){} },
+  { name:"Paso Sombra", rank:"A", passive:"30% evasión pasiva.", skill:"Apuñalamiento Oscuro", skillDescription:"Inflige 240% ignorando defensa.", cooldown:3, type:"damageIgnore", multiplier:2.4, apply(p){p.dodge+=0.30;} },
+  { name:"Coraza de Titán", rank:"B", passive:"PV Máx +70.", skill:"Muralla de Acero", skillDescription:"Bloquea completamente el siguiente ataque.", cooldown:4, type:"block", apply(p){p.maxHp+=70;} },
+  { name:"Mago Supremo", rank:"S", passive:"Ataque +8.", skill:"Esfera de Rayos", skillDescription:"Inflige 320% de daño mágico.", cooldown:4, type:"damage", multiplier:3.2, apply(p){p.attack+=8;} }
+];
 
-    let mission = {
-        target: 10,
-        current: 0
-    };
+/* TIENDA DE EQUIPAMIENTO COMPLETA (6 SLOTS) */
+const SHOP_EQUIPMENT = [
+  { id: "sword_1", name: "Espada Corta", type: "weapon", slot: "weapon", bonus: 8, cost: 120, icon: "🗡️" },
+  { id: "sword_2", name: "Espada de Hierro", type: "weapon", slot: "weapon", bonus: 18, cost: 280, icon: "⚔️" },
+  { id: "sword_3", name: "Espada de Acero Oscuro", type: "weapon", slot: "weapon", bonus: 35, cost: 650, icon: "🔥" },
+  { id: "shield_1", name: "Escudo de Madera", type: "shield", slot: "shield", bonus: 5, cost: 90, icon: "🛡️" },
+  { id: "shield_2", name: "Escudo de Hierro", type: "shield", slot: "shield", bonus: 12, cost: 240, icon: "🛡️" },
+  { id: "helmet_1", name: "Casco de Cuero", type: "helmet", slot: "helmet", bonus: 6, cost: 110, icon: "🪖" },
+  { id: "armor_1", name: "Armadura de Cuero", type: "armor", slot: "armor", bonus: 10, cost: 160, icon: "🥋" },
+  { id: "armor_2", name: "Cota de Malla", type: "armor", slot: "armor", bonus: 20, cost: 420, icon: "🦺" },
+  { id: "boots_1", name: "Botas de Explorador", type: "boots", slot: "boots", bonus: 5, cost: 130, icon: "🥾" },
+  { id: "ring_1", name: "Anillo de Poder", type: "ring", slot: "ring", bonus: 12, cost: 500, icon: "💍" }
+];
 
-    const uniqueTraits = [
-        {
-            trait: "Ojos de la Verdad (Rango S)",
-            passive: "Pasiva: Ojos agudos que aumentan tu ataque base en +8 permanentemente.",
-            active: "Activa: Corte Crítico (Inflige un golpe masivo de x2.8 de ataque).",
-            apply: () => { player.atk += 8; player.bonusType = "crit"; }
-        },
-        {
-            trait: "Regeneración del Fénix (Rango A)",
-            passive: "Pasiva: Tu cuerpo absorbió energía vital, recuperas 8 PV al derrotar a cada monstruo.",
-            active: "Activa: Llama Curativa (Restaura instantáneamente 30 PV propios).",
-            apply: () => { player.bonusType = "regen_heal"; }
-        },
-        {
-            trait: "Paso Sombra fantasma (Rango A)",
-            passive: "Pasiva: Tus movimientos son furtivos; posees un 25% de probabilidad de esquivar ataques.",
-            active: "Activa: Apuñalamiento Oscuro (Inflige x2.2 de daño ignorando resistencias).",
-            apply: () => { player.bonusType = "dodge"; }
-        },
-        {
-            trait: "Coraza de Titán (Rango B)",
-            passive: "Pasiva: Piel endurecida por maná, tu PV máximo aumenta en +40 puntos.",
-            active: "Activa: Muralla de Acero (Bloquea por completo el próximo ataque enemigo).",
-            apply: () => { player.maxHp += 40; player.hp = player.maxHp; player.bonusType = "shield"; }
-        },
-        {
-            trait: "Mago de Batalla Supremacia (Rango S)",
-            passive: "Pasiva: Canalización constante de maná, aumenta tu ataque en +5.",
-            active: "Activa: Esfera de Rayos (Lanza un hechizo que causa x3.0 de daño mágico).",
-            apply: () => { player.atk += 5; player.bonusType = "magic"; }
-        },
-        {
-            trait: "Vampirismo Ancestral (Rango A)",
-            passive: "Pasiva: Sed de sangre natural, curas 4 PV por cada ataque básico que realizas.",
-            active: "Activa: Drenaje Vital (Causa x1.5 de daño y te cura el 100% del daño hecho).",
-            apply: () => { player.bonusType = "vampire_basic"; }
-        },
-        {
-            trait: "Berserker Imparable (Rango S)",
-            passive: "Pasiva: La ira alimenta tu fuerza, aumentando tu ataque base en +12.",
-            active: "Activa: Furia Desatada (Un golpe brutal de x3.2 de daño pero pierdes 10 PV por esfuerzo).",
-            apply: () => { player.atk += 12; player.bonusType = "berserker"; }
-        },
-        {
-            trait: "Maestro de las Estaciones (Rango A)",
-            passive: "Pasiva: Armonía elemental, tu PV máximo sube +20 y tu ataque +3.",
-            active: "Activa: Ventisca Congelante (Aplica un impacto de x2.0 de daño y reduce la prisa del enemigo).",
-            apply: () => { player.maxHp += 20; player.hp = player.maxHp; player.atk += 3; player.bonusType = "frost"; }
-        },
-        {
-            trait: "Suerte del Novato Divino (Rango EX)",
-            passive: "Pasiva: Una anomalía de la torre; tienes 15% de esquiva y +5 de ataque.",
-            active: "Activa: Milagro Milenario (Cura 20 PV y daña al enemigo por x2.0).",
-            apply: () => { player.atk += 5; player.bonusType = "lucky"; }
-        },
-        {
-            trait: "Tanque Inquebrantable (Rango B)",
-            passive: "Pasiva: Resistencia colosal, obtienes +50 de PV máximo.",
-            active: "Activa: Contraataque Defensivo (Bloquea el daño y devuelve el 50% del golpe al enemigo).",
-            apply: () => { player.maxHp += 50; player.hp = player.maxHp; player.bonusType = "counter"; }
+/* BESTIARIO CON ESTÉTICA Y SKINS */
+const MONSTER_POOL = [
+  { minFloor: 1, maxFloor: 3, name: "Slime Ácido", icon: "🦠", skinBg: "radial-gradient(circle at 50% 30%, #153520 0%, #081a10 70%)", borderColor: "#2ecc71", avatarBg: "linear-gradient(135deg, #7afc9e, #27ae60)", shape: "50%" },
+  { minFloor: 1, maxFloor: 5, name: "Goblin Explorador", icon: "👺", skinBg: "radial-gradient(circle at 50% 30%, #3a2010 0%, #1a0c04 70%)", borderColor: "#e67e22", avatarBg: "linear-gradient(135deg, #f39c12, #d35400)", shape: "15%" },
+  { minFloor: 3, maxFloor: 8, name: "Esqueleto Errante", icon: "💀", skinBg: "radial-gradient(circle at 50% 30%, #202630 0%, #0b0f14 70%)", borderColor: "#95a5a6", avatarBg: "linear-gradient(135deg, #ecf0f1, #7f8c8d)", shape: "8px" },
+  { minFloor: 6, maxFloor: 12, name: "Orco Berserker", icon: "👹", skinBg: "radial-gradient(circle at 50% 30%, #3a1012 0%, #180507 70%)", borderColor: "#e74c3c", avatarBg: "linear-gradient(135deg, #e74c3c, #c0392b)", shape: "25%" },
+  { minFloor: 10, maxFloor: 20, name: "Caballero Corrupto", icon: "👻", skinBg: "radial-gradient(circle at 50% 30%, #28103a 0%, #100518 70%)", borderColor: "#9b59b6", avatarBg: "linear-gradient(135deg, #9b59b6, #512e5f)", shape: "6px" },
+  { minFloor: 15, maxFloor: 100, name: "Guardián de la Torre", icon: "🤖", skinBg: "radial-gradient(circle at 50% 30%, #10263a 0%, #050f18 70%)", borderColor: "#3498db", avatarBg: "linear-gradient(135deg, #3498db, #1b4f72)", shape: "10px" }
+];
+
+/* NPCS EN LA TORRE (SIMULAN OTROS JUGADORES) */
+const NPC_POOL = [
+  { name: "Kaelen (Jugador Rango B)", icon: "🧙‍♂️", dialog: "¡Saludos compañero! Llevo atrapado tres pisos buscando equipo de hierro. Cuidado con los guardianes en pisos superiores." },
+  { name: "Lyra (Exploradora Experta)", icon: "🧝‍♀️", dialog: "¿Buscas atajos? Los cofres en pisos impares suelen contener libros de clases avanzadas. ¡No te rindas!" },
+  { name: "Zack (Guerrero Solitario)", icon: "🤺", dialog: "Mi hermandad cayó en el piso 15. Si no mejoras tu armadura y casco pronto, no sobrevivirás." },
+  { name: "Aelin (Comerciante Nómada)", icon: "🧙", dialog: "Un consejo: mantén siempre al menos dos pociones en tu inventario antes de explorar." }
+];
+
+let game = {
+  player: {
+    name: "Aventurero",
+    title: "El Novato",
+    avatar: "🛡️",
+    level: 1,
+    exp: 0,
+    nextExp: 100,
+    maxHp: 120,
+    hp: 120,
+    maxMp: 60,
+    mp: 60,
+    attack: 18,
+    defense: 6,
+    dodge: 0.05,
+    gold: 100,
+    skillPoints: 0,
+    class: "Novato",
+    trait: null,
+    skillLevel: 1,
+    skillCooldown: 0,
+    defending: false,
+    block: false,
+    equipped: {
+      weapon: null,
+      shield: null,
+      helmet: null,
+      armor: null,
+      boots: null,
+      ring: null
+    }
+  },
+  floor: 1,
+  maxFloorReached: 1,
+  inventory: [],
+  materials: [],
+  books: [],
+  quests: [
+    { id: 1, title: "Primeros Pasos", desc: "Alcanza el Piso 03 de la torre.", targetFloor: 3, rewardGold: 150, completed: false },
+    { id: 2, title: "Veterano de Acero", desc: "Equipa al menos 3 piezas de equipo.", targetEquipped: 3, rewardGold: 300, completed: false }
+  ],
+  dungeonMaps: {},
+  playerPos: {x: 3, y: 6},
+  enemy: null,
+  turn: 1,
+  battleActive: false
+};
+
+let currentSlot = 1;
+
+function $(id){ return document.getElementById(id); }
+function random(min, max){ return Math.floor(Math.random()*(max - min + 1)) + min; }
+function clamp(val, min, max){ return Math.max(min, Math.min(max, val)); }
+
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  $(id).classList.add("active");
+  window.scrollTo(0,0);
+}
+
+function goToSlotSelection(){
+  const nameInput = $("playerNameInput").value.trim();
+  if(nameInput) game.player.name = nameInput;
+  renderSlots();
+  showScreen("screenSlots");
+}
+
+function renderSlots(){
+  const container = $("slotsContainer");
+  container.innerHTML = "";
+  for(let i = 1; i <= 5; i++){
+    const raw = localStorage.getItem(`torre_system_ultimate_slot_${i}`);
+    const card = document.createElement("div");
+    if(!raw){
+      card.className = "slot-card";
+      card.innerHTML = `
+        <div class="slot-header"><span>RANURA 0${i}</span><span style="color:var(--muted)">[ VACÍA ]</span></div>
+        <div class="slot-info">Sin datos de guardado registrados.</div>
+        <div class="slot-actions"><button class="btn green" onclick="createNewGame(${i})">[ NUEVA PARTIDA ]</button></div>
+      `;
+    } else {
+      const data = JSON.parse(raw);
+      const p = data.player;
+      card.className = "slot-card occupied";
+      card.innerHTML = `
+        <div class="slot-header"><span>RANURA 0${i} - ${p.name}</span><span style="color:var(--cyan)">NV. ${p.level}</span></div>
+        <div class="slot-info">
+          Clase: ${p.class} | Piso: ${data.floor} | Oro: ${p.gold} 🪙<br>
+          <small style="color:var(--muted)">Guardado: ${data.timestamp}</small>
+        </div>
+        <div class="slot-actions">
+          <button class="btn primary" onclick="loadSlot(${i})">[ CARGAR ]</button>
+          <button class="btn yellow" onclick="saveSlot(${i}, true)">[ SOBRESCRIBIR ]</button>
+          <button class="btn red" onclick="deleteSlot(${i})">[ BORRAR ]</button>
+        </div>
+      `;
+    }
+    container.appendChild(card);
+  }
+}
+
+function saveSlot(slotNum, alertUser = false){
+  const saveData = {
+    player: game.player,
+    floor: game.floor,
+    maxFloorReached: game.maxFloorReached,
+    inventory: game.inventory,
+    materials: game.materials,
+    books: game.books,
+    quests: game.quests,
+    dungeonMaps: game.dungeonMaps,
+    timestamp: new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+  };
+  localStorage.setItem(`torre_system_ultimate_slot_${slotNum}`, JSON.stringify(saveData));
+  currentSlot = slotNum;
+  if(alertUser) alert(`Partida guardada exitosamente en la Ranura 0${slotNum}.`);
+}
+
+function createNewGame(slotNum){
+  currentSlot = slotNum;
+  const name = $("playerNameInput").value.trim() || "Aventurero";
+  game = {
+    player: {
+      name: name, title: "El Novato", avatar: "🛡️", level: 1, exp: 0, nextExp: 100,
+      maxHp: 120, hp: 120, maxMp: 60, mp: 60,
+      attack: 18, defense: 6, dodge: 0.05, gold: 120,
+      skillPoints: 0, class: "Novato", trait: null,
+      skillLevel: 1, skillCooldown: 0, defending: false, block: false,
+      equipped: { weapon: null, shield: null, helmet: null, armor: null, boots: null, ring: null }
+    },
+    floor: 1, maxFloorReached: 1,
+    inventory: [{ id: 'potion', name: 'Poción de Vida', type: 'potion', count: 4, heal: 50, sellPrice: 15 }],
+    materials: [], books: [],
+    quests: [
+      { id: 1, title: "Primeros Pasos", desc: "Alcanza el Piso 03 de la torre.", targetFloor: 3, rewardGold: 150, completed: false },
+      { id: 2, title: "Veterano de Acero", desc: "Equipa al menos 3 piezas de equipo.", targetEquipped: 3, rewardGold: 300, completed: false }
+    ],
+    dungeonMaps: {}, playerPos: {x: 3, y: 6},
+    enemy: null, turn: 1, battleActive: false
+  };
+  saveSlot(slotNum);
+  showScreen("screenLore");
+}
+
+function loadSlot(slotNum){
+  const raw = localStorage.getItem(`torre_system_ultimate_slot_${slotNum}`);
+  if(!raw) return;
+  const data = JSON.parse(raw);
+  game.player = data.player;
+  game.floor = data.floor;
+  game.maxFloorReached = data.maxFloorReached || data.floor;
+  game.inventory = data.inventory || [];
+  game.materials = data.materials || [];
+  game.books = data.books || [];
+  game.quests = data.quests || game.quests;
+  game.dungeonMaps = data.dungeonMaps || {};
+  currentSlot = slotNum;
+
+  if(!game.player.trait){
+    showScreen("screenLore");
+  } else {
+    goToLobby();
+  }
+}
+
+function deleteSlot(slotNum){
+  if(confirm(`¿Deseas borrar la Ranura 0${slotNum}?`)){
+    localStorage.removeItem(`torre_system_ultimate_slot_${slotNum}`);
+    renderSlots();
+  }
+}
+
+function manualSaveLobby(){
+  saveSlot(currentSlot, true);
+  checkQuests();
+}
+
+function goToCustomization(){
+  showScreen("screenCustomization");
+}
+
+function setAvatarIcon(icon){
+  game.player.avatar = icon;
+  $("customAvatarPreview").textContent = icon;
+}
+
+function acceptAvatarAndAwaken(){
+  const title = $("playerTitleInput").value.trim();
+  if(title) game.player.title = title;
+  
+  showScreen("screenAwakening");
+  $("awakeningText").textContent = "Inicializando núcleo y escaneando compatibilidad de alma...";
+  setTimeout(() => {
+    const trait = TRAITS[random(0, TRAITS.length - 1)];
+    game.player.trait = trait;
+    trait.apply(game.player);
+    game.player.hp = game.player.maxHp;
+    saveSlot(currentSlot);
+
+    $("awakeningText").classList.add("hidden");
+    $("traitName").textContent = trait.name;
+    $("traitRank").textContent = "RANGO " + trait.rank;
+    $("traitDescription").innerHTML = `<b>Pasiva:</b> ${trait.passive}<br><b>Activa:</b> ${trait.skill} (${trait.skillDescription})`;
+    $("traitResult").classList.remove("hidden");
+    $("enterLobbyBtn").classList.remove("hidden");
+  }, 1200);
+}
+
+function goToLobby(){
+  respawnMonstersOnFloorReturn();
+  checkQuests();
+
+  $("lobbyPlayerName").textContent = `${game.player.name} [${game.player.title}]`;
+  $("lobbyGold").textContent = game.player.gold + " 🪙";
+  $("lobbyClass").textContent = game.player.class;
+  $("lobbyLevel").textContent = game.player.level;
+  $("lobbySP").textContent = game.player.skillPoints;
+  showScreen("screenLobby");
+}
+
+/* RESPAWN DINÁMICO DE MONSTRUOS */
+function respawnMonstersOnFloorReturn(){
+  if(!game.dungeonMaps) return;
+  for(let f in game.dungeonMaps){
+    let map = game.dungeonMaps[f];
+    map.forEach(cell => {
+      if(cell.type === 'empty' && Math.random() < 0.40 && cell.terrain === '·'){
+        cell.type = 'monster';
+        cell.icon = '👾';
+      }
+    });
+  }
+}
+
+/* TIENDA Y MERCADO */
+function openShop(){
+  renderShopEquipment();
+  renderInventoryLoot();
+  showScreen("screenShop");
+}
+
+function renderShopEquipment(){
+  const list = $("shopEquipmentList");
+  list.innerHTML = "";
+  SHOP_EQUIPMENT.forEach(item => {
+    const row = document.createElement("div");
+    row.className = "item-row";
+    row.innerHTML = `<span>${item.icon} <b>${item.name}</b> (+${item.bonus} Atq/Def)<br><small style="color:var(--yellow)">Costo: ${item.cost} 🪙</small></span>
+      <button class="btn primary" style="width:auto; min-height:28px; font-size:10px;" onclick="buyEquipment('${item.id}')">COMPRAR</button>`;
+    list.appendChild(row);
+  });
+}
+
+function buyEquipment(itemId){
+  const template = SHOP_EQUIPMENT.find(i => i.id === itemId);
+  if(!template) return;
+  if(game.player.gold < template.cost){
+    alert("¡Oro insuficiente!");
+    return;
+  }
+  game.player.gold -= template.cost;
+  $("lobbyGold").textContent = game.player.gold + " 🪙";
+
+  game.inventory.push({
+    id: template.id + "_" + Date.now(),
+    name: template.name,
+    type: template.slot,
+    slot: template.slot,
+    bonus: template.bonus,
+    icon: template.icon,
+    sellPrice: Math.floor(template.cost * 0.5)
+  });
+
+  saveSlot(currentSlot);
+  alert(`¡Has comprado ${template.name}! Revísalo en tu inventario.`);
+  renderShopEquipment();
+  checkQuests();
+}
+
+function buyItem(type, cost, value){
+  if(game.player.gold < cost){
+    alert("¡Oro insuficiente!");
+    return;
+  }
+  game.player.gold -= cost;
+  $("lobbyGold").textContent = game.player.gold + " 🪙";
+  if(type === 'potion'){
+    let pot = game.inventory.find(i => i.type === 'potion');
+    if(pot) pot.count++;
+    else game.inventory.push({ id: 'potion', name: 'Poción de Vida', type: 'potion', count: 1, heal: 50, sellPrice: 15 });
+    alert("¡Has comprado una Poción de Vida!");
+  }
+  saveSlot(currentSlot);
+  renderInventoryLoot();
+}
+
+function renderInventoryLoot(){
+  const list = $("inventoryLootList");
+  list.innerHTML = "";
+  if(game.materials.length === 0){
+    list.innerHTML = `<div style="color:var(--muted)">Inventario de materiales vacío.</div>`;
+    return;
+  }
+  game.materials.forEach((item, idx) => {
+    const row = document.createElement("div");
+    row.className = "item-row";
+    row.innerHTML = `<span>${item.name} (x${item.count}) - Valor: ${item.sellPrice * item.count} 🪙</span>
+      <button class="btn green" style="width:auto; min-height:26px; font-size:10px;" onclick="sellMaterial(${idx})">VENDER</button>`;
+    list.appendChild(row);
+  });
+}
+
+function sellMaterial(idx){
+  const item = game.materials[idx];
+  const total = item.sellPrice * item.count;
+  game.player.gold += total;
+  game.materials.splice(idx, 1);
+  renderInventoryLoot();
+  $("lobbyGold").textContent = game.player.gold + " 🪙";
+  saveSlot(currentSlot);
+}
+
+function sellAllLoot(){
+  let total = 0;
+  game.materials.forEach(i => total += (i.sellPrice * i.count));
+  game.player.gold += total;
+  game.materials = [];
+  renderInventoryLoot();
+  $("lobbyGold").textContent = game.player.gold + " 🪙";
+  saveSlot(currentSlot);
+  alert(`Has vendido todo tu botín por ${total} 🪙.`);
+}
+
+/* SISTEMA DE INVENTARIO Y EQUIPAMIENTO CON 6 SLOTS */
+function openInventory(){
+  updateInventoryScreen();
+  showScreen("screenInventory");
+}
+
+function updateInventoryScreen(){
+  $("invPlayerName").textContent = game.player.name;
+  $("invPlayerClass").textContent = game.player.class;
+
+  let avatarIcon = game.player.avatar || "🛡️";
+  if(game.player.equipped.weapon) avatarIcon = game.player.equipped.weapon.icon;
+  $("invPlayerAvatar").textContent = avatarIcon;
+
+  $("slotWeaponEquip").textContent = game.player.equipped.weapon ? `${game.player.equipped.weapon.name} (+${game.player.equipped.weapon.bonus})` : "Ninguna";
+  $("slotShieldEquip").textContent = game.player.equipped.shield ? `${game.player.equipped.shield.name} (+${game.player.equipped.shield.bonus})` : "Ninguno";
+  $("slotHelmetEquip").textContent = game.player.equipped.helmet ? `${game.player.equipped.helmet.name} (+${game.player.equipped.helmet.bonus})` : "Ninguno";
+  $("slotArmorEquip").textContent = game.player.equipped.armor ? `${game.player.equipped.armor.name} (+${game.player.equipped.armor.bonus})` : "Ninguna";
+  $("slotBootsEquip").textContent = game.player.equipped.boots ? `${game.player.equipped.boots.name} (+${game.player.equipped.boots.bonus})` : "Ningunas";
+  $("slotRingEquip").textContent = game.player.equipped.ring ? `${game.player.equipped.ring.name} (+${game.player.equipped.ring.bonus})` : "Ninguno";
+
+  const list = $("inventoryItemsList");
+  list.innerHTML = "";
+
+  if(game.inventory.length === 0){
+    list.innerHTML = `<div style="color:var(--muted); text-align:center; padding:15px;">Tu inventario está vacío.</div>`;
+    return;
+  }
+
+  game.inventory.forEach((item, idx) => {
+    const row = document.createElement("div");
+    row.className = "item-row";
+    if(item.type === 'potion'){
+      row.innerHTML = `<span>💊 <b>${item.name}</b> (x${item.count})</span>
+        <button class="btn green" style="width:auto; min-height:26px; font-size:10px;" onclick="usePotionFromInventory(${idx})">USAR</button>`;
+    } else {
+      let isEquipped = Object.values(game.player.equipped).some(eq => eq && eq.id === item.id);
+      row.innerHTML = `<span>${item.icon} <b>${item.name}</b> (+${item.bonus})</span>
+        <div style="display:flex; gap:4px;">
+          <button class="btn ${isEquipped ? 'red' : 'primary'}" style="width:auto; min-height:26px; font-size:10px;" onclick="toggleEquipItem(${idx})">${isEquipped ? 'QUITAR' : 'EQUIPAR'}</button>
+          <button class="btn red" style="width:auto; min-height:26px; font-size:10px;" onclick="sellInventoryItem(${idx})">VENDER</button>
+        </div>`;
+    }
+    list.appendChild(row);
+  });
+}
+
+function toggleEquipItem(idx){
+  const item = game.inventory[idx];
+  if(item.type === 'potion') return;
+
+  const slot = item.slot; 
+  if(game.player.equipped[slot] && game.player.equipped[slot].id === item.id){
+    game.player.equipped[slot] = null;
+  } else {
+    game.player.equipped[slot] = item;
+  }
+  saveSlot(currentSlot);
+  updateInventoryScreen();
+  checkQuests();
+}
+
+function sellInventoryItem(idx){
+  const item = game.inventory[idx];
+  if(item.type === 'potion') return;
+
+  for(let s in game.player.equipped){
+    if(game.player.equipped[s] && game.player.equipped[s].id === item.id){
+      game.player.equipped[s] = null;
+    }
+  }
+
+  game.player.gold += item.sellPrice;
+  game.inventory.splice(idx, 1);
+  saveSlot(currentSlot);
+  updateInventoryScreen();
+  alert(`Has vendido ${item.name} por ${item.sellPrice} 🪙.`);
+}
+
+function getPlayerTotalAttack(){
+  let bonus = 0;
+  for(let s in game.player.equipped){
+    if(game.player.equipped[s] && game.player.equipped[s].slot === 'weapon') bonus += game.player.equipped[s].bonus;
+    if(game.player.equipped[s] && game.player.equipped[s].slot === 'ring') bonus += game.player.equipped[s].bonus;
+  }
+  return game.player.attack + bonus;
+}
+
+function getPlayerTotalDefense(){
+  let bonus = 0;
+  for(let s in game.player.equipped){
+    let eq = game.player.equipped[s];
+    if(eq && eq.slot !== 'weapon' && eq.slot !== 'ring') bonus += eq.bonus;
+  }
+  return game.player.defense + bonus;
+}
+
+/* POCIONES */
+function getPotionCount(){
+  let pot = game.inventory.find(i => i.type === 'potion');
+  return pot ? pot.count : 0;
+}
+
+function usePotionExplore(){
+  let pot = game.inventory.find(i => i.type === 'potion');
+  if(!pot || pot.count <= 0){
+    alert("No tienes pociones en tu inventario.");
+    return;
+  }
+  if(game.player.hp >= game.player.maxHp){
+    alert("Salud ya al máximo.");
+    return;
+  }
+  pot.count--;
+  if(pot.count <= 0) game.inventory = game.inventory.filter(i => i.type !== 'potion');
+  game.player.hp = Math.min(game.player.maxHp, game.player.hp + 50);
+  updateExploreHUD();
+  saveSlot(currentSlot);
+  alert("¡Poción consumida (+50 PV)!");
+}
+
+function usePotionFromInventory(idx){
+  let item = game.inventory[idx];
+  if(item.count <= 0) return;
+  if(game.player.hp >= game.player.maxHp){
+    alert("Salud ya al máximo.");
+    return;
+  }
+  item.count--;
+  if(item.count <= 0) game.inventory.splice(idx, 1);
+  game.player.hp = Math.min(game.player.maxHp, game.player.hp + 50);
+  saveSlot(currentSlot);
+  updateInventoryScreen();
+  alert("¡Poción utilizada con éxito (+50 PV)!");
+}
+
+function usePotionBattle(){
+  let pot = game.inventory.find(i => i.type === 'potion');
+  if(!pot || pot.count <= 0){
+    logCombat("No te quedan pociones.", "bad");
+    return;
+  }
+  if(game.player.hp >= game.player.maxHp){
+    logCombat("Tu salud ya está al máximo.", "info");
+    return;
+  }
+  pot.count--;
+  if(pot.count <= 0) game.inventory = game.inventory.filter(i => i.type !== 'potion');
+  game.player.hp = Math.min(game.player.maxHp, game.player.hp + 50);
+  logCombat("¡Consumiste una poción en combate (+50 PV)!", "good");
+  updateBattleHUD();
+  enemyTurn();
+}
+
+/* ENTRENAMIENTO Y MISIONES */
+function openTraining(){
+  $("trainingSP").textContent = game.player.skillPoints;
+  if(game.floor >= 20){
+    $("floor20TrainingPanel").classList.remove("hidden");
+  } else {
+    $("floor20TrainingPanel").classList.add("hidden");
+  }
+  showScreen("screenTraining");
+}
+
+function upgradeStat(stat){
+  if(game.player.skillPoints <= 0){
+    alert("No tienes Puntos de Habilidad (SP) disponibles.");
+    return;
+  }
+  game.player.skillPoints--;
+  if(stat === 'attack') game.player.attack += 4;
+  if(stat === 'maxHp'){ game.player.maxHp += 30; game.player.hp += 30; }
+  if(stat === 'defense') game.player.defense += 3;
+  $("trainingSP").textContent = game.player.skillPoints;
+  $("lobbySP").textContent = game.player.skillPoints;
+  saveSlot(currentSlot);
+  alert("¡Atributo mejorado con éxito!");
+}
+
+function evolveSkillMastery(){
+  if(game.player.skillPoints < 2){
+    alert("Necesitas al menos 2 SP para evolucionar.");
+    return;
+  }
+  game.player.skillPoints -= 2;
+  game.player.skillLevel++;
+  alert(`¡Habilidad evolucionada a Nivel ${game.player.skillLevel}!`);
+  saveSlot(currentSlot);
+  openTraining();
+}
+
+function openQuests(){
+  const list = $("questsList");
+  list.innerHTML = "";
+  game.quests.forEach(q => {
+    const row = document.createElement("div");
+    row.className = "item-row";
+    row.innerHTML = `<span><b>${q.title}</b><br><small style="color:var(--muted)">${q.desc}</small><br><span style="color:var(--yellow)">Recompensa: ${q.rewardGold} 🪙</span></span>
+      <span style="font-weight:bold; color:${q.completed ? 'var(--green)' : 'var(--orange)'}">${q.completed ? 'COMPLETADA' : 'EN CURSO'}</span>`;
+    list.appendChild(row);
+  });
+  showScreen("screenQuests");
+}
+
+function checkQuests(){
+  game.quests.forEach(q => {
+    if(!q.completed){
+      if(q.targetFloor && game.maxFloorReached >= q.targetFloor){
+        q.completed = true;
+        game.player.gold += q.rewardGold;
+        alert(`🎉 ¡Misión completada: "${q.title}"! Recompensa: ${q.rewardGold} 🪙`);
+      }
+      if(q.targetEquipped){
+        let count = Object.values(game.player.equipped).filter(e => e !== null).length;
+        if(count >= q.targetEquipped){
+          q.completed = true;
+          game.player.gold += q.rewardGold;
+          alert(`🎉 ¡Misión completada: "${q.title}"! Recompensa: ${q.rewardGold} 🪙`);
         }
+      }
+    }
+  });
+}
+
+function openClassChange(){
+  const bList = $("booksList");
+  bList.innerHTML = "";
+  if(game.books.length === 0){
+    bList.innerHTML = `<span style="color:var(--muted)">No tienes libros de cambio de clase. Explora la torre.</span>`;
+  } else {
+    game.books.forEach((book, idx) => {
+      const row = document.createElement("div");
+      row.className = "item-row";
+      row.innerHTML = `<span>📖 ${book.name} (${book.rarity})</span>
+        <button class="btn purple" style="width:auto; min-height:26px; font-size:10px;" onclick="useClassBook(${idx})">USAR</button>`;
+      bList.appendChild(row);
+    });
+  }
+
+  if(game.maxFloorReached >= 10 && game.player.class === "Novato"){
+    $("classChoicePanel").classList.remove("hidden");
+  } else {
+    $("classChoicePanel").classList.add("hidden");
+  }
+  showScreen("screenClassChange");
+}
+
+function chooseBasicClass(className){
+  game.player.class = className;
+  if(className === 'Guerrero') { game.player.maxHp += 60; game.player.attack += 6; }
+  if(className === 'Mago') { game.player.maxMp += 40; game.player.attack += 10; }
+  if(className === 'Asesino') { game.player.dodge += 0.15; game.player.attack += 8; }
+  game.player.hp = game.player.maxHp;
+  saveSlot(currentSlot);
+  alert(`¡Has adoptado la clase: ${className}!`);
+  openClassChange();
+}
+
+function useClassBook(idx){
+  const book = game.books[idx];
+  if(confirm(`¿Consumir ${book.name} para evolucionar a ${book.classType}?`)){
+    game.player.class = book.classType;
+    game.player.attack += 12;
+    game.player.maxHp += 50;
+    game.player.hp = game.player.maxHp;
+    game.books.splice(idx, 1);
+    saveSlot(currentSlot);
+    alert(`¡Nueva clase avanzada obtenida: ${book.classType}!`);
+    openClassChange();
+  }
+}
+
+/* EXPLORACIÓN DE LA TORRE Y MAPA 7X7 */
+function openExplore(){
+  generateFloorMap();
+  updateExploreHUD();
+  showScreen("screenExplore");
+}
+
+function generateFloorMap(){
+  if(!game.dungeonMaps) game.dungeonMaps = {};
+  if(game.dungeonMaps[game.floor]) return;
+
+  let map = [];
+  for(let i = 0; i < 49; i++){
+    let type = 'empty';
+    let icon = '·';
+    const randTerrain = Math.random();
+    let terrainIcon = randTerrain < 0.20 ? '🌲' : randTerrain < 0.35 ? '🪨' : randTerrain < 0.48 ? '🌿' : '·';
+
+    const rand = Math.random();
+    if(i === 24){
+      type = 'teleport';
+      icon = '🌀';
+    } else if(rand < 0.22){
+      type = 'monster';
+      icon = '👾';
+    } else if(rand < 0.30){
+      type = 'item';
+      icon = '📦';
+    } else if(rand < 0.37){
+      type = 'npc';
+      icon = '🧙‍♂️';
+    } else {
+      icon = terrainIcon;
+    }
+    map.push({type: type, icon: icon, terrain: terrainIcon, explored: false});
+  }
+
+  game.playerPos = {x: 3, y: 6};
+  let startIdx = 6 * 7 + 3;
+  map[startIdx].explored = true;
+  map[startIdx].type = 'empty';
+  map[startIdx].icon = '·';
+
+  game.dungeonMaps[game.floor] = map;
+}
+
+function renderMap(){
+  const grid = $("mapGrid");
+  grid.innerHTML = "";
+  const map = game.dungeonMaps[game.floor];
+
+  for(let y = 0; y < 7; y++){
+    for(let x = 0; x < 7; x++){
+      const idx = y * 7 + x;
+      const cellData = map[idx];
+      const cell = document.createElement("div");
+      cell.className = "cell";
+
+      if(x === game.playerPos.x && y === game.playerPos.y){
+        cell.classList.add("player");
+        cell.textContent = "◆";
+      } else if(cellData.explored){
+        cell.classList.add("explored");
+        if(cellData.type === 'monster') { cell.classList.add("monster"); cell.textContent = cellData.icon; }
+        else if(cellData.type === 'teleport') { cell.classList.add("teleport"); cell.textContent = cellData.icon; }
+        else if(cellData.type === 'item') { cell.classList.add("item"); cell.textContent = cellData.icon; }
+        else if(cellData.type === 'npc') { cell.classList.add("npc"); cell.textContent = cellData.icon; }
+        else { cell.textContent = cellData.terrain; }
+      } else {
+        cell.textContent = "";
+      }
+      grid.appendChild(cell);
+    }
+  }
+}
+
+function movePlayer(dx, dy){
+  if(game.battleActive) return;
+  const newX = clamp(game.playerPos.x + dx, 0, 6);
+  const newY = clamp(game.playerPos.y + dy, 0, 6);
+
+  game.playerPos.x = newX;
+  game.playerPos.y = newY;
+
+  const map = game.dungeonMaps[game.floor];
+  const idx = newY * 7 + newX;
+  const cell = map[idx];
+  cell.explored = true;
+
+  renderMap();
+  saveSlot(currentSlot);
+
+  if(cell.type === 'monster'){
+    cell.type = 'empty';
+    cell.icon = '·';
+    startBattle();
+  } else if(cell.type === 'teleport'){
+    openTeleportModal();
+  } else if(cell.type === 'item'){
+    cell.type = 'empty';
+    cell.icon = '·';
+    triggerFloorEvent();
+  } else if(cell.type === 'npc'){
+    triggerNpcEvent();
+  }
+}
+
+function triggerFloorEvent(){
+  const rand = Math.random();
+  if(rand < 0.35 && game.floor >= 10){
+    const rarities = [
+      {name: "Libro de Clase Rara", rarity: "Rara", classType: "Paladín"},
+      {name: "Libro de Clase Épica", rarity: "Épica", classType: "Archimago"}
     ];
+    const b = rarities[random(0, rarities.length - 1)];
+    game.books.push(b);
+    alert(`✨ ¡Has descubierto un ${b.name} (${b.rarity}) en el piso!`);
+  } else {
+    const goldFound = random(20, 50) * game.floor;
+    game.player.gold += goldFound;
+    alert(`📦 ¡Has abierto un cofre con ${goldFound} 🪙!`);
+  }
+  saveSlot(currentSlot);
+  checkQuests();
+}
 
-    const floorData = {
-        1: { name: "Piso 1: Bosque Esmeralda", enemy: "Slime Ácido", emoji: "🟢", hp: 30, atk: 8, target: 10, desc: "Derrotar 10 Slimes" },
-        2: { name: "Piso 2: Cavernas Subterráneas", enemy: "Murciélago de Cristal", emoji: "🦇", hp: 45, atk: 12, target: 8, desc: "Derrotar 8 Murciélagos" },
-        3: { name: "Piso 3: Ruinas Abandonadas", enemy: "Goblin Guerrero", emoji: "👺", hp: 65, atk: 16, target: 12, desc: "Derrotar 12 Goblins" },
-        4: { name: "Piso 4: Pantano Venenosos", enemy: "Lagarto de Cieno", emoji: "🐊", hp: 90, atk: 20, target: 8, desc: "Derrotar 8 Lagartos" },
-        5: { name: "Piso 5: Páramo Ardiente", enemy: "Diablillo de Fuego", emoji: "🔥", hp: 120, atk: 25, target: 10, desc: "Derrotar 10 Diablillos" },
-        6: { name: "Piso 6: Montañas Heladas", enemy: "Lobo de Hielo", emoji: "🐺", hp: 160, atk: 30, target: 7, desc: "Derrotar 7 Lobos Alfa" },
-        7: { name: "Piso 7: Catacumbas Reales", enemy: "Esqueleto Guardián", emoji: "💀", hp: 210, atk: 36, target: 9, desc: "Derrotar 9 Esqueletos" },
-        8: { name: "Piso 8: Templo de Susurros", enemy: "Espectro Errante", emoji: "👻", hp: 270, atk: 42, target: 8, desc: "Derrotar 8 Espectros" },
-        9: { name: "Piso 9: Forja Colgante", enemy: "Golem de Piedra", emoji: "🗿", hp: 350, atk: 50, target: 5, desc: "Derrotar 5 Golems" },
-        10: { name: "Piso 10: La Cumbre (¡JEFE!)", enemy: "Rey Orco Berserker", emoji: "👑", hp: 600, atk: 65, target: 1, desc: "¡Derrotar al Jefe Supremo del Piso 10!" }
+function triggerNpcEvent(){
+  const npc = NPC_POOL[random(0, NPC_POOL.length - 1)];
+  alert(`💬 [${npc.name}]: "${npc.dialog}"\n\nTe obsequia 1 Poción de Vida por tu valentía.`);
+  let pot = game.inventory.find(i => i.type === 'potion');
+  if(pot) pot.count++;
+  else game.inventory.push({ id: 'potion', name: 'Poción de Vida', type: 'potion', count: 1, heal: 50, sellPrice: 15 });
+  updateExploreHUD();
+  saveSlot(currentSlot);
+}
+
+function updateExploreHUD(){
+  $("exploreTitle").textContent = `TORRE // PISO 0${game.floor}`;
+  $("explorePlayerName").textContent = game.player.name;
+  $("exploreLevelText").textContent = `NV. ${game.player.level} (${game.player.exp}/${game.player.nextExp} EXP)`;
+  $("exploreHpText").textContent = `${game.player.hp}/${game.player.maxHp}`;
+  $("exploreHp").style.width = `${(game.player.hp / game.player.maxHp)*100}%`;
+  $("explorePotionCount").textContent = getPotionCount();
+  renderMap();
+}
+
+function openTeleportModal(){
+  const container = $("floorTeleportButtons");
+  container.innerHTML = "";
+  for(let f = 1; f <= game.maxFloorReached; f++){
+    const btn = document.createElement("button");
+    btn.className = "btn primary";
+    btn.style.minHeight = "34px";
+    btn.style.fontSize = "11px";
+    btn.textContent = `PISO 0${f} ${f === game.floor ? '(Actual)' : ''}`;
+    btn.onclick = () => {
+      game.floor = f;
+      closeTeleportModal();
+      openExplore();
     };
+    container.appendChild(btn);
+  }
+  showScreen("screenTeleport");
+}
 
-    function switchScreen(screenId) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(screenId).classList.add('active');
+function closeTeleportModal(){
+  showScreen("screenExplore");
+}
+
+function teleportToLobby(){
+  goToLobby();
+}
+
+/* COMBATE TÁCTICO AVANZADO */
+function startBattle(){
+  let availableMonsters = MONSTER_POOL.filter(m => game.floor >= m.minFloor && game.floor <= m.maxFloor);
+  if(availableMonsters.length === 0) availableMonsters = MONSTER_POOL;
+  const tmpl = availableMonsters[random(0, availableMonsters.length - 1)];
+
+  let isBoss = (game.floor % 5 === 0);
+  game.enemy = {
+    name: isBoss ? `Señor Supremo Piso ${game.floor}` : tmpl.name,
+    icon: isBoss ? "👑" : tmpl.icon,
+    skinBg: isBoss ? "radial-gradient(circle at 50% 30%, #3a1038 0%, #0e0416 70%)" : tmpl.skinBg,
+    borderColor: isBoss ? "#9b59b6" : tmpl.borderColor,
+    avatarBg: isBoss ? "linear-gradient(135deg, #e74c3c, #8e44ad)" : tmpl.avatarBg,
+    shape: isBoss ? "50%" : tmpl.shape,
+    level: game.floor,
+    maxHp: (isBoss ? 150 : 60) + (game.floor * 25),
+    hp: (isBoss ? 150 : 60) + (game.floor * 25),
+    attack: (isBoss ? 18 : 12) + (game.floor * 5),
+    defense: 3 + Math.floor(game.floor / 2)
+  };
+
+  game.turn = 1;
+  game.battleActive = true;
+  game.player.defending = false;
+  game.player.block = false;
+
+  $("enemyName").textContent = game.enemy.name.toUpperCase();
+  $("enemyName").style.color = game.enemy.borderColor;
+  $("enemyLevel").textContent = `NV. ${game.enemy.level}`;
+
+  const sceneBox = $("battleSceneBox");
+  sceneBox.style.background = game.enemy.skinBg;
+  sceneBox.style.borderColor = game.enemy.borderColor;
+
+  const avatarEl = $("enemyAvatar");
+  avatarEl.textContent = game.enemy.icon;
+  avatarEl.style.background = game.enemy.avatarBg;
+  avatarEl.style.borderRadius = game.enemy.shape;
+  avatarEl.style.border = `2px solid ${game.enemy.borderColor}`;
+
+  $("battlePlayerName").textContent = game.player.name;
+  $("combatLog").innerHTML = "";
+
+  logCombat(`¡Un ${game.enemy.name} salvaje apareció en el piso!`, "info");
+  updateBattleHUD();
+  showScreen("screenBattle");
+}
+
+function updateBattleHUD(){
+  $("battleHpText").textContent = `${game.player.hp}/${game.player.maxHp}`;
+  $("battleHp").style.width = `${clamp(game.player.hp/game.player.maxHp*100, 0, 100)}%`;
+  $("enemyHpText").textContent = `${game.enemy.hp}/${game.enemy.maxHp}`;
+  $("enemyHp").style.width = `${clamp(game.enemy.hp/game.enemy.maxHp*100, 0, 100)}%`;
+  $("turnText").textContent = `TURNO ${game.turn}`;
+  $("battlePotionCount").textContent = getPotionCount();
+}
+
+function logCombat(text, type=""){
+  const logBox = $("combatLog");
+  const p = document.createElement("p");
+  if(type) p.className = type;
+  p.textContent = "> " + text;
+  logBox.appendChild(p);
+  logBox.scrollTop = logBox.scrollHeight;
+}
+
+function basicAttack(){
+  if(!game.battleActive) return;
+  const p = game.player;
+  const e = game.enemy;
+  let totalAtk = getPlayerTotalAttack();
+  let dmg = Math.max(1, (totalAtk + random(0, 6)) - e.defense);
+  e.hp = Math.max(0, e.hp - dmg);
+  logCombat(`Atacas y causas ${dmg} de daño.`, "good");
+  floatingDamage(dmg, false);
+
+  updateBattleHUD();
+  if(e.hp <= 0){ winBattle(); return; }
+  enemyTurn();
+}
+
+function useSkill(){
+  if(!game.battleActive) return;
+  const p = game.player;
+  const e = game.enemy;
+  let totalAtk = getPlayerTotalAttack();
+  let dmg = Math.max(1, (totalAtk * 2.4 + game.skillLevel * 6) - e.defense);
+  e.hp = Math.max(0, e.hp - dmg);
+  logCombat(`¡Ejecutas Habilidad Especial! Causas ${dmg} de daño crítico.`, "good");
+  floatingDamage(dmg, false);
+
+  updateBattleHUD();
+  if(e.hp <= 0){ winBattle(); return; }
+  enemyTurn();
+}
+
+function defend(){
+  if(!game.battleActive) return;
+  game.player.defending = true;
+  logCombat("Adoptas postura defensiva para mitigar daño.", "info");
+  enemyTurn();
+}
+
+function enemyTurn(){
+  if(!game.battleActive) return;
+  const p = game.player;
+  const e = game.enemy;
+
+  setTimeout(() => {
+    if(Math.random() < p.dodge){
+      logCombat("¡Esquivas el ataque enemigo con agilidad!", "good");
+      finishTurn();
+      return;
     }
+    let totalDef = getPlayerTotalDefense();
+    let dmg = Math.max(1, e.attack - (p.defending ? totalDef + 8 : totalDef));
+    p.defending = false;
+    p.hp = Math.max(0, p.hp - dmg);
+    logCombat(`El ${e.name} te ataca e inflige ${dmg} de daño.`, "bad");
+    floatingDamage(dmg, true);
+    updateBattleHUD();
 
-    function goToStatGen() {
-        switchScreen('screen-stats');
-        setTimeout(() => {
-            let chosen = uniqueTraits[Math.floor(Math.random() * uniqueTraits.length)];
-            
-            player.traitName = chosen.trait;
-            player.passiveDesc = chosen.passive;
-            player.activeName = chosen.active.split(":")[0].replace("Activa: ", "");
-            player.activeDesc = chosen.active;
-            
-            chosen.apply();
+    if(p.hp <= 0){ loseBattle(); return; }
+    finishTurn();
+  }, 500);
+}
 
-            document.getElementById('system-awakening').innerHTML = "¡Sincronización completada con éxito!<br>La Torre ha esculpido tu código genético.";
-            document.getElementById('trait-title').innerHTML = `✨ Característica: ${player.traitName}`;
-            document.getElementById('passive-desc').innerHTML = `${player.passiveDesc}`;
-            document.getElementById('active-desc').innerHTML = `${player.activeDesc}`;
-            document.getElementById('active-skill-label').innerText = player.activeName;
-            document.getElementById('stat-result').style.display = 'block';
-            document.getElementById('btn-start-tower').style.display = 'block';
-        }, 1500);
-    }
+function finishTurn(){
+  game.turn++;
+  updateBattleHUD();
+}
 
-    function startGameplay() {
-        switchScreen('screen-game');
-        loadFloorData();
-    }
+function winBattle(){
+  game.battleActive = false;
+  const expGain = 50 * game.floor;
+  const goldGain = 30 * game.floor;
+  game.player.exp += expGain;
+  game.player.gold += goldGain;
 
-    function loadFloorData() {
-        let f = floorData[player.floor] || { name: `Piso ${player.floor}: Zona Desconocida`, enemy: "Monstruo de la Torre", emoji: "👹", hp: 300 + (player.floor * 80), atk: 40 + (player.floor * 10), target: 5, desc: "Derrotar 5 enemigos" };
-        
-        document.getElementById('floor-title').innerText = f.name;
-        document.getElementById('player-lvl').innerText = `Nv. ${player.floor}`;
-        enemy.name = f.enemy;
-        enemy.emoji = f.emoji;
-        enemy.maxHp = f.hp;
-        enemy.hp = f.hp;
-        enemy.atk = f.atk;
+  const lootTable = ["Jalea Esencial", "Colmillo de Bestia", "Núcleo Energético"];
+  const droppedName = lootTable[random(0, lootTable.length - 1)];
+  let existingItem = game.materials.find(i => i.name === droppedName);
+  if(existingItem) existingItem.count++;
+  else game.materials.push({name: droppedName, count: 1, sellPrice: 20 * game.floor});
 
-        mission.target = f.target;
-        mission.current = 0;
+  if(Math.random() < 0.18){
+    game.books.push({name: "Libro de Clase Rara", rarity: "Rara", classType: "Paladín"});
+    logCombat("¡El enemigo dejó caer un Libro de Clase Rara!", "systemlog");
+  }
 
-        document.getElementById('enemy-name').innerText = enemy.name;
-        document.getElementById('enemy-icon').innerText = enemy.emoji;
-        
-        updateUI();
-        logMessage(`[Sistema] Entraste al ${f.name}. Objetivo: ${f.desc}`);
-    }
+  let levelUpMsg = "";
+  if(game.player.exp >= game.player.nextExp){
+    game.player.level++;
+    game.player.skillPoints += 2;
+    game.player.exp = 0;
+    game.player.nextExp = Math.floor(game.player.nextExp * 1.35);
+    game.player.maxHp += 25;
+    game.player.hp = game.player.maxHp;
+    levelUpMsg = `\n🌟 ¡SUBISTE AL NIVEL ${game.player.level}! (+2 SP)`;
+  }
 
-    function updateUI() {
-        document.getElementById('player-hp-text').innerText = `${player.hp}/${player.maxHp}`;
-        document.getElementById('player-hp-bar').style.width = `${Math.max(0, (player.hp / player.maxHp) * 100)}%`;
+  if(game.floor === game.maxFloorReached){
+    game.maxFloorReached = Math.min(100, game.maxFloorReached + 1);
+  }
 
-        document.getElementById('enemy-hp-text').innerText = `${enemy.hp}/${enemy.maxHp}`;
-        document.getElementById('enemy-hp-bar').style.width = `${Math.max(0, (enemy.hp / enemy.maxHp) * 100)}%`;
+  saveSlot(currentSlot);
+  checkQuests();
 
-        document.getElementById('progress-text').innerText = `${mission.current}/${mission.target}`;
-        document.getElementById('quest-text').innerText = floorData[player.floor]?.desc || "Derrotar enemigos";
-        document.getElementById('cd-text').innerText = player.activeCD;
-    }
+  $("victoryRewardText").innerHTML = `
+    Has superado el combate.<br>
+    • EXP: +${expGain}<br>
+    • Oro: +${goldGain} 🪙<br>
+    • Botín: <b>1x ${droppedName}</b>
+    ${levelUpMsg}
+  `;
+  showScreen("screenVictory");
+}
 
-    function logMessage(msg) {
-        let box = document.getElementById('combat-log');
-        box.innerHTML += `<div>${msg}</div>`;
-        box.scrollTop = box.scrollHeight;
-    }
+function loseBattle(){
+  game.battleActive = false;
+  alert("Has sido derrotado en combate.\nEl Sistema te devuelve al Lobby para recuperarte.");
+  game.player.hp = Math.ceil(game.player.maxHp * 0.5);
+  goToLobby();
+}
 
-    function playerAttack() {
-        let dmg = player.atk + Math.floor(Math.random() * 5);
-        
-        if (player.bonusType === "vampire_basic") {
-            let heal = 4;
-            player.hp = Math.min(player.maxHp, player.hp + heal);
-            logMessage(`🩸 Absorbes ${heal} PV con tu ataque vampírico básico.`);
-        }
+function fleeBattle(){
+  if(!game.battleActive) return;
+  if(Math.random() < 0.75){
+    game.battleActive = false;
+    alert("Has escapado con éxito.");
+    openExplore();
+  } else {
+    logCombat("¡Fallo al intentar huir!", "bad");
+    enemyTurn();
+  }
+}
 
-        enemy.hp -= dmg;
-        logMessage(`Atacas a ${enemy.name} causando ${dmg} de daño.`);
+function returnToExploreMap(){
+  openExplore();
+}
 
-        checkBattleState();
-    }
-
-    function playerActiveSkill() {
-        if (player.activeCD > 0) {
-            logMessage(`[Sistema] La habilidad activa está en recarga (${player.activeCD} turnos restantes).`);
-            return;
-        }
-
-        let dmg = 0;
-        if (player.bonusType === "crit") {
-            dmg = Math.floor(player.atk * 2.8);
-            enemy.hp -= dmg;
-            logMessage(`💥 ¡Corte Crítico! Causas ${dmg} de daño masivo.`);
-        } else if (player.bonusType === "regen_heal") {
-            player.hp = Math.min(player.maxHp, player.hp + 30);
-            logMessage(`🌿 ¡Llama Curativa! Restauras 30 PV.`);
-        } else if (player.bonusType === "dodge") {
-            dmg = Math.floor(player.atk * 2.2);
-            enemy.hp -= dmg;
-            logMessage(`🗡️ ¡Apuñalamiento Oscuro! Causas ${dmg} ignorando defensas.`);
-        } else if (player.bonusType === "shield" || player.bonusType === "counter") {
-            logMessage(`🛡️ ¡Escudo activado! El próximo ataque será neutralizado.`);
-            player.activeCD = player.cdMax + 1;
-            updateUI();
-            enemyTurn(true);
-            return;
-        } else if (player.bonusType === "magic") {
-            dmg = Math.floor(player.atk * 3.0);
-            enemy.hp -= dmg;
-            logMessage(`🔮 ¡Esfera de Rayos! Magia pura causa ${dmg} de daño.`);
-        } else if (player.bonusType === "vampire_basic") {
-            dmg = Math.floor(player.atk * 1.5);
-            enemy.hp -= dmg;
-            let rob = Math.floor(dmg);
-            player.hp = Math.min(player.maxHp, player.hp + rob);
-            logMessage(`🦇 ¡Drenaje Vital! Causa ${dmg} y robas ${rob} PV.`);
-        } else if (player.bonusType === "berserker") {
-            dmg = Math.floor(player.atk * 3.2);
-            enemy.hp -= dmg;
-            player.hp = Math.max(1, player.hp - 10);
-            logMessage(`🔥 ¡Furia Desatada! Daño brutal de ${dmg}, pero pierdes 10 PV.`);
-        } else if (player.bonusType === "frost") {
-            dmg = Math.floor(player.atk * 2.0);
-            enemy.hp -= dmg;
-            logMessage(`❄️ ¡Ventisca Congelante! Impacto de ${dmg} de daño helado.`);
-        } else {
-            dmg = Math.floor(player.atk * 2.0);
-            enemy.hp -= dmg;
-            player.hp = Math.min(player.maxHp, player.hp + 20);
-            logMessage(`✨ ¡Milagro Milenario! Causas ${dmg} y recuperas 20 PV.`);
-        }
-
-        player.activeCD = player.cdMax;
-        checkBattleState();
-    }
-
-    function checkBattleState() {
-        if (enemy.hp <= 0) {
-            enemy.hp = 0;
-            updateUI();
-            mission.current++;
-            logMessage(`🎉 ¡Has derrotado a ${enemy.name}! (${mission.current}/${mission.target})`);
-
-            if (player.bonusType === "regen_heal") {
-                player.hp = Math.min(player.maxHp, player.hp + 8);
-            }
-
-            if (mission.current >= mission.target) {
-                setTimeout(() => {
-                    if (player.floor === 10) {
-                        document.getElementById('victory-msg').innerHTML = "👑 ¡Has derrotado al Rey Orco y superado el Piso 10! Has estabilizado la torre temporalmente. ¡Próximamente más pisos!";
-                    } else {
-                        document.getElementById('victory-msg').innerHTML = `Has completado la misión del Piso ${player.floor}. La torre te otorga acceso al siguiente nivel.`;
-                    }
-                    switchScreen('screen-victory');
-                }, 800);
-                return;
-            } else {
-                let baseHp = floorData[player.floor]?.hp || 100;
-                enemy.hp = baseHp;
-                enemy.maxHp = baseHp;
-                logMessage(`Un nuevo ${enemy.name} aparece frente a ti.`);
-            }
-        } else {
-            enemyTurn(false);
-        }
-
-        if (player.activeCD > 0) player.activeCD--;
-        updateUI();
-    }
-
-    function enemyTurn(shieldActive) {
-        if (shieldActive) {
-            logMessage(`🛡️ El ataque de ${enemy.name} fue bloqueado por completo.`);
-            if (player.bonusType === "counter") {
-                let counterDmg = Math.floor(enemy.atk / 2);
-                enemy.hp -= counterDmg;
-                logMessage(`⚡ ¡Contraataque! Devuelves ${counterDmg} de daño al enemigo.`);
-                if(enemy.hp <= 0) {
-                    checkBattleState();
-                    return;
-                }
-            }
-            return;
-        }
-
-        let dodgeChance = (player.bonusType === "dodge") ? 0.25 : ((player.bonusType === "lucky") ? 0.15 : 0.05);
-        if (Math.random() < dodgeChance) {
-            logMessage(`💨 ¡Esquivaste hábilmente el ataque de ${enemy.name}!`);
-            return;
-        }
-
-        let eDmg = enemy.atk + Math.floor(Math.random() * 4) - 3;
-        player.hp -= eDmg;
-        logMessage(`⚠️ ${enemy.name} te ataca e inflige ${eDmg} de daño.`);
-
-        if (player.hp <= 0) {
-            player.hp = 0;
-            updateUI();
-            logMessage(`💀 Has caído en combate... La torre te expulsa del piso.`);
-            alert("Has muerto en la mazmorra. Reiniciando piso...");
-            player.hp = player.maxHp;
-            loadFloorData();
-        }
-    }
-
-    function nextFloor() {
-        if (player.floor >= 10) {
-            alert("¡Has completado el juego hasta el Piso 10! ¡Felicidades, cazador!");
-            player.floor = 1;
-            player.hp = player.maxHp;
-            switchScreen('screen-intro');
-            return;
-        }
-        player.floor++;
-        player.maxHp += 25;
-        player.hp = player.maxHp;
-        player.atk += 6;
-        switchScreen('screen-game');
-        loadFloorData();
-    }
+function floatingDamage(amount, onPlayer){
+  const scene = document.querySelector(".battle-scene");
+  if(!scene) return;
+  const d = document.createElement("div");
+  d.className = "damage";
+  d.textContent = "-" + amount;
+  d.style.left = onPlayer ? "28%" : "68%";
+  d.style.top = "42%";
+  scene.appendChild(d);
+  setTimeout(() => d.remove(), 600);
+}
 </script>
 
 </body>
