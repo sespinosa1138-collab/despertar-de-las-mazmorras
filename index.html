@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tower of Despair - RPG</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #0d0e15;
+            color: #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+        .game-container {
+            width: 100%;
+            max-width: 420px;
+            background: #161b22;
+            border: 2px solid #30363d;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 85vh;
+            max-height: 750px;
+        }
+        .screen {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .screen.active {
+            display: flex;
+        }
+        h1 {
+            color: #58a6ff;
+            font-size: 22px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .story-box {
+            background: #0d1117;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #58a6ff;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #c9d1d9;
+        }
+        .btn {
+            background: #238636;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-align: center;
+            width: 100%;
+            margin-top: auto;
+        }
+        .btn:hover { background: #2ea043; }
+        .btn-secondary { background: #1f6feb; }
+        .btn-secondary:hover { background: #388bfd; }
+
+        .top-stats {
+            background: #21262d;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+        .bar-container {
+            background: #30363d;
+            border-radius: 4px;
+            height: 10px;
+            width: 100%;
+            margin: 5px 0 10px 0;
+            overflow: hidden;
+        }
+        .hp-bar {
+            background: #238636;
+            height: 100%;
+            width: 100%;
+            transition: width 0.3s;
+        }
+        .enemy-box {
+            text-align: center;
+            background: #0d1117;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #30363d;
+            margin-bottom: 15px;
+        }
+        .enemy-emoji {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+        .combat-log {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 10px;
+            height: 120px;
+            overflow-y: auto;
+            font-size: 12px;
+            color: #8b949e;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: auto;
+        }
+        .skill-info {
+            background: #1f242c;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            margin-bottom: 10px;
+            border: 1px dashed #58a6ff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+
+    <!-- PANTALLA 1: INTRODUCCIÓN LORE -->
+    <div id="screen-intro" class="screen active">
+        <h1>Torre de la Desesperación</h1>
+        <div class="story-box">
+            En este mundo aparecieron repentinamente **Torres de 100 pisos** habitadas por monstruos.<br><br>
+            ⏳ **La Regla:** Si un piso no se supera en **6 meses**, al cumplirse el plazo los monstruos saldrán durante 24 horas para destruir todo. El plazo se reduce cada vez más.<br><br>
+            🌍 La Torre elige a sus participantes aleatoriamente según su suerte... Y hoy, tu cama se iluminó. Fuiste seleccionado.
+        </div>
+        <button class="btn" onclick="goToStatGen()">Aceptar el Destino</button>
+    </div>
+
+    <!-- PANTALLA 2: GENERACIÓN DE HABILIDAD ÚNICA -->
+    <div id="screen-stats" class="screen">
+        <h1>[SISTEMA DE LA TORRE]</h1>
+        <div class="story-box" id="system-awakening">
+            Sincronizando alma con el huésped...<br>Examinando el flujo de maná universal...
+        </div>
+        <div id="stat-result" style="display:none; margin-bottom: 20px;">
+            <p id="trait-title" style="color: #f0883e; font-weight: bold; margin-bottom: 8px; font-size: 16px;"></p>
+            <p id="passive-desc" style="font-size: 13px; color: #a5d6ff; margin-bottom: 8px;"></p>
+            <p id="active-desc" style="font-size: 13px; color: #ffa657;"></p>
+        </div>
+        <button id="btn-start-tower" class="btn btn-secondary" style="display:none;" onclick="startGameplay()">Entrar al Piso 1</button>
+    </div>
+
+    <!-- PANTALLA 3: JUEGO / COMBATE Y PROGRESIÓN -->
+    <div id="screen-game" class="screen">
+        <div class="top-stats">
+            <div style="display: flex; justify-content: space-between; font-weight: bold;">
+                <span id="floor-title">Piso 1: Bosque Esmeralda</span>
+                <span id="player-lvl">Nv. 1</span>
+            </div>
+            <div style="margin-top: 5px;">PV del Jugador: <span id="player-hp-text">100/100</span></div>
+            <div class="bar-container"><div id="player-hp-bar" class="hp-bar"></div></div>
+            <div style="font-size: 12px; color: #8b949e;">Misión: <span id="quest-text">Derrotar 10 Slimes</span> (<span id="progress-text">0/10</span>)</div>
+        </div>
+
+        <div class="enemy-box">
+            <div class="enemy-emoji" id="enemy-icon">🟢</div>
+            <h3 id="enemy-name">Slime Ácido</h3>
+            <div style="font-size: 12px; margin-top: 5px;">PV Enemigo: <span id="enemy-hp-text">30/30</span></div>
+            <div class="bar-container"><div id="enemy-hp-bar" class="hp-bar" style="background: #da3633;"></div></div>
+        </div>
+
+        <div class="skill-info" id="skill-box">
+            Habilidad Activa: ⚡ <span id="active-skill-label">Golpe Relámpago</span> (Recarga: <span id="cd-text">0</span>)
+        </div>
+
+        <div class="combat-log" id="combat-log">
+            <div>[Sistema] Has sido teletransportado al Piso 1. ¡Prepárate para combatir!</div>
+        </div>
+
+        <div class="action-grid">
+            <button class="btn" onclick="playerAttack()">⚔️ Atacar</button>
+            <button class="btn btn-secondary" id="btn-active-skill" onclick="playerActiveSkill()">⚡ Usar Activa</button>
+        </div>
+    </div>
+
+    <!-- PANTALLA 4: VICTORIA / PISO SUPERADO -->
+    <div id="screen-victory" class="screen" style="justify-content: center; text-align: center;">
+        <h1 style="color: #3fb950;">¡PISO SUPERADO!</h1>
+        <div class="story-box" id="victory-msg">
+            Has limpiado el piso con éxito. La torre se recalibra y te otorga acceso al siguiente nivel.
+        </div>
+        <button class="btn" onclick="nextFloor()">Avanzar al Siguiente Piso</button>
+    </div>
+
+</div>
+
+<script>
+    let player = {
+        hp: 100,
+        maxHp: 100,
+        atk: 15,
+        floor: 1,
+        traitName: "",
+        passiveDesc: "",
+        activeName: "",
+        activeDesc: "",
+        activeCD: 0,
+        cdMax: 3,
+        bonusType: ""
+    };
+
+    let enemy = {
+        name: "Slime Ácido",
+        emoji: "🟢",
+        hp: 30,
+        maxHp: 30,
+        atk: 8
+    };
+
+    let mission = {
+        target: 10,
+        current: 0
+    };
+
+    // Las 10 Características Únicas Aleatorias
+    const uniqueTraits = [
+        {
+            trait: "Ojos de la Verdad (Rango S)",
+            passive: "Pasiva: Ojos agudos que aumentan tu ataque base en +8 permanentemente.",
+            active: "Activa: Corte Crítico (Inflige un golpe masivo de x2.8 de ataque).",
+            apply: () => { player.atk += 8; player.bonusType = "crit"; }
+        },
+        {
+            trait: "Regeneración del Fénix (Rango A)",
+            passive: "Pasiva: Tu cuerpo absorbió energía vital, recuperas 8 PV al derrotar a cada monstruo.",
+            active: "Activa: Llama Curativa (Restaura instantáneamente 30 PV propios).",
+            apply: () => { player.bonusType = "regen_heal"; }
+        },
+        {
+            trait: "Paso Sombra fantasma (Rango A)",
+            passive: "Pasiva: Tus movimientos son furtivos; posees un 25% de probabilidad de esquivar ataques.",
+            active: "Activa: Apuñalamiento Oscuro (Inflige x2.2 de daño ignorando resistencias).",
+            apply: () => { player.bonusType = "dodge"; }
+        },
+        {
+            trait: "Coraza de Titán (Rango B)",
+            passive: "Pasiva: Piel endurecida por maná, tu PV máximo aumenta en +40 puntos.",
+            active: "Activa: Muralla de Acero (Bloquea por completo el próximo ataque enemigo).",
+            apply: () => { player.maxHp += 40; player.hp = player.maxHp; player.bonusType = "shield"; }
+        },
+        {
+            trait: "Mago de Batalla Supremacia (Rango S)",
+            passive: "Pasiva: Canalización constante de maná, aumenta tu ataque en +5.",
+            active: "Activa: Esfera de Rayos (Lanza un hechizo que causa x3.0 de daño mágico).",
+            apply: () => { player.atk += 5; player.bonusType = "magic"; }
+        },
+        {
+            trait: "Vampirismo Ancestral (Rango A)",
+            passive: "Pasiva: Sed de sangre natural, curas 4 PV por cada ataque básico que realizas.",
+            active: "Activa: Drenaje Vital (Causa x1.5 de daño y te cura el 100% del daño hecho).",
+            apply: () => { player.bonusType = "vampire_basic"; }
+        },
+        {
+            trait: "Berserker Imparable (Rango S)",
+            passive: "Pasiva: La ira alimenta tu fuerza, aumentando tu ataque base en +12.",
+            active: "Activa: Furia Desatada (Un golpe brutal de x3.2 de daño pero pierdes 10 PV por esfuerzo).",
+            apply: () => { player.atk += 12; player.bonusType = "berserker"; }
+        },
+        {
+            trait: "Maestro de las Estaciones (Rango A)",
+            passive: "Pasiva: Armonía elemental, tu PV máximo sube +20 y tu ataque +3.",
+            active: "Activa: Ventisca Congelante (Aplica un impacto de x2.0 de daño y reduce la prisa del enemigo).",
+            apply: () => { player.maxHp += 20; player.hp = player.maxHp; player.atk += 3; player.bonusType = "frost"; }
+        },
+        {
+            trait: "Suerte del Novato Divino (Rango EX)",
+            passive: "Pasiva: Una anomalía de la torre; tienes 15% de esquiva y +5 de ataque.",
+            active: "Activa: Milagro Milenario (Cura 20 PV y daña al enemigo por x2.0).",
+            apply: () => { player.atk += 5; player.bonusType = "lucky"; }
+        },
+        {
+            trait: "Tanque Inquebrantable (Rango B)",
+            passive: "Pasiva: Resistencia colosal, obtienes +50 de PV máximo.",
+            active: "Activa: Contraataque Defensivo (Bloquea el daño y devuelve el 50% del golpe al enemigo).",
+            apply: () => { player.maxHp += 50; player.hp = player.maxHp; player.bonusType = "counter"; }
+        }
+    ];
+
+    const floorData = {
+        1: { name: "Piso 1: Bosque Esmeralda", enemy: "Slime Ácido", emoji: "🟢", hp: 30, atk: 8, target: 10, desc: "Derrotar 10 Slimes" },
+        2: { name: "Piso 2: Cavernas Subterráneas", enemy: "Murciélago de Cristal", emoji: "🦇", hp: 45, atk: 12, target: 8, desc: "Derrotar 8 Murciélagos" },
+        3: { name: "Piso 3: Ruinas Abandonadas", enemy: "Goblin Guerrero", emoji: "👺", hp: 65, atk: 16, target: 12, desc: "Derrotar 12 Goblins" },
+        4: { name: "Piso 4: Pantano Venenosos", enemy: "Lagarto de Cieno", emoji: "🐊", hp: 90, atk: 20, target: 8, desc: "Derrotar 8 Lagartos" },
+        5: { name: "Piso 5: Páramo Ardiente", enemy: "Diablillo de Fuego", emoji: "🔥", hp: 120, atk: 25, target: 10, desc: "Derrotar 10 Diablillos" },
+        6: { name: "Piso 6: Montañas Heladas", enemy: "Lobo de Hielo", emoji: "🐺", hp: 160, atk: 30, target: 7, desc: "Derrotar 7 Lobos Alfa" },
+        7: { name: "Piso 7: Catacumbas Reales", enemy: "Esqueleto Guardián", emoji: "💀", hp: 210, atk: 36, target: 9, desc: "Derrotar 9 Esqueletos" },
+        8: { name: "Piso 8: Templo de Susurros", enemy: "Espectro Errante", emoji: "👻", hp: 270, atk: 42, target: 8, desc: "Derrotar 8 Espectros" },
+        9: { name: "Piso 9: Forja Colgante", enemy: "Golem de Piedra", emoji: "🗿", hp: 350, atk: 50, target: 5, desc: "Derrotar 5 Golems" },
+        10: { name: "Piso 10: La Cumbre (¡JEFE!)", enemy: "Rey Orco Berserker", emoji: "👑", hp: 600, atk: 65, target: 1, desc: "¡Derrotar al Jefe Supremo del Piso 10!" }
+    };
+
+    function switchScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+    }
+
+    function goToStatGen() {
+        switchScreen('screen-stats');
+        setTimeout(() => {
+            // Seleccionar aleatoriamente 1 característica de las 10 disponibles
+            let chosen = uniqueTraits[Math.floor(Math.random() * uniqueTraits.length)];
+            
+            player.traitName = chosen.trait;
+            player.passiveDesc = chosen.passive;
+            player.activeName = chosen.active.split(":")[0].replace("Activa: ", "");
+            player.activeDesc = chosen.active;
+            
+            chosen.apply();
+
+            document.getElementById('system-awakening').innerHTML = "¡Sincronización completada con éxito!<br>La Torre ha esculpido tu código genético.";
+            document.getElementById('trait-title').innerHTML = `✨ Característica: ${player.traitName}`;
+            document.getElementById('passive-desc').innerHTML = `${player.passiveDesc}`;
+            document.getElementById('active-desc').innerHTML = `${player.activeDesc}`;
+            document.getElementById('active-skill-label').innerText = player.activeName;
+            document.getElementById('stat-result').style.display = 'block';
+            document.getElementById('btn-start-tower').style.display = 'block';
+        }, 1500);
+    }
+
+    function startGameplay() {
+        switchScreen('screen-game');
+        loadFloorData();
+    }
+
+    function loadFloorData() {
+        let f = floorData[player.floor] || { name: `Piso ${player.floor}: Zona Desconocida`, enemy: "Monstruo de la Torre", emoji: "👹", hp: 300 + (player.floor * 80), atk: 40 + (player.floor * 10), target: 5, desc: "Derrotar 5 enemigos" };
+        
+        document.getElementById('floor-title').innerText = f.name;
+        document.getElementById('player-lvl').innerText = `Nv. ${player.floor}`;
+        enemy.name = f.enemy;
+        enemy.emoji = f.emoji;
+        enemy.maxHp = f.hp;
+        enemy.hp = f.hp;
+        enemy.atk = f.atk;
+
+        mission.target = f.target;
+        mission.current = 0;
+
+        document.getElementById('enemy-name').innerText = enemy.name;
+        document.getElementById('enemy-icon').innerText = enemy.emoji;
+        
+        updateUI();
+        logMessage(`[Sistema] Entraste al ${f.name}. Objetivo: ${f.desc}`);
+    }
+
+    function updateUI() {
+        document.getElementById('player-hp-text').innerText = `${player.hp}/${player.maxHp}`;
+        document.getElementById('player-hp-bar'].style.width = `${Math.max(0, (player.hp / player.maxHp) * 100)}%`;
+
+        document.getElementById('enemy-hp-text').innerText = `${enemy.hp}/${enemy.maxHp}`;
+        document.getElementById('enemy-hp-bar').style.width = `${Math.max(0, (enemy.hp / enemy.maxHp) * 100)}%`;
+
+        document.getElementById('progress-text').innerText = `${mission.current}/${mission.target}`;
+        document.getElementById('quest-text').innerText = floorData[player.floor]?.desc || "Derrotar enemigos";
+        document.getElementById('cd-text').innerText = player.activeCD;
+    }
+
+    function logMessage(msg) {
+        let box = document.getElementById('combat-log');
+        box.innerHTML += `<div>${msg}</div>`;
+        box.scrollTop = box.scrollHeight;
+    }
+
+    function playerAttack() {
+        let dmg = player.atk + Math.floor(Math.random() * 5);
+        
+        if (player.bonusType === "vampire_basic") {
+            let heal = 4;
+            player.hp = Math.min(player.maxHp, player.hp + heal);
+            logMessage(`🩸 Absorbes ${heal} PV con tu ataque vampírico básico.`);
+        }
+
+        enemy.hp -= dmg;
+        logMessage(`Atacas a ${enemy.name} causando ${dmg} de daño.`);
+
+        checkBattleState();
+    }
+
+    function playerActiveSkill() {
+        if (player.activeCD > 0) {
+            logMessage(`[Sistema] La habilidad activa está en recarga (${player.activeCD} turnos restantes).`);
+            return;
+        }
+
+        let dmg = 0;
+        if (player.bonusType === "crit") {
+            dmg = Math.floor(player.atk * 2.8);
+            enemy.hp -= dmg;
+            logMessage(`💥 ¡Corte Crítico! Causas ${dmg} de daño masivo.`);
+        } else if (player.bonusType === "regen_heal") {
+            player.hp = Math.min(player.maxHp, player.hp + 30);
+            logMessage(`🌿 ¡Llama Curativa! Restauras 30 PV.`);
+        } else if (player.bonusType === "dodge") {
+            dmg = Math.floor(player.atk * 2.2);
+            enemy.hp -= dmg;
+            logMessage(`🗡️ ¡Apuñalamiento Oscuro! Causas ${dmg} ignorando defensas.`);
+        } else if (player.bonusType === "shield" || player.bonusType === "counter") {
+            logMessage(`🛡️ ¡Escudo activado! El próximo ataque será neutralizado.`);
+            player.activeCD = player.cdMax + 1;
+            updateUI();
+            enemyTurn(true);
+            return;
+        } else if (player.bonusType === "magic") {
+            dmg = Math.floor(player.atk * 3.0);
+            enemy.hp -= dmg;
+            logMessage(`🔮 ¡Esfera de Rayos! Magia pura causa ${dmg} de daño.`);
+        } else if (player.bonusType === "vampire_basic") {
+            dmg = Math.floor(player.atk * 1.5);
+            enemy.hp -= dmg;
+            let rob = Math.floor(dmg);
+            player.hp = Math.min(player.maxHp, player.hp + rob);
+            logMessage(`🦇 ¡Drenaje Vital! Causa ${dmg} y robas ${rob} PV.`);
+        } else if (player.bonusType === "berserker") {
+            dmg = Math.floor(player.atk * 3.2);
+            enemy.hp -= dmg;
+            player.hp = Math.max(1, player.hp - 10);
+            logMessage(`🔥 ¡Furia Desatada! Daño brutal de ${dmg}, pero pierdes 10 PV.`);
+        } else if (player.bonusType === "frost") {
+            dmg = Math.floor(player.atk * 2.0);
+            enemy.hp -= dmg;
+            logMessage(`❄️ ¡Ventisca Congelante! Impacto de ${dmg} de daño helado.`);
+        } else { // lucky o default
+            dmg = Math.floor(player.atk * 2.0);
+            enemy.hp -= dmg;
+            player.hp = Math.min(player.maxHp, player.hp + 20);
+            logMessage(`✨ ¡Milagro Milenario! Causas ${dmg} y recuperas 20 PV.`);
+        }
+
+        player.activeCD = player.cdMax;
+        checkBattleState();
+    }
+
+    function checkBattleState() {
+        if (enemy.hp <= 0) {
+            enemy.hp = 0;
+            updateUI();
+            mission.current++;
+            logMessage(`🎉 ¡Has derrotado a ${enemy.name}! (${mission.current}/${mission.target})`);
+
+            if (player.bonusType === "regen_heal") {
+                player.hp = Math.min(player.maxHp, player.hp + 8);
+            }
+
+            if (mission.current >= mission.target) {
+                setTimeout(() => {
+                    if (player.floor === 10) {
+                        document.getElementById('victory-msg').innerHTML = "👑 ¡Has derrotado al Rey Orco y superado el Piso 10! Has estabilizado la torre temporalmente. ¡Próximamente más pisos!";
+                    } else {
+                        document.getElementById('victory-msg').innerHTML = `Has completado la misión del Piso ${player.floor}. La torre te otorga acceso al siguiente nivel.`;
+                    }
+                    switchScreen('screen-victory');
+                }, 800);
+                return;
+            } else {
+                let baseHp = floorData[player.floor]?.hp || 100;
+                enemy.hp = baseHp;
+                enemy.maxHp = baseHp;
+                logMessage(`Un nuevo ${enemy.name} aparece frente a ti.`);
+            }
+        } else {
+            enemyTurn(false);
+        }
+
+        if (player.activeCD > 0) player.activeCD--;
+        updateUI();
+    }
+
+    function enemyTurn(shieldActive) {
+        if (shieldActive) {
+            logMessage(`🛡️ El ataque de ${enemy.name} fue bloqueado por completo.`);
+            if (player.bonusType === "counter") {
+                let counterDmg = Math.floor(enemy.atk / 2);
+                enemy.hp -= counterDmg;
+                logMessage(`⚡ ¡Contraataque! Devuelves ${counterDmg} de daño al enemigo.`);
+                if(enemy.hp <= 0) {
+                    checkBattleState();
+                    return;
+                }
+            }
+            return;
+        }
+
+        let dodgeChance = (player.bonusType === "dodge") ? 0.25 : ((player.bonusType === "lucky") ? 0.15 : 0.05);
+        if (Math.random() < dodgeChance) {
+            logMessage(`💨 ¡Esquivaste hábilmente el ataque de ${enemy.name}!`);
+            return;
+        }
+
+        let eDmg = enemy.atk + Math.floor(Math.random() * 4) - 3;
+        player.hp -= eDmg;
+        logMessage(`⚠️ ${enemy.name} te ataca e inflige ${eDmg} de daño.`);
+
+        if (player.hp <= 0) {
+            player.hp = 0;
+            updateUI();
+            logMessage(`💀 Has caído en combate... La torre te expulsa del piso.`);
+            alert("Has muerto en la mazmorra. Reiniciando piso...");
+            player.hp = player.maxHp;
+            loadFloorData();
+        }
+    }
+
+    function nextFloor() {
+        if (player.floor >= 10) {
+            alert("¡Has completado el juego hasta el Piso 10! ¡Felicidades, cazador!");
+            player.floor = 1;
+            player.hp = player.maxHp;
+            switchScreen('screen-intro');
+            return;
+        }
+        player.floor++;
+        player.maxHp += 25;
+        player.hp = player.maxHp;
+        player.atk += 6;
+        switchScreen('screen-game');
+        loadFloorData();
+    }
+</script>
+
+</body>
+</html>
