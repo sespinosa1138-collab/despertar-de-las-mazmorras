@@ -6,6 +6,9 @@
 <meta name="theme-color" content="#06090f">
 <title>TORRE:SYSTEM - ULTIMATE EDITION V4.0</title>
 
+<!-- Enlace al Manifiesto PWA -->
+<link rel="manifest" href="./manifest.json">
+
 <style>
 :root{
   --bg:#06090f;
@@ -1872,6 +1875,17 @@ function floatingDamage(amount, onPlayer){
   scene.appendChild(d);
   setTimeout(() => d.remove(), 600);
 }
+</script>
+
+<!-- Script para registrar el Service Worker (Habilita PWA / Offline) -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('Service Worker registrado con éxito:', reg.scope))
+        .catch(err => console.log('Error al registrar el Service Worker:', err));
+    });
+  }
 </script>
 
 </body>
