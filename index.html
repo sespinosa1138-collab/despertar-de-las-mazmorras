@@ -148,8 +148,8 @@
     <div id="screen-intro" class="screen active">
         <h1>Torre de la Desesperación</h1>
         <div class="story-box">
-            En este mundo aparecieron repentinamente **Torres de 100 pisos** habitadas por monstruos.<br><br>
-            ⏳ **La Regla:** Si un piso no se supera en **6 meses**, al cumplirse el plazo los monstruos saldrán durante 24 horas para destruir todo. El plazo se reduce cada vez más.<br><br>
+            En este mundo aparecieron repentinamente <b>Torres de 100 pisos</b> habitadas por monstruos.<br><br>
+            ⏳ <b>La Regla:</b> Si un piso no se supera en <b>6 meses</b>, al cumplirse el plazo los monstruos saldrán durante 24 horas para destruir todo. El plazo se reduce cada vez más.<br><br>
             🌍 La Torre elige a sus participantes aleatoriamente según su suerte... Y hoy, tu cama se iluminó. Fuiste seleccionado.
         </div>
         <button class="btn" onclick="goToStatGen()">Aceptar el Destino</button>
@@ -241,7 +241,6 @@
         current: 0
     };
 
-    // Las 10 Características Únicas Aleatorias
     const uniqueTraits = [
         {
             trait: "Ojos de la Verdad (Rango S)",
@@ -326,7 +325,6 @@
     function goToStatGen() {
         switchScreen('screen-stats');
         setTimeout(() => {
-            // Seleccionar aleatoriamente 1 característica de las 10 disponibles
             let chosen = uniqueTraits[Math.floor(Math.random() * uniqueTraits.length)];
             
             player.traitName = chosen.trait;
@@ -374,7 +372,7 @@
 
     function updateUI() {
         document.getElementById('player-hp-text').innerText = `${player.hp}/${player.maxHp}`;
-        document.getElementById('player-hp-bar'].style.width = `${Math.max(0, (player.hp / player.maxHp) * 100)}%`;
+        document.getElementById('player-hp-bar').style.width = `${Math.max(0, (player.hp / player.maxHp) * 100)}%`;
 
         document.getElementById('enemy-hp-text').innerText = `${enemy.hp}/${enemy.maxHp}`;
         document.getElementById('enemy-hp-bar').style.width = `${Math.max(0, (enemy.hp / enemy.maxHp) * 100)}%`;
@@ -448,7 +446,7 @@
             dmg = Math.floor(player.atk * 2.0);
             enemy.hp -= dmg;
             logMessage(`❄️ ¡Ventisca Congelante! Impacto de ${dmg} de daño helado.`);
-        } else { // lucky o default
+        } else {
             dmg = Math.floor(player.atk * 2.0);
             enemy.hp -= dmg;
             player.hp = Math.min(player.maxHp, player.hp + 20);
