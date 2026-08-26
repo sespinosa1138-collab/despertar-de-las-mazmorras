@@ -152,10 +152,10 @@
             const gain = audioCtx.createGain();
             osc.connect(gain);
             gain.connect(audioCtx.destination);
-            gain.gain.value = 0.1 * volumeScale;
             const now = audioCtx.currentTime;
             if (typeof game !== 'undefined' && game.settings && (game.settings.muted || game.settings.volume <= 0)) return;
             const volumeScale = (typeof game !== 'undefined' && game.settings) ? game.settings.volume : 0.65;
+            gain.gain.value = 0.1 * volumeScale;
 
             if (type === 'click') {
                 osc.type = 'square';
