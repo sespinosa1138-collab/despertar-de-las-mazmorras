@@ -1,1892 +1,947 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#06090f">
-<title>TORRE:SYSTEM - ULTIMATE EDITION V4.0</title>
-
-<!-- Enlace al Manifiesto PWA -->
-<link rel="manifest" href="./manifest.json">
-
-<style>
-:root{
-  --bg:#06090f;
-  --panel:#0d121b;
-  --panel2:#121a26;
-  --line:#233145;
-  --text:#dce7f3;
-  --muted:#7b8c9f;
-  --green:#50fa7b;
-  --cyan:#50d9ff;
-  --blue:#5b8cff;
-  --red:#ff5570;
-  --yellow:#ffd166;
-  --purple:#bd7cff;
-  --orange:#ff9f43;
-}
-
-*{box-sizing:border-box}
-
-html,body{
-  margin:0;
-  padding:0;
-  width:100%;
-  min-height:100%;
-  background:var(--bg);
-  color:var(--text);
-  font-family:"Courier New",monospace;
-  image-rendering:pixelated;
-  image-rendering:crisp-edges;
-}
-
-body{min-height:100vh; overflow-x:hidden;}
-
-button{
-  font:inherit;
-  color:inherit;
-  cursor:pointer;
-  touch-action:manipulation;
-}
-
-#app{
-  width:100%;
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  background:
-    radial-gradient(circle at 50% -15%,#16253c 0,#06090f 50%),
-    var(--bg);
-}
-
-.screen{
-  width:100%;
-  max-width:720px;
-  min-height:100vh;
-  padding:16px 12px 32px;
-  display:none;
-  flex-direction:column;
-  animation:screenIn .25s ease;
-}
-
-.screen.active{display:flex}
-
-@keyframes screenIn{
-  from{opacity:0;transform:translateY(8px)}
-  to{opacity:1;transform:translateY(0)}
-}
-
-.logo{
-  text-align:center;
-  color:var(--cyan);
-  font-size:clamp(22px,6vw,32px);
-  font-weight:bold;
-  letter-spacing:3px;
-  text-shadow:0 0 14px #50d9ff66;
-  margin:6px 0 2px;
-}
-
-.subtitle{
-  text-align:center;
-  color:var(--muted);
-  font-size:11px;
-  margin-bottom:14px;
-  letter-spacing:1px;
-}
-
-.panel{
-  background:linear-gradient(145deg,var(--panel2),var(--panel));
-  border:2px solid var(--line);
-  border-radius:8px;
-  padding:12px 14px;
-  margin-bottom:10px;
-  box-shadow:0 6px 22px #0008;
-}
-
-.panel-title{
-  color:var(--cyan);
-  font-size:12px;
-  margin-bottom:8px;
-  text-transform:uppercase;
-  letter-spacing:1px;
-  font-weight:bold;
-}
-
-.story{
-  line-height:1.6;
-  font-size:12px;
-  color:#bac7d5;
-}
-
-.system{
-  border-color:#26536b;
-  background:#081720;
-  color:#83e7ff;
-}
-
-.input-text{
-  width:100%;
-  padding:12px;
-  background:#080d14;
-  border:2px solid var(--cyan);
-  color:var(--text);
-  font-family:inherit;
-  font-size:14px;
-  border-radius:6px;
-  text-align:center;
-  outline:none;
-  box-shadow:0 0 10px #50d9ff33;
-}
-
-.input-text:focus{
-  border-color:var(--green);
-  box-shadow:0 0 14px #50fa7b44;
-}
-
-.slot-card{
-  background:#0c121c;
-  border:2px solid var(--line);
-  border-radius:6px;
-  padding:10px 12px;
-  margin-bottom:8px;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-
-.slot-card.occupied{
-  border-color:var(--cyan);
-  background:#091622;
-}
-
-.slot-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  font-weight:bold;
-  font-size:12px;
-  color:var(--cyan);
-}
-
-.slot-info{
-  font-size:11px;
-  color:var(--muted);
-  line-height:1.4;
-}
-
-.slot-actions{
-  display:flex;
-  gap:5px;
-  margin-top:2px;
-}
-
-.slot-actions button{
-  flex:1;
-  min-height:34px;
-  padding:4px;
-  font-size:10px;
-  border-radius:4px;
-  border:2px solid #334256;
-  background:#131c28;
-  font-weight:bold;
-}
-
-.btn{
-  width:100%;
-  min-height:46px;
-  border:2px solid #334256;
-  border-radius:6px;
-  background:#131c28;
-  margin-top:6px;
-  padding:10px;
-  font-weight:bold;
-  font-size:12px;
-  transition:.15s;
-}
-
-.btn:active{transform:scale(.97)}
-
-.btn.primary{border-color:var(--cyan);background:#0e2935;color:#76e7ff}
-.btn.green{border-color:#2e8c48;background:#0e2418;color:var(--green)}
-.btn.red{border-color:#842e40;background:#240e15;color:#ff8295}
-.btn.yellow{border-color:#8c722e;background:#241d0e;color:var(--yellow)}
-.btn.purple{border-color:#6d3fb7;background:#180e24;color:var(--purple)}
-.btn.orange{border-color:#b76e3f;background:#24180e;color:var(--orange)}
-
-.hidden{display:none!important}
-
-/* MAPA DE EXPLORACIÓN */
-.game-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:8px;
-}
-
-.floor{
-  color:var(--cyan);
-  font-weight:bold;
-  font-size:12px;
-}
-
-.bar-wrap{margin:4px 0}
-.bar-label{
-  display:flex;
-  justify-content:space-between;
-  font-size:10px;
-  color:var(--muted);
-  margin-bottom:2px;
-}
-
-.bar{
-  height:10px;
-  background:#05080c;
-  border:2px solid #25313f;
-  overflow:hidden;
-  border-radius:3px;
-}
-
-.bar-fill{height:100%;width:100%;transition:width .3s ease}
-.hp{background:linear-gradient(90deg,#b52845,#ff5570)}
-.mp{background:linear-gradient(90deg,#2862c7,#50bfff)}
-.enemyhp{background:linear-gradient(90deg,#85243a,#ff4f63)}
-
-.map-container{
-  display:flex;
-  justify-content:center;
-  margin:8px 0;
-}
-
-.map{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:2px;
-  padding:4px;
-  background:#030508;
-  border:2px solid #183324;
-  box-shadow:inset 0 0 12px rgba(0,0,0,0.8);
-  width:100%;
-  max-width:320px;
-  aspect-ratio:1;
-}
-
-.cell{
-  aspect-ratio:1;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:#0a120d;
-  border:1px solid #13271c;
-  font-size:13px;
-  color:#376746;
-  user-select:none;
-}
-
-.cell.explored{background:#0e2016;border-color:#1a3a27;color:#6db582}
-.cell.player{background:#173b2b;border-color:var(--green);color:#fff;font-weight:bold;box-shadow:inset 0 0 6px #50fa7b66}
-.cell.monster{background:#35151e;border-color:#602537;color:#ff758d}
-.cell.teleport{background:#152335;border-color:var(--cyan);color:var(--cyan);animation:pulseTeleport 1.5s infinite}
-.cell.item{background:#302810;border-color:var(--yellow);color:var(--yellow)}
-.cell.npc{background:#241535;border-color:var(--purple);color:var(--purple)}
-
-@keyframes pulseTeleport{
-  0%, 100% {box-shadow:inset 0 0 4px var(--cyan)}
-  50% {box-shadow:inset 0 0 12px var(--cyan)}
-}
-
-.dpad-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:4px;
-  max-width:200px;
-  margin:8px auto;
-}
-
-.dpad-btn{
-  min-height:42px;
-  background:#131c28;
-  border:2px solid #293b4f;
-  color:var(--cyan);
-  font-weight:bold;
-  font-size:16px;
-  border-radius:4px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-.dpad-btn:active{background:#1f3144}
-
-.lobby-menu{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-  margin:10px 0;
-}
-
-.log{
-  height:105px;
-  overflow-y:auto;
-  background:#05070a;
-  border:2px solid var(--line);
-  padding:8px;
-  font-size:10px;
-  line-height:1.5;
-  color:#9aa9b8;
-  border-radius:4px;
-}
-.log p{margin:0 0 3px}
-.log .good{color:var(--green)}
-.log .bad{color:#ff7185}
-.log .info{color:var(--cyan)}
-.log .systemlog{color:var(--yellow)}
-
-.battle-scene{
-  min-height:190px;
-  border:2px solid #3c2830;
-  border-radius:6px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  background:radial-gradient(circle at 50% 30%,#2c1721 0,#110a11 40%,#040507 90%);
-  margin-bottom:8px;
-  position:relative;
-  overflow:hidden;
-}
-
-.enemy-avatar{
-  width:72px;
-  height:72px;
-  position:relative;
-  z-index:2;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-size:32px;
-  box-shadow:0 8px 18px rgba(0,0,0,0.7);
-  animation:float 2s ease-in-out infinite;
-}
-@keyframes float{
-  0%, 100% {transform:translateY(0)}
-  50% {transform:translateY(-6px)}
-}
-
-.action-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:6px;
-}
-
-.action{
-  min-height:46px;
-  border-radius:6px;
-  border:2px solid #334154;
-  background:#131b24;
-  font-weight:bold;
-  font-size:11px;
-}
-.action.attack{border-color:#bc384e;background:#291118;color:#ff7589}
-.action.skill{border-color:#7e4fb6;background:#20142b;color:#c795ff}
-.action.defend{border-color:#366d98;background:#0f1f2c;color:#70caff}
-.action.flee{border-color:#745d31;background:#201a0f;color:#e9c56d}
-.action.potion{border-color:#2e8c48;background:#0e2418;color:var(--green)}
-.action:disabled{opacity:.35;cursor:not-allowed}
-
-.damage{
-  position:absolute;
-  font-size:22px;
-  font-weight:bold;
-  color:#fff;
-  z-index:5;
-  text-shadow:2px 2px 0 #000;
-  animation:damageFloat .6s ease forwards;
-  pointer-events:none;
-}
-@keyframes damageFloat{
-  from{opacity:1;transform:translateY(0)}
-  to{opacity:0;transform:translateY(-35px)}
-}
-
-.item-row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  background:#080d14;
-  border:1px solid var(--line);
-  padding:8px;
-  border-radius:4px;
-  margin-bottom:6px;
-  font-size:11px;
-}
-
-/* INVENTARIO Y PREVIEW DE PERSONAJE */
-.inventory-container{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:10px;
-}
-@media(min-width:520px){
-  .inventory-container{grid-template-columns:150px 1fr;}
-}
-
-.character-preview-box{
-  background:#060a10;
-  border:2px solid var(--cyan);
-  border-radius:6px;
-  padding:10px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  text-align:center;
-  justify-content:center;
-}
-
-.avatar-preview{
-  width:64px;
-  height:64px;
-  background:radial-gradient(circle at 50% 30%, #153520, #06090f);
-  border:2px solid var(--green);
-  border-radius:50%;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-size:28px;
-  margin-bottom:6px;
-  box-shadow:0 0 10px rgba(80,250,123,0.3);
-}
-
-.equipped-slots{
-  font-size:9px;
-  color:var(--muted);
-  width:100%;
-  text-align:left;
-  margin-top:6px;
-  border-top:1px solid var(--line);
-  padding-top:4px;
-  line-height:1.4;
-}
-
-.footer{
-  margin-top:auto;
-  text-align:center;
-  color:#455263;
-  font-size:9px;
-  padding-top:10px;
-  letter-spacing:1px;
-}
-</style>
-</head>
-
-<body>
-<div id="app">
-
-  <!-- ================= PANTALLA 0: INICIO ================= -->
-  <section id="screenHome" class="screen active">
-    <div class="logo">▣ TORRE:SYSTEM</div>
-    <div class="subtitle">PROTOCOLO ULTIMATE // V.4.0</div>
-
-    <div class="panel">
-      <div class="panel-title">> IDENTIFICACIÓN DE SUJETO</div>
-      <p class="story" style="margin-bottom:10px;">
-        Ingresa tu nombre para iniciar tu registro en el sistema de la torre.
-      </p>
-      <input type="text" id="playerNameInput" class="input-text" placeholder="Ej. Kaelen, Alex..." maxlength="16" value="Aventurero">
-    </div>
-
-    <button class="btn primary" onclick="goToSlotSelection()">
-      [ JUGAR / GESTIÓN DE PARTIDAS ]
-    </button>
-
-    <div class="footer">TORRE:SYSTEM // SELECTION PROTOCOL</div>
-  </section>
-
-  <!-- ================= PANTALLA 0.5: SLOTS DE GUARDADO ================= -->
-  <section id="screenSlots" class="screen">
-    <div class="logo">RANURAS DE MEMORIA</div>
-    <div class="subtitle">SELECCIONA UN SECTOR (1 AL 5)</div>
-
-    <div id="slotsContainer" style="margin-bottom:10px;"></div>
-
-    <button class="btn" onclick="showScreen('screenHome')">
-      [ VOLVER AL INICIO ]
-    </button>
-    <div class="footer">TORRE:SYSTEM // SAVE MANAGER</div>
-  </section>
-
-  <!-- ================= PANTALLA 1: LORE & PRÓLOGO ================= -->
-  <section id="screenLore" class="screen">
-    <div class="logo">▣ TORRE:SYSTEM</div>
-    <div class="subtitle">PRÓLOGO DE DESPERTAR</div>
-
-    <div class="panel">
-      <div class="panel-title">> REGISTRO HISTÓRICO DE LA CATÁSTROFE</div>
-      <div class="story">
-        Las torres negras surgieron simultáneamente en todo el planeta. Cada torre contiene <strong>100 pisos</strong> de peligro absoluto, jefes colosales y recompensas divinas.
-        <br><br>
-        Tienes un límite temporal implacable por piso antes de que los monstruos desaten una invasión global. El Lobby será tu base segura. Personaliza tu avatar y prepárate.
-      </div>
-    </div>
-
-    <button class="btn primary" onclick="goToCustomization()">
-      [ PROCEDER A PERSONALIZACIÓN ]
-    </button>
-    <div class="footer">TORRE:SYSTEM // LORE PROTOCOL</div>
-  </section>
-
-  <!-- ================= PANTALLA 1.5: PERSONALIZACIÓN DE AVATAR ================= -->
-  <section id="screenCustomization" class="screen">
-    <div class="logo">CREACIÓN DE AVATAR</div>
-    <div class="subtitle">CONFIGURA TU APARIENCIA INICIAL</div>
-
-    <div class="panel" style="text-align:center;">
-      <div id="customAvatarPreview" class="avatar-preview" style="margin:0 auto 10px; font-size:36px;">🛡️</div>
-      <div class="panel-title">> ELIGE TU ICONO BASE</div>
-      <div style="display:flex; justify-content:center; gap:8px; margin-bottom:12px;">
-        <button class="btn primary" style="width:50px; min-height:40px;" onclick="setAvatarIcon('🛡️')">🛡️</button>
-        <button class="btn green" style="width:50px; min-height:40px;" onclick="setAvatarIcon('⚔️')">⚔️</button>
-        <button class="btn purple" style="width:50px; min-height:40px;" onclick="setAvatarIcon('🧙‍♂️')">🧙‍♂️</button>
-        <button class="btn yellow" style="width:50px; min-height:40px;" onclick="setAvatarIcon('🗡️')">🗡️</button>
-      </div>
-      <div class="panel-title">> TÍTULO / APODO</div>
-      <input type="text" id="playerTitleInput" class="input-text" value="El Novato Prometedor" maxlength="25">
-    </div>
-
-    <button class="btn primary" onclick="acceptAvatarAndAwaken()">
-      [ CONFIRMAR Y DESPERTAR HABILIDAD ]
-    </button>
-  </section>
-
-  <!-- ================= PANTALLA 2: DESPERTAR ================= -->
-  <section id="screenAwakening" class="screen">
-    <div class="logo">SISTEMA</div>
-    <div class="subtitle">GENERANDO CARACTERÍSTICA ÚNICA...</div>
-
-    <div class="panel system" style="text-align:center; padding:20px;">
-      <div style="font-size:45px; margin-bottom:10px;">◈</div>
-      <div id="awakeningText" class="story">Analizando alma, potencial y arquetipo...</div>
-      <div id="traitResult" class="hidden" style="margin-top:12px;">
-        <div id="traitName" style="font-size:18px; color:var(--purple); font-weight:bold;"></div>
-        <div id="traitRank" style="display:inline-block; margin:6px 0; padding:2px 8px; border:2px solid var(--yellow); color:var(--yellow); border-radius:4px; font-size:11px;"></div>
-        <div id="traitDescription" class="story" style="font-size:11px; margin-top:6px;"></div>
-      </div>
-    </div>
-
-    <button id="enterLobbyBtn" class="btn primary hidden" onclick="goToLobby()">
-      [ INGRESAR AL LOBBY SEGURO ]
-    </button>
-  </section>
-
-  <!-- ================= PANTALLA 3: LOBBY CENTRAL ================= -->
-  <section id="screenLobby" class="screen">
-    <div class="logo">LOBBY CENTRAL</div>
-    <div class="subtitle">ZONA SEGURA DEL SISTEMA</div>
-
-    <div class="panel">
-      <div class="bar-label">
-        <span id="lobbyPlayerName">AVENTURERO</span>
-        <span id="lobbyGold" style="color:var(--yellow)">0 🪙</span>
-      </div>
-      <div style="font-size:11px; color:var(--muted); margin-top:4px;">
-        Clase: <span id="lobbyClass" style="color:var(--cyan)">Novato</span> | Nivel: <span id="lobbyLevel">1</span> | SP: <span id="lobbySP" style="color:var(--green)">0</span>
-      </div>
-    </div>
-
-    <div class="lobby-menu">
-      <button class="btn green" onclick="openExplore()">
-        ⚔️ ENTRAR A LA TORRE
-      </button>
-      <button class="btn yellow" onclick="openShop()">
-        🛒 TIENDA & EQUIPO
-      </button>
-      <button class="btn purple" onclick="openInventory()">
-        🎒 INVENTARIO & ESTADO
-      </button>
-      <button class="btn orange" onclick="openTraining()">
-        ⚡ ENTRENAMIENTO & SKILLS
-      </button>
-    </div>
-
-    <button class="btn" style="margin-top:4px;" onclick="openQuests()">
-      📜 TABLÓN DE MISIONES
-    </button>
-    <button class="btn" style="margin-top:4px;" onclick="openClassChange()">
-      🏛️ CENTRO DE CLASES
-    </button>
-    <button class="btn" style="margin-top:4px;" onclick="manualSaveLobby()">
-      💾 GUARDAR PARTIDA
-    </button>
-    <button class="btn red" style="margin-top:4px; font-size:10px;" onclick="goToSlotSelection()">
-      ⚙ CAMBIAR RANURA / SALIR
-    </button>
-
-    <div class="footer">LOBBY PRINCIPAL // TORRE:SYSTEM</div>
-  </section>
-
-  <!-- ================= PANTALLA 4: TIENDA ================= -->
-  <section id="screenShop" class="screen">
-    <div class="logo">MERCADO DEL LOBBY</div>
-    <div class="subtitle">ADQUIERE EQUIPAMIENTO Y CONSUMIBLES</div>
-
-    <div class="panel">
-      <div class="panel-title">> ARMAS Y ARMADURAS DISPONIBLES</div>
-      <div id="shopEquipmentList" style="max-height:160px; overflow-y:auto; margin-bottom:8px;"></div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-title">> COMPRA DE CONSUMIBLES</div>
-      <div class="item-row">
-        <span>Pocción de Vida (+50 PV) - Costo: 30 🪙</span>
-        <button class="btn primary" style="width:auto; min-height:30px; font-size:10px;" onclick="buyItem('potion', 30, 50)">COMPRAR</button>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-title">> INVENTARIO DE MATERIALES</div>
-      <div id="inventoryLootList" style="max-height:100px; overflow-y:auto; margin-bottom:8px;"></div>
-      <button class="btn green" onclick="sellAllLoot()">[ VENDER TODO EL BOTÍN ]</button>
-    </div>
-
-    <button class="btn" onclick="showScreen('screenLobby')">[ VOLVER AL LOBBY ]</button>
-  </section>
-
-  <!-- ================= PANTALLA INVENTARIO Y EQUIPAMIENTO ================= -->
-  <section id="screenInventory" class="screen">
-    <div class="logo">INVENTARIO & ESTADO</div>
-    <div class="subtitle">GESTIONA TU EQUIPO Y VISUALIZA TU PERSONAJE</div>
-
-    <div class="inventory-container">
-      <!-- Preview del Personaje con equipo reflejado -->
-      <div class="character-preview-box">
-        <div id="invPlayerAvatar" class="avatar-preview">🛡️</div>
-        <div id="invPlayerName" style="font-weight:bold; font-size:11px; color:var(--cyan);">AVENTURERO</div>
-        <div style="font-size:10px; color:var(--muted);" id="invPlayerClass">Novato</div>
-        <div class="equipped-slots">
-          <div><b>Arma:</b> <span id="slotWeaponEquip" style="color:var(--yellow)">Ninguna</span></div>
-          <div><b>Escudo:</b> <span id="slotShieldEquip" style="color:var(--yellow)">Ninguno</span></div>
-          <div><b>Casco:</b> <span id="slotHelmetEquip" style="color:var(--yellow)">Ninguno</span></div>
-          <div><b>Armadura:</b> <span id="slotArmorEquip" style="color:var(--yellow)">Ninguna</span></div>
-          <div><b>Botas:</b> <span id="slotBootsEquip" style="color:var(--yellow)">Ningunas</span></div>
-          <div><b>Anillo:</b> <span id="slotRingEquip" style="color:var(--yellow)">Ninguno</span></div>
-        </div>
-      </div>
-
-      <!-- Lista de Objetos en Inventario -->
-      <div class="panel" style="margin-bottom:0; flex:1;">
-        <div class="panel-title">> OBJETOS DISPONIBLES</div>
-        <div id="inventoryItemsList" style="max-height:220px; overflow-y:auto;"></div>
-      </div>
-    </div>
-
-    <button class="btn" style="margin-top:10px;" onclick="showScreen('screenLobby')">[ VOLVER AL LOBBY ]</button>
-  </section>
-
-  <!-- ================= PANTALLA 5: ENTRENAMIENTO ================= -->
-  <section id="screenTraining" class="screen">
-    <div class="logo">ZONA DE ENTRENAMIENTO</div>
-    <div class="subtitle">MEJORA ESTADÍSTICAS Y HABILIDADES</div>
-
-    <div class="panel">
-      <div class="panel-title">> DISTRIBUIR PUNTOS (SP DISPONIBLES: <span id="trainingSP">0</span>)</div>
-      <button class="btn primary" onclick="upgradeStat('attack')">Aumentar Ataque Base (+4) [1 SP]</button>
-      <button class="btn primary" onclick="upgradeStat('maxHp')">Aumentar PV Máx (+30) [1 SP]</button>
-      <button class="btn primary" onclick="upgradeStat('defense')">Aumentar Defensa (+3) [1 SP]</button>
-    </div>
-
-    <div id="floor20TrainingPanel" class="panel hidden" style="border-color:var(--purple); background:#140d22;">
-      <div class="panel-title" style="color:var(--purple);">> EVOLUCIÓN DE MAESTRÍA (NIVEL 20+)</div>
-      <button class="btn purple" onclick="evolveSkillMastery()">[ EVOLUCIONAR HABILIDAD ÚNICA ]</button>
-    </div>
-
-    <button class="btn" onclick="showScreen('screenLobby')">[ VOLVER AL LOBBY ]</button>
-  </section>
-
-  <!-- ================= PANTALLA 6: MISIONES ================= -->
-  <section id="screenQuests" class="screen">
-    <div class="logo">TABLÓN DE MISIONES</div>
-    <div class="subtitle">CUMPLE OBJETIVOS PARA GANAR RECOMPENSAS</div>
-
-    <div class="panel">
-      <div class="panel-title">> MISIONES ACTIVAS</div>
-      <div id="questsList" style="font-size:11px; line-height:1.5;"></div>
-    </div>
-
-    <button class="btn" onclick="showScreen('screenLobby')">[ VOLVER AL LOBBY ]</button>
-  </section>
-
-  <!-- ================= PANTALLA 7: CAMBIO DE CLASE ================= -->
-  <section id="screenClassChange" class="screen">
-    <div class="logo">CENTRO DE CLASES</div>
-    <div class="subtitle">EVOLUCIONA TU ARQUETIPO DE COMBATE</div>
-
-    <div class="panel">
-      <div class="panel-title">> LIBROS DE CLASE EN POSESIÓN</div>
-      <div id="booksList" style="margin-bottom:10px; font-size:11px;"></div>
-    </div>
-
-    <div id="classChoicePanel" class="panel hidden">
-      <div class="panel-title">> ELECCIÓN DE CLASE BÁSICA (PISO 10)</div>
-      <button class="btn green" onclick="chooseBasicClass('Guerrero')">GUERRERO (Tanque y Daño)</button>
-      <button class="btn purple" onclick="chooseBasicClass('Mago')">MAGO (Poder Arcano)</button>
-      <button class="btn yellow" onclick="chooseBasicClass('Asesino')">ASESINO (Alta Evasión y Crítico)</button>
-    </div>
-
-    <button class="btn" onclick="showScreen('screenLobby')">[ VOLVER AL LOBBY ]</button>
-  </section>
-
-  <!-- ================= PANTALLA 8: EXPLORACIÓN DE LA TORRE ================= -->
-  <section id="screenExplore" class="screen">
-    <div class="game-header">
-      <span id="exploreTitle" class="floor">TORRE // PISO 01</span>
-      <div style="display:flex; gap:4px;">
-        <button class="btn green" style="width:auto; min-height:28px; padding:2px 8px; font-size:10px; margin:0;" onclick="usePotionExplore()">💊 <span id="explorePotionCount">0</span></button>
-        <button class="btn yellow" style="width:auto; min-height:28px; padding:2px 8px; font-size:10px; margin:0;" onclick="openTeleportModal()">🌀 TELEPORT</button>
-      </div>
-    </div>
-
-    <div class="panel" style="padding:8px 10px;">
-      <div class="bar-label">
-        <span id="explorePlayerName">PROTAGONISTA</span>
-        <span id="exploreLevelText">NV. 1</span>
-      </div>
-      <div class="bar-wrap">
-        <div class="bar-label"><span>PV</span><span id="exploreHpText">100/100</span></div>
-        <div class="bar"><div id="exploreHp" class="bar-fill hp"></div></div>
-      </div>
-    </div>
-
-    <div class="map-container">
-      <div id="mapGrid" class="map"></div>
-    </div>
-
-    <div class="dpad-grid">
-      <div></div>
-      <button class="dpad-btn" onclick="movePlayer(0, -1)">▲</button>
-      <div></div>
-      <button class="dpad-btn" onclick="movePlayer(-1, 0)">◀</button>
-      <button class="dpad-btn" onclick="movePlayer(0, 1)">●</button>
-      <button class="dpad-btn" onclick="movePlayer(1, 0)">▶</button>
-      <div></div>
-      <button class="dpad-btn" onclick="movePlayer(0, 1)">▼</button>
-      <div></div>
-    </div>
-
-    <div class="footer">USA EL D-PAD PARA NAVEGAR EL PISO</div>
-  </section>
-
-  <!-- ================= MODAL TELEPORT ================= -->
-  <section id="screenTeleport" class="screen">
-    <div class="logo">CÍRCULO DE TELETRANSPORTE</div>
-    <div class="subtitle">SELECCIONA TU DESTINO</div>
-
-    <div class="panel">
-      <div class="panel-title">> PISOS DESBLOQUEADOS</div>
-      <button class="btn green" onclick="teleportToLobby()">[ 🏠 IR AL LOBBY SEGURO ]</button>
-      <div id="floorTeleportButtons" style="margin-top:8px; display:flex; flex-direction:column; gap:5px;"></div>
-    </div>
-
-    <button class="btn" onclick="closeTeleportModal()">[ VOLVER AL PISO ]</button>
-  </section>
-
-  <!-- ================= PANTALLA 9: COMBATE ================= -->
-  <section id="screenBattle" class="screen">
-    <div class="game-header">
-      <span class="floor">COMBATE EN CURSO</span>
-      <span id="turnText" class="timer" style="color:var(--yellow); font-size:11px;">TURNO 1</span>
-    </div>
-
-    <div class="panel">
-      <div class="bar-label">
-        <span id="battlePlayerName">PROTAGONISTA</span>
-        <span id="battleHpText"></span>
-      </div>
-      <div class="bar"><div id="battleHp" class="bar-fill hp"></div></div>
-    </div>
-
-    <div id="battleSceneBox" class="battle-scene">
-      <div id="enemyAvatar" class="enemy-avatar">🦠</div>
-      <div id="enemyName" style="color:#ff7b8c; font-weight:bold; margin-top:6px; font-size:12px;">SLIME ÁCIDO</div>
-      <div id="enemyLevel" style="color:var(--muted); font-size:10px;">NV. 1</div>
-      <div style="width:75%; margin-top:8px;">
-        <div class="bar-label"><span>PV ENEMIGO</span><span id="enemyHpText"></span></div>
-        <div class="bar"><div id="enemyHp" class="bar-fill enemyhp"></div></div>
-      </div>
-    </div>
-
-    <div class="panel" style="padding:8px;">
-      <div id="combatLog" class="log"></div>
-    </div>
-
-    <div class="action-grid">
-      <button id="attackBtn" class="action attack" onclick="basicAttack()">⚔️ ATACAR</button>
-      <button id="skillBtn" class="action skill" onclick="useSkill()">⚡ HABILIDAD</button>
-      <button id="potionBattleBtn" class="action potion" onclick="usePotionBattle()">💊 POCIÓN (<span id="battlePotionCount">0</span>)</button>
-      <button class="action defend" onclick="defend()">🛡️ DEFENDER</button>
-      <button class="action flee" onclick="fleeBattle()" style="grid-column: span 2;">🏃 HUIR</button>
-    </div>
-  </section>
-
-  <!-- ================= PANTALLA 10: VICTORIA ================= -->
-  <section id="screenVictory" class="screen">
-    <div class="logo">VICTORIA</div>
-    <div style="text-align:center; font-size:60px; margin:10px 0;">🏆</div>
-
-    <div class="panel" style="text-align:center;">
-      <div class="panel-title">> RECOMPENSAS OBTENIDAS</div>
-      <p id="victoryRewardText" class="story" style="margin-bottom:10px;"></p>
-    </div>
-
-    <button class="btn primary" onclick="returnToExploreMap()">[ CONTINUAR EXPLORANDO ]</button>
-    <button class="btn yellow" onclick="teleportToLobby()">[ VOLVER AL LOBBY ]</button>
-  </section>
-
-</div>
-
-<script>
-"use strict";
-
-const TRAITS = [
-  { name:"Ojos de la Verdad", rank:"S", passive:"Ataque Base +10", skill:"Corte Crítico", skillDescription:"Inflige 300% de daño.", cooldown:3, type:"damage", multiplier:3.0, apply(p){p.attack+=10;} },
-  { name:"Regeneración del Fénix", rank:"A", passive:"Recupera 15 PV al vencer enemigos.", skill:"Llama Curativa", skillDescription:"Restaura 45 PV.", cooldown:4, type:"heal", heal:45, apply(p){} },
-  { name:"Paso Sombra", rank:"A", passive:"30% evasión pasiva.", skill:"Apuñalamiento Oscuro", skillDescription:"Inflige 240% ignorando defensa.", cooldown:3, type:"damageIgnore", multiplier:2.4, apply(p){p.dodge+=0.30;} },
-  { name:"Coraza de Titán", rank:"B", passive:"PV Máx +70.", skill:"Muralla de Acero", skillDescription:"Bloquea completamente el siguiente ataque.", cooldown:4, type:"block", apply(p){p.maxHp+=70;} },
-  { name:"Mago Supremo", rank:"S", passive:"Ataque +8.", skill:"Esfera de Rayos", skillDescription:"Inflige 320% de daño mágico.", cooldown:4, type:"damage", multiplier:3.2, apply(p){p.attack+=8;} }
-];
-
-/* TIENDA DE EQUIPAMIENTO COMPLETA (6 SLOTS) */
-const SHOP_EQUIPMENT = [
-  { id: "sword_1", name: "Espada Corta", type: "weapon", slot: "weapon", bonus: 8, cost: 120, icon: "🗡️" },
-  { id: "sword_2", name: "Espada de Hierro", type: "weapon", slot: "weapon", bonus: 18, cost: 280, icon: "⚔️" },
-  { id: "sword_3", name: "Espada de Acero Oscuro", type: "weapon", slot: "weapon", bonus: 35, cost: 650, icon: "🔥" },
-  { id: "shield_1", name: "Escudo de Madera", type: "shield", slot: "shield", bonus: 5, cost: 90, icon: "🛡️" },
-  { id: "shield_2", name: "Escudo de Hierro", type: "shield", slot: "shield", bonus: 12, cost: 240, icon: "🛡️" },
-  { id: "helmet_1", name: "Casco de Cuero", type: "helmet", slot: "helmet", bonus: 6, cost: 110, icon: "🪖" },
-  { id: "armor_1", name: "Armadura de Cuero", type: "armor", slot: "armor", bonus: 10, cost: 160, icon: "🥋" },
-  { id: "armor_2", name: "Cota de Malla", type: "armor", slot: "armor", bonus: 20, cost: 420, icon: "🦺" },
-  { id: "boots_1", name: "Botas de Explorador", type: "boots", slot: "boots", bonus: 5, cost: 130, icon: "🥾" },
-  { id: "ring_1", name: "Anillo de Poder", type: "ring", slot: "ring", bonus: 12, cost: 500, icon: "💍" }
-];
-
-/* BESTIARIO CON ESTÉTICA Y SKINS */
-const MONSTER_POOL = [
-  { minFloor: 1, maxFloor: 3, name: "Slime Ácido", icon: "🦠", skinBg: "radial-gradient(circle at 50% 30%, #153520 0%, #081a10 70%)", borderColor: "#2ecc71", avatarBg: "linear-gradient(135deg, #7afc9e, #27ae60)", shape: "50%" },
-  { minFloor: 1, maxFloor: 5, name: "Goblin Explorador", icon: "👺", skinBg: "radial-gradient(circle at 50% 30%, #3a2010 0%, #1a0c04 70%)", borderColor: "#e67e22", avatarBg: "linear-gradient(135deg, #f39c12, #d35400)", shape: "15%" },
-  { minFloor: 3, maxFloor: 8, name: "Esqueleto Errante", icon: "💀", skinBg: "radial-gradient(circle at 50% 30%, #202630 0%, #0b0f14 70%)", borderColor: "#95a5a6", avatarBg: "linear-gradient(135deg, #ecf0f1, #7f8c8d)", shape: "8px" },
-  { minFloor: 6, maxFloor: 12, name: "Orco Berserker", icon: "👹", skinBg: "radial-gradient(circle at 50% 30%, #3a1012 0%, #180507 70%)", borderColor: "#e74c3c", avatarBg: "linear-gradient(135deg, #e74c3c, #c0392b)", shape: "25%" },
-  { minFloor: 10, maxFloor: 20, name: "Caballero Corrupto", icon: "👻", skinBg: "radial-gradient(circle at 50% 30%, #28103a 0%, #100518 70%)", borderColor: "#9b59b6", avatarBg: "linear-gradient(135deg, #9b59b6, #512e5f)", shape: "6px" },
-  { minFloor: 15, maxFloor: 100, name: "Guardián de la Torre", icon: "🤖", skinBg: "radial-gradient(circle at 50% 30%, #10263a 0%, #050f18 70%)", borderColor: "#3498db", avatarBg: "linear-gradient(135deg, #3498db, #1b4f72)", shape: "10px" }
-];
-
-/* NPCS EN LA TORRE (SIMULAN OTROS JUGADORES) */
-const NPC_POOL = [
-  { name: "Kaelen (Jugador Rango B)", icon: "🧙‍♂️", dialog: "¡Saludos compañero! Llevo atrapado tres pisos buscando equipo de hierro. Cuidado con los guardianes en pisos superiores." },
-  { name: "Lyra (Exploradora Experta)", icon: "🧝‍♀️", dialog: "¿Buscas atajos? Los cofres en pisos impares suelen contener libros de clases avanzadas. ¡No te rindas!" },
-  { name: "Zack (Guerrero Solitario)", icon: "🤺", dialog: "Mi hermandad cayó en el piso 15. Si no mejoras tu armadura y casco pronto, no sobrevivirás." },
-  { name: "Aelin (Comerciante Nómada)", icon: "🧙", dialog: "Un consejo: mantén siempre al menos dos pociones en tu inventario antes de explorar." }
-];
-
-let game = {
-  player: {
-    name: "Aventurero",
-    title: "El Novato",
-    avatar: "🛡️",
-    level: 1,
-    exp: 0,
-    nextExp: 100,
-    maxHp: 120,
-    hp: 120,
-    maxMp: 60,
-    mp: 60,
-    attack: 18,
-    defense: 6,
-    dodge: 0.05,
-    gold: 100,
-    skillPoints: 0,
-    class: "Novato",
-    trait: null,
-    skillLevel: 1,
-    skillCooldown: 0,
-    defending: false,
-    block: false,
-    equipped: {
-      weapon: null,
-      shield: null,
-      helmet: null,
-      armor: null,
-      boots: null,
-      ring: null
-    }
-  },
-  floor: 1,
-  maxFloorReached: 1,
-  inventory: [],
-  materials: [],
-  books: [],
-  quests: [
-    { id: 1, title: "Primeros Pasos", desc: "Alcanza el Piso 03 de la torre.", targetFloor: 3, rewardGold: 150, completed: false },
-    { id: 2, title: "Veterano de Acero", desc: "Equipa al menos 3 piezas de equipo.", targetEquipped: 3, rewardGold: 300, completed: false }
-  ],
-  dungeonMaps: {},
-  playerPos: {x: 3, y: 6},
-  enemy: null,
-  turn: 1,
-  battleActive: false
-};
-
-let currentSlot = 1;
-
-function $(id){ return document.getElementById(id); }
-function random(min, max){ return Math.floor(Math.random()*(max - min + 1)) + min; }
-function clamp(val, min, max){ return Math.max(min, Math.min(max, val)); }
-
-function showScreen(id){
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  $(id).classList.add("active");
-  window.scrollTo(0,0);
-}
-
-function goToSlotSelection(){
-  const nameInput = $("playerNameInput").value.trim();
-  if(nameInput) game.player.name = nameInput;
-  renderSlots();
-  showScreen("screenSlots");
-}
-
-function renderSlots(){
-  const container = $("slotsContainer");
-  container.innerHTML = "";
-  for(let i = 1; i <= 5; i++){
-    const raw = localStorage.getItem(`torre_system_ultimate_slot_${i}`);
-    const card = document.createElement("div");
-    if(!raw){
-      card.className = "slot-card";
-      card.innerHTML = `
-        <div class="slot-header"><span>RANURA 0${i}</span><span style="color:var(--muted)">[ VACÍA ]</span></div>
-        <div class="slot-info">Sin datos de guardado registrados.</div>
-        <div class="slot-actions"><button class="btn green" onclick="createNewGame(${i})">[ NUEVA PARTIDA ]</button></div>
-      `;
-    } else {
-      const data = JSON.parse(raw);
-      const p = data.player;
-      card.className = "slot-card occupied";
-      card.innerHTML = `
-        <div class="slot-header"><span>RANURA 0${i} - ${p.name}</span><span style="color:var(--cyan)">NV. ${p.level}</span></div>
-        <div class="slot-info">
-          Clase: ${p.class} | Piso: ${data.floor} | Oro: ${p.gold} 🪙<br>
-          <small style="color:var(--muted)">Guardado: ${data.timestamp}</small>
-        </div>
-        <div class="slot-actions">
-          <button class="btn primary" onclick="loadSlot(${i})">[ CARGAR ]</button>
-          <button class="btn yellow" onclick="saveSlot(${i}, true)">[ SOBRESCRIBIR ]</button>
-          <button class="btn red" onclick="deleteSlot(${i})">[ BORRAR ]</button>
-        </div>
-      `;
-    }
-    container.appendChild(card);
-  }
-}
-
-function saveSlot(slotNum, alertUser = false){
-  const saveData = {
-    player: game.player,
-    floor: game.floor,
-    maxFloorReached: game.maxFloorReached,
-    inventory: game.inventory,
-    materials: game.materials,
-    books: game.books,
-    quests: game.quests,
-    dungeonMaps: game.dungeonMaps,
-    timestamp: new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-  };
-  localStorage.setItem(`torre_system_ultimate_slot_${slotNum}`, JSON.stringify(saveData));
-  currentSlot = slotNum;
-  if(alertUser) alert(`Partida guardada exitosamente en la Ranura 0${slotNum}.`);
-}
-
-function createNewGame(slotNum){
-  currentSlot = slotNum;
-  const name = $("playerNameInput").value.trim() || "Aventurero";
-  game = {
-    player: {
-      name: name, title: "El Novato", avatar: "🛡️", level: 1, exp: 0, nextExp: 100,
-      maxHp: 120, hp: 120, maxMp: 60, mp: 60,
-      attack: 18, defense: 6, dodge: 0.05, gold: 120,
-      skillPoints: 0, class: "Novato", trait: null,
-      skillLevel: 1, skillCooldown: 0, defending: false, block: false,
-      equipped: { weapon: null, shield: null, helmet: null, armor: null, boots: null, ring: null }
-    },
-    floor: 1, maxFloorReached: 1,
-    inventory: [{ id: 'potion', name: 'Poción de Vida', type: 'potion', count: 4, heal: 50, sellPrice: 15 }],
-    materials: [], books: [],
-    quests: [
-      { id: 1, title: "Primeros Pasos", desc: "Alcanza el Piso 03 de la torre.", targetFloor: 3, rewardGold: 150, completed: false },
-      { id: 2, title: "Veterano de Acero", desc: "Equipa al menos 3 piezas de equipo.", targetEquipped: 3, rewardGold: 300, completed: false }
-    ],
-    dungeonMaps: {}, playerPos: {x: 3, y: 6},
-    enemy: null, turn: 1, battleActive: false
-  };
-  saveSlot(slotNum);
-  showScreen("screenLore");
-}
-
-function loadSlot(slotNum){
-  const raw = localStorage.getItem(`torre_system_ultimate_slot_${slotNum}`);
-  if(!raw) return;
-  const data = JSON.parse(raw);
-  game.player = data.player;
-  game.floor = data.floor;
-  game.maxFloorReached = data.maxFloorReached || data.floor;
-  game.inventory = data.inventory || [];
-  game.materials = data.materials || [];
-  game.books = data.books || [];
-  game.quests = data.quests || game.quests;
-  game.dungeonMaps = data.dungeonMaps || {};
-  currentSlot = slotNum;
-
-  if(!game.player.trait){
-    showScreen("screenLore");
-  } else {
-    goToLobby();
-  }
-}
-
-function deleteSlot(slotNum){
-  if(confirm(`¿Deseas borrar la Ranura 0${slotNum}?`)){
-    localStorage.removeItem(`torre_system_ultimate_slot_${slotNum}`);
-    renderSlots();
-  }
-}
-
-function manualSaveLobby(){
-  saveSlot(currentSlot, true);
-  checkQuests();
-}
-
-function goToCustomization(){
-  showScreen("screenCustomization");
-}
-
-function setAvatarIcon(icon){
-  game.player.avatar = icon;
-  $("customAvatarPreview").textContent = icon;
-}
-
-function acceptAvatarAndAwaken(){
-  const title = $("playerTitleInput").value.trim();
-  if(title) game.player.title = title;
-  
-  showScreen("screenAwakening");
-  $("awakeningText").textContent = "Inicializando núcleo y escaneando compatibilidad de alma...";
-  setTimeout(() => {
-    const trait = TRAITS[random(0, TRAITS.length - 1)];
-    game.player.trait = trait;
-    trait.apply(game.player);
-    game.player.hp = game.player.maxHp;
-    saveSlot(currentSlot);
-
-    $("awakeningText").classList.add("hidden");
-    $("traitName").textContent = trait.name;
-    $("traitRank").textContent = "RANGO " + trait.rank;
-    $("traitDescription").innerHTML = `<b>Pasiva:</b> ${trait.passive}<br><b>Activa:</b> ${trait.skill} (${trait.skillDescription})`;
-    $("traitResult").classList.remove("hidden");
-    $("enterLobbyBtn").classList.remove("hidden");
-  }, 1200);
-}
-
-function goToLobby(){
-  respawnMonstersOnFloorReturn();
-  checkQuests();
-
-  $("lobbyPlayerName").textContent = `${game.player.name} [${game.player.title}]`;
-  $("lobbyGold").textContent = game.player.gold + " 🪙";
-  $("lobbyClass").textContent = game.player.class;
-  $("lobbyLevel").textContent = game.player.level;
-  $("lobbySP").textContent = game.player.skillPoints;
-  showScreen("screenLobby");
-}
-
-/* RESPAWN DINÁMICO DE MONSTRUOS */
-function respawnMonstersOnFloorReturn(){
-  if(!game.dungeonMaps) return;
-  for(let f in game.dungeonMaps){
-    let map = game.dungeonMaps[f];
-    map.forEach(cell => {
-      if(cell.type === 'empty' && Math.random() < 0.40 && cell.terrain === '·'){
-        cell.type = 'monster';
-        cell.icon = '👾';
-      }
-    });
-  }
-}
-
-/* TIENDA Y MERCADO */
-function openShop(){
-  renderShopEquipment();
-  renderInventoryLoot();
-  showScreen("screenShop");
-}
-
-function renderShopEquipment(){
-  const list = $("shopEquipmentList");
-  list.innerHTML = "";
-  SHOP_EQUIPMENT.forEach(item => {
-    const row = document.createElement("div");
-    row.className = "item-row";
-    row.innerHTML = `<span>${item.icon} <b>${item.name}</b> (+${item.bonus} Atq/Def)<br><small style="color:var(--yellow)">Costo: ${item.cost} 🪙</small></span>
-      <button class="btn primary" style="width:auto; min-height:28px; font-size:10px;" onclick="buyEquipment('${item.id}')">COMPRAR</button>`;
-    list.appendChild(row);
-  });
-}
-
-function buyEquipment(itemId){
-  const template = SHOP_EQUIPMENT.find(i => i.id === itemId);
-  if(!template) return;
-  if(game.player.gold < template.cost){
-    alert("¡Oro insuficiente!");
-    return;
-  }
-  game.player.gold -= template.cost;
-  $("lobbyGold").textContent = game.player.gold + " 🪙";
-
-  game.inventory.push({
-    id: template.id + "_" + Date.now(),
-    name: template.name,
-    type: template.slot,
-    slot: template.slot,
-    bonus: template.bonus,
-    icon: template.icon,
-    sellPrice: Math.floor(template.cost * 0.5)
-  });
-
-  saveSlot(currentSlot);
-  alert(`¡Has comprado ${template.name}! Revísalo en tu inventario.`);
-  renderShopEquipment();
-  checkQuests();
-}
-
-function buyItem(type, cost, value){
-  if(game.player.gold < cost){
-    alert("¡Oro insuficiente!");
-    return;
-  }
-  game.player.gold -= cost;
-  $("lobbyGold").textContent = game.player.gold + " 🪙";
-  if(type === 'potion'){
-    let pot = game.inventory.find(i => i.type === 'potion');
-    if(pot) pot.count++;
-    else game.inventory.push({ id: 'potion', name: 'Poción de Vida', type: 'potion', count: 1, heal: 50, sellPrice: 15 });
-    alert("¡Has comprado una Poción de Vida!");
-  }
-  saveSlot(currentSlot);
-  renderInventoryLoot();
-}
-
-function renderInventoryLoot(){
-  const list = $("inventoryLootList");
-  list.innerHTML = "";
-  if(game.materials.length === 0){
-    list.innerHTML = `<div style="color:var(--muted)">Inventario de materiales vacío.</div>`;
-    return;
-  }
-  game.materials.forEach((item, idx) => {
-    const row = document.createElement("div");
-    row.className = "item-row";
-    row.innerHTML = `<span>${item.name} (x${item.count}) - Valor: ${item.sellPrice * item.count} 🪙</span>
-      <button class="btn green" style="width:auto; min-height:26px; font-size:10px;" onclick="sellMaterial(${idx})">VENDER</button>`;
-    list.appendChild(row);
-  });
-}
-
-function sellMaterial(idx){
-  const item = game.materials[idx];
-  const total = item.sellPrice * item.count;
-  game.player.gold += total;
-  game.materials.splice(idx, 1);
-  renderInventoryLoot();
-  $("lobbyGold").textContent = game.player.gold + " 🪙";
-  saveSlot(currentSlot);
-}
-
-function sellAllLoot(){
-  let total = 0;
-  game.materials.forEach(i => total += (i.sellPrice * i.count));
-  game.player.gold += total;
-  game.materials = [];
-  renderInventoryLoot();
-  $("lobbyGold").textContent = game.player.gold + " 🪙";
-  saveSlot(currentSlot);
-  alert(`Has vendido todo tu botín por ${total} 🪙.`);
-}
-
-/* SISTEMA DE INVENTARIO Y EQUIPAMIENTO CON 6 SLOTS */
-function openInventory(){
-  updateInventoryScreen();
-  showScreen("screenInventory");
-}
-
-function updateInventoryScreen(){
-  $("invPlayerName").textContent = game.player.name;
-  $("invPlayerClass").textContent = game.player.class;
-
-  let avatarIcon = game.player.avatar || "🛡️";
-  if(game.player.equipped.weapon) avatarIcon = game.player.equipped.weapon.icon;
-  $("invPlayerAvatar").textContent = avatarIcon;
-
-  $("slotWeaponEquip").textContent = game.player.equipped.weapon ? `${game.player.equipped.weapon.name} (+${game.player.equipped.weapon.bonus})` : "Ninguna";
-  $("slotShieldEquip").textContent = game.player.equipped.shield ? `${game.player.equipped.shield.name} (+${game.player.equipped.shield.bonus})` : "Ninguno";
-  $("slotHelmetEquip").textContent = game.player.equipped.helmet ? `${game.player.equipped.helmet.name} (+${game.player.equipped.helmet.bonus})` : "Ninguno";
-  $("slotArmorEquip").textContent = game.player.equipped.armor ? `${game.player.equipped.armor.name} (+${game.player.equipped.armor.bonus})` : "Ninguna";
-  $("slotBootsEquip").textContent = game.player.equipped.boots ? `${game.player.equipped.boots.name} (+${game.player.equipped.boots.bonus})` : "Ningunas";
-  $("slotRingEquip").textContent = game.player.equipped.ring ? `${game.player.equipped.ring.name} (+${game.player.equipped.ring.bonus})` : "Ninguno";
-
-  const list = $("inventoryItemsList");
-  list.innerHTML = "";
-
-  if(game.inventory.length === 0){
-    list.innerHTML = `<div style="color:var(--muted); text-align:center; padding:15px;">Tu inventario está vacío.</div>`;
-    return;
-  }
-
-  game.inventory.forEach((item, idx) => {
-    const row = document.createElement("div");
-    row.className = "item-row";
-    if(item.type === 'potion'){
-      row.innerHTML = `<span>💊 <b>${item.name}</b> (x${item.count})</span>
-        <button class="btn green" style="width:auto; min-height:26px; font-size:10px;" onclick="usePotionFromInventory(${idx})">USAR</button>`;
-    } else {
-      let isEquipped = Object.values(game.player.equipped).some(eq => eq && eq.id === item.id);
-      row.innerHTML = `<span>${item.icon} <b>${item.name}</b> (+${item.bonus})</span>
-        <div style="display:flex; gap:4px;">
-          <button class="btn ${isEquipped ? 'red' : 'primary'}" style="width:auto; min-height:26px; font-size:10px;" onclick="toggleEquipItem(${idx})">${isEquipped ? 'QUITAR' : 'EQUIPAR'}</button>
-          <button class="btn red" style="width:auto; min-height:26px; font-size:10px;" onclick="sellInventoryItem(${idx})">VENDER</button>
-        </div>`;
-    }
-    list.appendChild(row);
-  });
-}
-
-function toggleEquipItem(idx){
-  const item = game.inventory[idx];
-  if(item.type === 'potion') return;
-
-  const slot = item.slot; 
-  if(game.player.equipped[slot] && game.player.equipped[slot].id === item.id){
-    game.player.equipped[slot] = null;
-  } else {
-    game.player.equipped[slot] = item;
-  }
-  saveSlot(currentSlot);
-  updateInventoryScreen();
-  checkQuests();
-}
-
-function sellInventoryItem(idx){
-  const item = game.inventory[idx];
-  if(item.type === 'potion') return;
-
-  for(let s in game.player.equipped){
-    if(game.player.equipped[s] && game.player.equipped[s].id === item.id){
-      game.player.equipped[s] = null;
-    }
-  }
-
-  game.player.gold += item.sellPrice;
-  game.inventory.splice(idx, 1);
-  saveSlot(currentSlot);
-  updateInventoryScreen();
-  alert(`Has vendido ${item.name} por ${item.sellPrice} 🪙.`);
-}
-
-function getPlayerTotalAttack(){
-  let bonus = 0;
-  for(let s in game.player.equipped){
-    if(game.player.equipped[s] && game.player.equipped[s].slot === 'weapon') bonus += game.player.equipped[s].bonus;
-    if(game.player.equipped[s] && game.player.equipped[s].slot === 'ring') bonus += game.player.equipped[s].bonus;
-  }
-  return game.player.attack + bonus;
-}
-
-function getPlayerTotalDefense(){
-  let bonus = 0;
-  for(let s in game.player.equipped){
-    let eq = game.player.equipped[s];
-    if(eq && eq.slot !== 'weapon' && eq.slot !== 'ring') bonus += eq.bonus;
-  }
-  return game.player.defense + bonus;
-}
-
-/* POCIONES */
-function getPotionCount(){
-  let pot = game.inventory.find(i => i.type === 'potion');
-  return pot ? pot.count : 0;
-}
-
-function usePotionExplore(){
-  let pot = game.inventory.find(i => i.type === 'potion');
-  if(!pot || pot.count <= 0){
-    alert("No tienes pociones en tu inventario.");
-    return;
-  }
-  if(game.player.hp >= game.player.maxHp){
-    alert("Salud ya al máximo.");
-    return;
-  }
-  pot.count--;
-  if(pot.count <= 0) game.inventory = game.inventory.filter(i => i.type !== 'potion');
-  game.player.hp = Math.min(game.player.maxHp, game.player.hp + 50);
-  updateExploreHUD();
-  saveSlot(currentSlot);
-  alert("¡Poción consumida (+50 PV)!");
-}
-
-function usePotionFromInventory(idx){
-  let item = game.inventory[idx];
-  if(item.count <= 0) return;
-  if(game.player.hp >= game.player.maxHp){
-    alert("Salud ya al máximo.");
-    return;
-  }
-  item.count--;
-  if(item.count <= 0) game.inventory.splice(idx, 1);
-  game.player.hp = Math.min(game.player.maxHp, game.player.hp + 50);
-  saveSlot(currentSlot);
-  updateInventoryScreen();
-  alert("¡Poción utilizada con éxito (+50 PV)!");
-}
-
-function usePotionBattle(){
-  let pot = game.inventory.find(i => i.type === 'potion');
-  if(!pot || pot.count <= 0){
-    logCombat("No te quedan pociones.", "bad");
-    return;
-  }
-  if(game.player.hp >= game.player.maxHp){
-    logCombat("Tu salud ya está al máximo.", "info");
-    return;
-  }
-  pot.count--;
-  if(pot.count <= 0) game.inventory = game.inventory.filter(i => i.type !== 'potion');
-  game.player.hp = Math.min(game.player.maxHp, game.player.hp + 50);
-  logCombat("¡Consumiste una poción en combate (+50 PV)!", "good");
-  updateBattleHUD();
-  enemyTurn();
-}
-
-/* ENTRENAMIENTO Y MISIONES */
-function openTraining(){
-  $("trainingSP").textContent = game.player.skillPoints;
-  if(game.floor >= 20){
-    $("floor20TrainingPanel").classList.remove("hidden");
-  } else {
-    $("floor20TrainingPanel").classList.add("hidden");
-  }
-  showScreen("screenTraining");
-}
-
-function upgradeStat(stat){
-  if(game.player.skillPoints <= 0){
-    alert("No tienes Puntos de Habilidad (SP) disponibles.");
-    return;
-  }
-  game.player.skillPoints--;
-  if(stat === 'attack') game.player.attack += 4;
-  if(stat === 'maxHp'){ game.player.maxHp += 30; game.player.hp += 30; }
-  if(stat === 'defense') game.player.defense += 3;
-  $("trainingSP").textContent = game.player.skillPoints;
-  $("lobbySP").textContent = game.player.skillPoints;
-  saveSlot(currentSlot);
-  alert("¡Atributo mejorado con éxito!");
-}
-
-function evolveSkillMastery(){
-  if(game.player.skillPoints < 2){
-    alert("Necesitas al menos 2 SP para evolucionar.");
-    return;
-  }
-  game.player.skillPoints -= 2;
-  game.player.skillLevel++;
-  alert(`¡Habilidad evolucionada a Nivel ${game.player.skillLevel}!`);
-  saveSlot(currentSlot);
-  openTraining();
-}
-
-function openQuests(){
-  const list = $("questsList");
-  list.innerHTML = "";
-  game.quests.forEach(q => {
-    const row = document.createElement("div");
-    row.className = "item-row";
-    row.innerHTML = `<span><b>${q.title}</b><br><small style="color:var(--muted)">${q.desc}</small><br><span style="color:var(--yellow)">Recompensa: ${q.rewardGold} 🪙</span></span>
-      <span style="font-weight:bold; color:${q.completed ? 'var(--green)' : 'var(--orange)'}">${q.completed ? 'COMPLETADA' : 'EN CURSO'}</span>`;
-    list.appendChild(row);
-  });
-  showScreen("screenQuests");
-}
-
-function checkQuests(){
-  game.quests.forEach(q => {
-    if(!q.completed){
-      if(q.targetFloor && game.maxFloorReached >= q.targetFloor){
-        q.completed = true;
-        game.player.gold += q.rewardGold;
-        alert(`🎉 ¡Misión completada: "${q.title}"! Recompensa: ${q.rewardGold} 🪙`);
-      }
-      if(q.targetEquipped){
-        let count = Object.values(game.player.equipped).filter(e => e !== null).length;
-        if(count >= q.targetEquipped){
-          q.completed = true;
-          game.player.gold += q.rewardGold;
-          alert(`🎉 ¡Misión completada: "${q.title}"! Recompensa: ${q.rewardGold} 🪙`);
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TORRE:SYSTEM // ULTIMATE PIXEL EDITION</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        retroDark: '#080c14',
+                        retroCard: '#0f172a',
+                        retroBorder: '#1e293b',
+                        retroGreen: '#10b981',
+                        retroBlue: '#3b82f6',
+                        retroPurple: '#8b5cf6',
+                        retroGold: '#f59e0b',
+                        retroRed: '#ef4444'
+                    },
+                    fontFamily: {
+                        mono: ['Courier New', 'Courier', 'monospace']
+                    }
+                }
+            }
         }
-      }
-    }
-  });
-}
+    </script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        .pixel-font { font-family: 'VT323', monospace; letter-spacing: 1px; }
+        .crt-overlay {
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+        }
+        .pixel-border {
+            box-shadow: 0 0 0 2px #0f172a, 0 0 0 4px #334155, inset 0 0 0 2px #1e293b;
+        }
+        .pixel-border-gold {
+            box-shadow: 0 0 0 2px #0f172a, 0 0 0 4px #f59e0b, inset 0 0 0 2px #d97706;
+        }
+        .pixel-btn {
+            position: relative;
+            transition: all 0.1s ease;
+        }
+        .pixel-btn:active {
+            transform: translateY(2px);
+        }
+        /* Custom scrollbar for grid inventory */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
+</head>
+<body class="bg-retroDark text-slate-100 font-mono min-h-screen flex flex-col items-center justify-between overflow-x-hidden select-none relative">
+    
+    <div class="crt-overlay absolute inset-0 z-50 pointer-events-none"></div>
 
-function openClassChange(){
-  const bList = $("booksList");
-  bList.innerHTML = "";
-  if(game.books.length === 0){
-    bList.innerHTML = `<span style="color:var(--muted)">No tienes libros de cambio de clase. Explora la torre.</span>`;
-  } else {
-    game.books.forEach((book, idx) => {
-      const row = document.createElement("div");
-      row.className = "item-row";
-      row.innerHTML = `<span>📖 ${book.name} (${book.rarity})</span>
-        <button class="btn purple" style="width:auto; min-height:26px; font-size:10px;" onclick="useClassBook(${idx})">USAR</button>`;
-      bList.appendChild(row);
-    });
-  }
+    <!-- MAIN APP CONTAINER -->
+    <div id="app" class="w-full max-w-md md:max-w-xl lg:max-w-2xl min-h-screen flex flex-col justify-between p-4 relative z-10">
+        
+        <!-- HEADER HEADER -->
+        <header id="header-container" class="text-center py-2 border-b border-retroBorder mb-3">
+            <h1 class="pixel-font text-3xl md:text-4xl text-cyan-400 font-bold tracking-widest drop-shadow-[0_0_10px_rgba(6,182,212,0.6)]">TORRE:SYSTEM // V4.5</h1>
+            <p id="sub-header" class="text-xs text-slate-400 tracking-wider">SISTEMA TÁCTICO DE SUPERVIVENCIA EN TORRES</p>
+        </header>
 
-  if(game.maxFloorReached >= 10 && game.player.class === "Novato"){
-    $("classChoicePanel").classList.remove("hidden");
-  } else {
-    $("classChoicePanel").classList.add("hidden");
-  }
-  showScreen("screenClassChange");
-}
+        <!-- DYNAMIC SCREEN CONTAINER -->
+        <main id="main-view" class="flex-grow flex flex-col justify-center items-center my-2">
+            <!-- Dynamically populated by JS -->
+        </main>
 
-function chooseBasicClass(className){
-  game.player.class = className;
-  if(className === 'Guerrero') { game.player.maxHp += 60; game.player.attack += 6; }
-  if(className === 'Mago') { game.player.maxMp += 40; game.player.attack += 10; }
-  if(className === 'Asesino') { game.player.dodge += 0.15; game.player.attack += 8; }
-  game.player.hp = game.player.maxHp;
-  saveSlot(currentSlot);
-  alert(`¡Has adoptado la clase: ${className}!`);
-  openClassChange();
-}
+        <!-- FOOTER STATUS / CREDITS -->
+        <footer class="text-center py-2 text-[10px] text-slate-500 border-t border-retroBorder/50 mt-2">
+            TORRE:SYSTEM ULTIMATE PIXEL EDITION &bull; ENGINE V4.5
+        </footer>
+    </div>
 
-function useClassBook(idx){
-  const book = game.books[idx];
-  if(confirm(`¿Consumir ${book.name} para evolucionar a ${book.classType}?`)){
-    game.player.class = book.classType;
-    game.player.attack += 12;
-    game.player.maxHp += 50;
-    game.player.hp = game.player.maxHp;
-    game.books.splice(idx, 1);
-    saveSlot(currentSlot);
-    alert(`¡Nueva clase avanzada obtenida: ${book.classType}!`);
-    openClassChange();
-  }
-}
+    <!-- NOTIFICATION MODAL / TOAST -->
+    <div id="toast-modal" class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 hidden">
+        <div class="bg-retroCard border-2 border-retroBorder p-5 rounded max-w-sm w-full text-center pixel-border shadow-2xl">
+            <h3 id="toast-title" class="pixel-font text-2xl text-yellow-400 mb-2">NOTIFICACIÓN</h3>
+            <p id="toast-msg" class="text-sm text-slate-300 mb-4">Mensaje del sistema...</p>
+            <button onclick="closeToast()" class="bg-cyan-600 hover:bg-cyan-500 text-black font-bold px-6 py-2 rounded pixel-font text-lg tracking-wider">ACEPTAR</button>
+        </div>
+    </div>
 
-/* EXPLORACIÓN DE LA TORRE Y MAPA 7X7 */
-function openExplore(){
-  generateFloorMap();
-  updateExploreHUD();
-  showScreen("screenExplore");
-}
+    <script>
+        // Audio Synthesizer for Retro SFX
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            if (!audioCtx) return;
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
 
-function generateFloorMap(){
-  if(!game.dungeonMaps) game.dungeonMaps = {};
-  if(game.dungeonMaps[game.floor]) return;
+            if (type === 'click') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(440, now);
+                osc.frequency.exponentialRampToValueAtTime(880, now + 0.05);
+                gain.gain.setValueAtTime(0.05, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                osc.start(now);
+                osc.stop(now + 0.05);
+            } else if (type === 'hit') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(120, now);
+                osc.frequency.linearRampToValueAtTime(40, now + 0.15);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+                osc.start(now);
+                osc.stop(now + 0.15);
+            } else if (type === 'victory') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.setValueAtTime(400, now + 0.1);
+                osc.frequency.setValueAtTime(600, now + 0.2);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            } else if (type === 'potion') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.exponentialRampToValueAtTime(900, now + 0.2);
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+                osc.start(now);
+                osc.stop(now + 0.2);
+            }
+        }
 
-  let map = [];
-  for(let i = 0; i < 49; i++){
-    let type = 'empty';
-    let icon = '·';
-    const randTerrain = Math.random();
-    let terrainIcon = randTerrain < 0.20 ? '🌲' : randTerrain < 0.35 ? '🪨' : randTerrain < 0.48 ? '🌿' : '·';
+        // Base Game State
+        let game = {
+            screen: 'title', // title, create, lobby, floor, combat, inventory, shop, npc
+            player: {
+                name: 'Aventurero',
+                title: 'Novato Prometedor',
+                classId: 'warrior', // warrior, rogue, mage, paladin
+                level: 1,
+                exp: 0,
+                maxExp: 100,
+                hp: 190,
+                maxHp: 190,
+                mp: 80,
+                maxMp: 80,
+                // Core stats
+                str: 15,
+                spd: 12,
+                mag: 10,
+                def: 10,
+                luck: 5,
+                trait: 'Golpe Furioso: +20% Daño Físico',
+                skillName: 'Corte Táctico',
+                skillCost: 15,
+                skillDesc: 'Inflige 150% de daño de Fuerza.',
+                gold: 150,
+                equipment: {
+                    weapon: null,   // { id, name, type, atk, def, icon }
+                    shield: null,
+                    helmet: null,
+                    armor: null,
+                    boots: null,
+                    ring: null
+                },
+                // Grid Inventory (Max 16 slots)
+                inventory: [
+                    { id: 'pot_hp', name: 'Poción de Vida', type: 'potion', effect: 'hp', val: 50, qty: 4, icon: '🔴', desc: 'Restaura 50 PV.' },
+                    { id: 'pot_mp', name: 'Poción de Mana', type: 'potion', effect: 'mp', val: 30, qty: 2, icon: '🔵', desc: 'Restaura 30 PM.' },
+                    { id: 'pot_str', name: 'Elixir de Fuerza', type: 'potion', effect: 'str', val: 5, qty: 1, icon: '🟡', desc: 'Aumenta Fuerza temporalmente.' }
+                ]
+            },
+            floor: 1,
+            grid: [], // 7x7 grid
+            playerPos: { x: 3, y: 6 },
+            enemy: null,
+            npc: null,
+            combatTurn: 1,
+            log: []
+        };
 
-    const rand = Math.random();
-    if(i === 24){
-      type = 'teleport';
-      icon = '🌀';
-    } else if(rand < 0.22){
-      type = 'monster';
-      icon = '👾';
-    } else if(rand < 0.30){
-      type = 'item';
-      icon = '📦';
-    } else if(rand < 0.37){
-      type = 'npc';
-      icon = '🧙‍♂️';
-    } else {
-      icon = terrainIcon;
-    }
-    map.push({type: type, icon: icon, terrain: terrainIcon, explored: false});
-  }
+        // Available Classes for Creation
+        const AVAILABLE_CLASSES = {
+            warrior: { id: 'warrior', name: 'Guerrero', icon: '🛡️', color: 'text-red-400', border: 'border-red-500', hp: 220, str: 18, spd: 10, mag: 5, def: 14, luck: 5, trait: 'Resistencia Titánica: -15% daño recibido', skillName: 'Estocada Brutal', skillCost: 15, skillDesc: 'Golpe pesado con 160% de Fuerza.' },
+            rogue: { id: 'rogue', name: 'Asesino', icon: '🗡️', color: 'text-emerald-400', border: 'border-emerald-500', hp: 160, str: 16, spd: 20, mag: 8, def: 8, luck: 15, trait: 'Golpe Crítico: +25% Prob. Crítica', skillName: 'Puñalada Sombra', skillCost: 12, skillDesc: 'Ataque rápido y preciso.' },
+            mage: { id: 'mage', name: 'Mago Arcano', icon: '🧙‍♂️', color: 'text-cyan-400', border: 'border-cyan-500', hp: 130, str: 8, spd: 12, mag: 22, def: 6, luck: 10, trait: 'Sintonía de Maná: +20% PM máximo', skillName: 'Rayo de Fuego', skillCost: 20, skillDesc: 'Lanza una descarga mágica pura.' },
+            paladin: { id: 'paladin', name: 'Paladín', icon: '⚔️', color: 'text-amber-400', border: 'border-amber-500', hp: 200, str: 14, spd: 9, mag: 14, def: 16, luck: 8, trait: 'Bendición Divina: Regenera 5 PV por turno', skillName: 'Juicio Sagrado', skillCost: 18, skillDesc: 'Daño físico y mágico combinado.' }
+        };
 
-  game.playerPos = {x: 3, y: 6};
-  let startIdx = 6 * 7 + 3;
-  map[startIdx].explored = true;
-  map[startIdx].type = 'empty';
-  map[startIdx].icon = '·';
+        // Items and Shop Pool
+        const SHOP_ITEMS = [
+            { id: 'pot_hp', name: 'Poción de Vida', type: 'potion', effect: 'hp', val: 50, price: 35, icon: '🔴', desc: 'Restaura 50 PV.' },
+            { id: 'pot_mp', name: 'Poción de Mana', type: 'potion', effect: 'mp', val: 30, price: 30, icon: '🔵', desc: 'Restaura 30 PM.' },
+            { id: 'eq_sword1', name: 'Espada de Hierro', type: 'weapon', slot: 'weapon', atk: 8, price: 120, icon: '🗡️', desc: 'Arma básica de hierro. +8 ATK.' },
+            { id: 'eq_helm1', name: 'Casco de Soldado', type: 'armor', slot: 'helmet', def: 5, price: 90, icon: '🪖', desc: 'Protege la cabeza. +5 DEF.' },
+            { id: 'eq_armor1', name: 'Cota de Malla', type: 'armor', slot: 'armor', def: 10, price: 180, icon: '🛡️', desc: 'Armadura corporal resistente. +10 DEF.' },
+            { id: 'eq_boots1', name: 'Botas de Cuero', type: 'armor', slot: 'boots', spd: 4, def: 3, price: 85, icon: '👢', desc: 'Ligeras y cómodas. +4 SPD, +3 DEF.' }
+        ];
 
-  game.dungeonMaps[game.floor] = map;
-}
+        // Monster Database with Classic Pixel Slimes & Goblins
+        const MONSTER_TYPES = [
+            { name: 'Slime Azul Ácido', hp: 70, atk: 12, def: 4, exp: 35, gold: 20, type: 'slime', color: 'border-blue-500 text-blue-400', drop: 'Gelatina Azul' },
+            { name: 'Slime Verde Tóxico', hp: 85, atk: 15, def: 5, exp: 45, gold: 25, type: 'slime', color: 'border-green-500 text-green-400', drop: 'Núcleo de Slime' },
+            { name: 'Goblin Explorador', hp: 90, atk: 18, def: 6, exp: 50, gold: 30, type: 'goblin', color: 'border-amber-500 text-amber-400', drop: 'Oreja de Goblin' },
+            { name: 'Goblin Guerrero', hp: 120, atk: 22, def: 9, exp: 70, gold: 45, type: 'goblin', color: 'border-red-500 text-red-400', drop: 'Daga Rota' }
+        ];
 
-function renderMap(){
-  const grid = $("mapGrid");
-  grid.innerHTML = "";
-  const map = game.dungeonMaps[game.floor];
+        function renderPixelAvatar(classId, equipment = {}, size = 96) {
+            let hasHelmet = equipment.helmet ? true : false;
+            let hasWeapon = equipment.weapon ? true : false;
+            let hasArmor = equipment.armor ? true : false;
+            
+            let classColor = '#3b82f6';
+            if (classId === 'warrior') classColor = '#ef4444';
+            if (classId === 'rogue') classColor = '#10b981';
+            if (classId === 'mage') classColor = '#06b6d4';
+            if (classId === 'paladin') classColor = '#f59e0b';
 
-  for(let y = 0; y < 7; y++){
-    for(let x = 0; x < 7; x++){
-      const idx = y * 7 + x;
-      const cellData = map[idx];
-      const cell = document.createElement("div");
-      cell.className = "cell";
+            return `
+            <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="mx-auto drop-shadow-md">
+                <!-- Background Pixel Glow -->
+                <rect x="3" y="3" width="18" height="18" rx="2" fill="#0f172a" stroke="${classColor}" stroke-width="1"/>
+                <!-- Body / Armor -->
+                <rect x="8" y="13" width="8" height="7" fill="${hasArmor ? '#64748b' : classColor}" />
+                <!-- Head / Face -->
+                <rect x="9" y="7" width="6" height="6" fill="#fcd34d" />
+                <!-- Eyes -->
+                <rect x="10" y="9" width="1" height="1" fill="#1e293b" />
+                <rect x="13" y="9" width="1" height="1" fill="#1e293b" />
+                <!-- Helmet Overlayer -->
+                ${hasHelmet ? `<rect x="8" y="6" width="8" height="3" fill="#94a3b8"/><rect x="9" y="5" width="6" height="1" fill="#cbd5e1"/>` : ''}
+                <!-- Weapon Overlayer -->
+                ${hasWeapon ? `<rect x="17" y="10" width="2" height="8" fill="#e2e8f0"/><rect x="16" y="12" width="4" height="1" fill="#b45309"/>` : ''}
+            </svg>`;
+        }
 
-      if(x === game.playerPos.x && y === game.playerPos.y){
-        cell.classList.add("player");
-        cell.textContent = "◆";
-      } else if(cellData.explored){
-        cell.classList.add("explored");
-        if(cellData.type === 'monster') { cell.classList.add("monster"); cell.textContent = cellData.icon; }
-        else if(cellData.type === 'teleport') { cell.classList.add("teleport"); cell.textContent = cellData.icon; }
-        else if(cellData.type === 'item') { cell.classList.add("item"); cell.textContent = cellData.icon; }
-        else if(cellData.type === 'npc') { cell.classList.add("npc"); cell.textContent = cellData.icon; }
-        else { cell.textContent = cellData.terrain; }
-      } else {
-        cell.textContent = "";
-      }
-      grid.appendChild(cell);
-    }
-  }
-}
+        function renderPixelMonster(type, size = 96) {
+            if (type === 'slime') {
+                return `
+                <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="mx-auto animate-bounce">
+                    <!-- Classic Gel Slime Shape -->
+                    <path d="M4 16C4 12 8 8 12 8C16 8 20 12 20 16C20 19 18 20 12 20C6 20 4 19 4 16Z" fill="#38bdf8" fill-opacity="0.8" stroke="#0284c7" stroke-width="1.5"/>
+                    <!-- Highlight reflection -->
+                    <ellipse cx="9" cy="12" rx="2" ry="1" fill="white" fill-opacity="0.6"/>
+                    <!-- Cute Slime Eyes -->
+                    <rect x="9" y="13" width="1.5" height="2.5" fill="#0f172a" rx="0.5"/>
+                    <rect x="13" y="13" width="1.5" height="2.5" fill="#0f172a" rx="0.5"/>
+                </svg>`;
+            } else {
+                // Goblin Pixel Art
+                return `
+                <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="mx-auto">
+                    <!-- Goblin Body -->
+                    <rect x="8" y="12" width="8" height="8" fill="#4d7c0f"/>
+                    <!-- Big Pointy Ears -->
+                    <polygon points="4,8 8,11 8,7" fill="#65a30d"/>
+                    <polygon points="20,8 16,11 16,7" fill="#65a30d"/>
+                    <!-- Head & Nose -->
+                    <rect x="8" y="7" width="8" height="6" fill="#65a30d"/>
+                    <rect x="12" y="9" width="4" height="2" fill="#3f6212"/>
+                    <!-- Red/Yellow Eyes -->
+                    <rect x="9" y="8" width="1.5" height="1.5" fill="#facc15"/>
+                    <rect x="13.5" y="8" width="1.5" height="1.5" fill="#facc15"/>
+                </svg>`;
+            }
+        }
 
-function movePlayer(dx, dy){
-  if(game.battleActive) return;
-  const newX = clamp(game.playerPos.x + dx, 0, 6);
-  const newY = clamp(game.playerPos.y + dy, 0, 6);
+        function initGame() {
+            game.screen = 'title';
+            render();
+        }
 
-  game.playerPos.x = newX;
-  game.playerPos.y = newY;
+        function render() {
+            const main = document.getElementById('main-view');
+            main.innerHTML = '';
 
-  const map = game.dungeonMaps[game.floor];
-  const idx = newY * 7 + newX;
-  const cell = map[idx];
-  cell.explored = true;
+            if (game.screen === 'title') {
+                main.innerHTML = `
+                <div class="text-center py-6">
+                    <div class="mb-6 flex justify-center">
+                        <div class="p-4 bg-retroCard border-2 border-cyan-500 rounded-xl pixel-border shadow-[0_0_25px_rgba(6,182,212,0.3)]">
+                            <i class="fa-solid fa-chess-rook text-6xl text-cyan-400 animate-pulse"></i>
+                        </div>
+                    </div>
+                    <h2 class="pixel-font text-4xl text-cyan-300 mb-2 font-bold">TORRE:SYSTEM</h2>
+                    <p class="text-xs text-slate-400 mb-8 max-w-xs mx-auto">Despierta en lo profundo de las mazmorras cibernéticas y conquista los pisos de la torre.</p>
+                    <div class="space-y-3 w-full max-w-xs mx-auto">
+                        <button onclick="playSound('click'); game.screen='create'; render();" class="w-full bg-cyan-600 hover:bg-cyan-500 text-black font-bold py-3 rounded pixel-font text-xl tracking-wider transition shadow-lg">NUEVA PARTIDA</button>
+                    </div>
+                </div>`;
+            } else if (game.screen === 'create') {
+                let cls = AVAILABLE_CLASSES[game.player.classId];
+                main.innerHTML = `
+                <div class="w-full">
+                    <h2 class="pixel-font text-2xl text-center text-cyan-400 mb-3">CREACIÓN DE AVATAR</h2>
+                    <div class="bg-retroCard p-4 rounded-xl border border-retroBorder mb-4 pixel-border">
+                        <div class="text-center mb-3">
+                            ${renderPixelAvatar(game.player.classId, game.player.equipment, 80)}
+                            <div class="text-xs text-slate-400 mt-2">Apariencia y Clase Seleccionada</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-xs text-cyan-400 block mb-1">ELIGE TU CLASE</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                ${Object.keys(AVAILABLE_CLASSES).map(k => {
+                                    let c = AVAILABLE_CLASSES[k];
+                                    let active = game.player.classId === k ? 'border-cyan-400 bg-cyan-950/40' : 'border-slate-700 bg-retroDark';
+                                    return `<button onclick="playSound('click'); selectClass('${k}')" class="p-2 border rounded text-left ${active} hover:border-cyan-500 transition">
+                                        <div class="font-bold text-sm ${c.color}">${c.icon} ${c.name}</div>
+                                        <div class="text-[10px] text-slate-400">PV:${c.hp} ATK:${c.str}</div>
+                                    </button>`;
+                                }).join('')}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-xs text-cyan-400 block mb-1">NOMBRE / APODO</label>
+                            <input type="text" id="player-name-input" value="${game.player.name}" class="w-full bg-retroDark border border-retroBorder p-2 rounded text-cyan-300 pixel-font text-lg text-center" maxlength="15">
+                        </div>
+                    </div>
+                    <button onclick="confirmCharacter()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-black font-bold py-3 rounded pixel-font text-xl tracking-wider shadow-lg">COMENZAR ASCENSO</button>
+                </div>`;
+            } else if (game.screen === 'lobby') {
+                main.innerHTML = `
+                <div class="w-full text-center">
+                    <div class="bg-retroCard p-4 rounded-xl border border-retroBorder mb-4 pixel-border flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-14 h-14 bg-retroDark rounded border border-cyan-500 flex items-center justify-center">
+                                ${renderPixelAvatar(game.player.classId, game.player.equipment, 50)}
+                            </div>
+                            <div class="text-left">
+                                <div class="font-bold text-cyan-300">${game.player.name}</div>
+                                <div class="text-xs text-slate-400">Nv. ${game.player.level} &bull; ${AVAILABLE_CLASSES[game.player.classId].name}</div>
+                                <div class="text-xs text-yellow-400"><i class="fa-solid fa-coins"></i> ${game.player.gold} Oro</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xs text-slate-400">PISO ACTUAL</div>
+                            <div class="pixel-font text-2xl text-cyan-400">#${game.floor}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <button onclick="playSound('click'); game.screen='floor'; initFloor(); render();" class="p-4 bg-cyan-950/60 hover:bg-cyan-900/60 border border-cyan-600 rounded-xl pixel-border text-center transition">
+                            <i class="fa-solid fa-stairs text-2xl text-cyan-400 mb-1"></i>
+                            <div class="pixel-font text-lg text-cyan-300">EXPLORAR TORRE</div>
+                        </button>
+                        <button onclick="playSound('click'); game.screen='inventory'; render();" class="p-4 bg-purple-950/60 hover:bg-purple-900/60 border border-purple-600 rounded-xl pixel-border text-center transition">
+                            <i class="fa-solid fa-id-card text-2xl text-purple-400 mb-1"></i>
+                            <div class="pixel-font text-lg text-purple-300">INVENTARIO & ESTADO</div>
+                        </button>
+                        <button onclick="playSound('click'); game.screen='shop'; render();" class="p-4 bg-amber-950/60 hover:bg-amber-900/60 border border-amber-600 rounded-xl pixel-border text-center transition">
+                            <i class="fa-solid fa-store text-2xl text-amber-400 mb-1"></i>
+                            <div class="pixel-font text-lg text-amber-300">TIENDA</div>
+                        </button>
+                        <button onclick="playSound('click'); showToast('Sistema', 'Progreso guardado correctamente.');" class="p-4 bg-slate-800/60 hover:bg-slate-700/60 border border-slate-600 rounded-xl pixel-border text-center transition">
+                            <i class="fa-solid fa-floppy-disk text-2xl text-slate-300 mb-1"></i>
+                            <div class="pixel-font text-lg text-slate-200">GUARDAR</div>
+                        </button>
+                    </div>
+                </div>`;
+            } else if (game.screen === 'inventory') {
+                renderInventoryScreen(main);
+            } else if (game.screen === 'shop') {
+                renderShopScreen(main);
+            } else if (game.screen === 'floor') {
+                renderFloorScreen(main);
+            } else if (game.screen === 'combat') {
+                renderCombatScreen(main);
+            } else if (game.screen === 'npc') {
+                renderNpcScreen(main);
+            }
+        }
 
-  renderMap();
-  saveSlot(currentSlot);
+        function selectClass(cid) {
+            game.player.classId = cid;
+            let c = AVAILABLE_CLASSES[cid];
+            game.player.hp = c.hp;
+            game.player.maxHp = c.hp;
+            game.player.str = c.str;
+            game.player.spd = c.spd;
+            game.player.mag = c.mag;
+            game.player.def = c.def;
+            game.player.luck = c.luck;
+            game.player.trait = c.trait;
+            game.player.skillName = c.skillName;
+            game.player.skillCost = c.skillCost;
+            game.player.skillDesc = c.skillDesc;
+            render();
+        }
 
-  if(cell.type === 'monster'){
-    cell.type = 'empty';
-    cell.icon = '·';
-    startBattle();
-  } else if(cell.type === 'teleport'){
-    openTeleportModal();
-  } else if(cell.type === 'item'){
-    cell.type = 'empty';
-    cell.icon = '·';
-    triggerFloorEvent();
-  } else if(cell.type === 'npc'){
-    triggerNpcEvent();
-  }
-}
+        function confirmCharacter() {
+            const input = document.getElementById('player-name-input');
+            if (input && input.value.trim() !== '') {
+                game.player.name = input.value.trim();
+            }
+            playSound('victory');
+            game.screen = 'lobby';
+            render();
+        }
 
-function triggerFloorEvent(){
-  const rand = Math.random();
-  if(rand < 0.35 && game.floor >= 10){
-    const rarities = [
-      {name: "Libro de Clase Rara", rarity: "Rara", classType: "Paladín"},
-      {name: "Libro de Clase Épica", rarity: "Épica", classType: "Archimago"}
-    ];
-    const b = rarities[random(0, rarities.length - 1)];
-    game.books.push(b);
-    alert(`✨ ¡Has descubierto un ${b.name} (${b.rarity}) en el piso!`);
-  } else {
-    const goldFound = random(20, 50) * game.floor;
-    game.player.gold += goldFound;
-    alert(`📦 ¡Has abierto un cofre con ${goldFound} 🪙!`);
-  }
-  saveSlot(currentSlot);
-  checkQuests();
-}
+        function renderInventoryScreen(main) {
+            let p = game.player;
+            let cls = AVAILABLE_CLASSES[p.classId];
+            
+            main.innerHTML = `
+            <div class="w-full">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="pixel-font text-2xl text-purple-400">INVENTARIO & ESTADO</h2>
+                    <button onclick="playSound('click'); game.screen='lobby'; render();" class="bg-slate-800 hover:bg-slate-700 text-cyan-300 px-3 py-1 rounded text-xs border border-slate-600">[ VOLVER ]</button>
+                </div>
 
-function triggerNpcEvent(){
-  const npc = NPC_POOL[random(0, NPC_POOL.length - 1)];
-  alert(`💬 [${npc.name}]: "${npc.dialog}"\n\nTe obsequia 1 Poción de Vida por tu valentía.`);
-  let pot = game.inventory.find(i => i.type === 'potion');
-  if(pot) pot.count++;
-  else game.inventory.push({ id: 'potion', name: 'Poción de Vida', type: 'potion', count: 1, heal: 50, sellPrice: 15 });
-  updateExploreHUD();
-  saveSlot(currentSlot);
-}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                    <!-- Character Details & Stats & Equipment -->
+                    <div class="bg-retroCard p-3 rounded-xl border border-purple-500/50 pixel-border">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <div class="w-16 h-16 bg-retroDark rounded border border-purple-400 flex items-center justify-center">
+                                ${renderPixelAvatar(p.classId, p.equipment, 56)}
+                            </div>
+                            <div>
+                                <div class="font-bold text-cyan-300">${p.name}</div>
+                                <div class="text-xs text-purple-300">${p.title} &bull; ${cls.name}</div>
+                                <div class="text-xs text-slate-400">Nivel ${p.level} (${p.exp}/${p.maxExp} EXP)</div>
+                            </div>
+                        </div>
 
-function updateExploreHUD(){
-  $("exploreTitle").textContent = `TORRE // PISO 0${game.floor}`;
-  $("explorePlayerName").textContent = game.player.name;
-  $("exploreLevelText").textContent = `NV. ${game.player.level} (${game.player.exp}/${game.player.nextExp} EXP)`;
-  $("exploreHpText").textContent = `${game.player.hp}/${game.player.maxHp}`;
-  $("exploreHp").style.width = `${(game.player.hp / game.player.maxHp)*100}%`;
-  $("explorePotionCount").textContent = getPotionCount();
-  renderMap();
-}
+                        <!-- Full Stats & Traits -->
+                        <div class="grid grid-cols-2 gap-2 text-xs bg-retroDark p-2 rounded border border-retroBorder mb-2">
+                            <div><span class="text-slate-400">PV:</span> <span class="text-red-400">${p.hp}/${p.maxHp}</span></div>
+                            <div><span class="text-slate-400">PM:</span> <span class="text-blue-400">${p.mp}/${p.maxMp}</span></div>
+                            <div><span class="text-slate-400">Fuerza (STR):</span> <span class="text-amber-400">${p.str}</span></div>
+                            <div><span class="text-slate-400">Velocidad (SPD):</span> <span class="text-emerald-400">${p.spd}</span></div>
+                            <div><span class="text-slate-400">Magia (MAG):</span> <span class="text-cyan-400">${p.mag}</span></div>
+                            <div><span class="text-slate-400">Defensa (DEF):</span> <span class="text-purple-400">${p.def}</span></div>
+                            <div class="col-span-2"><span class="text-slate-400">Rasgo Único:</span> <span class="text-yellow-300">${p.trait}</span></div>
+                            <div class="col-span-2"><span class="text-slate-400">Habilidad:</span> <span class="text-pink-400">${p.skillName} (${p.skillCost} PM)</span></div>
+                        </div>
 
-function openTeleportModal(){
-  const container = $("floorTeleportButtons");
-  container.innerHTML = "";
-  for(let f = 1; f <= game.maxFloorReached; f++){
-    const btn = document.createElement("button");
-    btn.className = "btn primary";
-    btn.style.minHeight = "34px";
-    btn.style.fontSize = "11px";
-    btn.textContent = `PISO 0${f} ${f === game.floor ? '(Actual)' : ''}`;
-    btn.onclick = () => {
-      game.floor = f;
-      closeTeleportModal();
-      openExplore();
-    };
-    container.appendChild(btn);
-  }
-  showScreen("screenTeleport");
-}
+                        <!-- Equipped Gear -->
+                        <div class="text-xs text-slate-300 font-bold mb-1">EQUIPO ACTUAL</div>
+                        <div class="grid grid-cols-3 gap-1 text-[11px]">
+                            <div class="bg-retroDark p-1.5 rounded border border-retroBorder truncate">⚔️ Arma: ${p.equipment.weapon ? p.equipment.weapon.name : 'Ninguna'}</div>
+                            <div class="bg-retroDark p-1.5 rounded border border-retroBorder truncate">🛡️ Escudo: ${p.equipment.shield ? p.equipment.shield.name : 'Ninguno'}</div>
+                            <div class="bg-retroDark p-1.5 rounded border border-retroBorder truncate">🪖 Casco: ${p.equipment.helmet ? p.equipment.helmet.name : 'Ninguno'}</div>
+                            <div class="bg-retroDark p-1.5 rounded border border-retroBorder truncate">🛡️ Armadura: ${p.equipment.armor ? p.equipment.armor.name : 'Ninguna'}</div>
+                            <div class="bg-retroDark p-1.5 rounded border border-retroBorder truncate">👢 Botas: ${p.equipment.boots ? p.equipment.boots.name : 'Ningunas'}</div>
+                            <div class="bg-retroDark p-1.5 rounded border border-retroBorder truncate">💍 Anillo: ${p.equipment.ring ? p.equipment.ring.name : 'Ninguno'}</div>
+                        </div>
+                    </div>
 
-function closeTeleportModal(){
-  showScreen("screenExplore");
-}
+                    <!-- Backpack Grid Inventory (Potions & Monster Drops) -->
+                    <div class="bg-retroCard p-3 rounded-xl border border-retroBorder pixel-border flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-bold text-xs text-cyan-400"><i class="fa-solid fa-backpack"></i> MOCHILA / INVENTARIO</span>
+                                <span class="text-[10px] text-slate-400">${p.inventory.length}/16 Espacios</span>
+                            </div>
+                            <div class="grid grid-cols-4 gap-2 bg-retroDark p-2 rounded border border-retroBorder min-h-[220px]">
+                                ${Array.from({length: 16}).map((_, i) => {
+                                    let item = p.inventory[i];
+                                    if (item) {
+                                        return `
+                                        <div onclick="useInventoryItem(${i})" class="bg-retroCard border border-slate-700 hover:border-cyan-400 rounded p-1 flex flex-col items-center justify-center cursor-pointer relative group transition" title="${item.name}: ${item.desc}">
+                                            <span class="text-2xl">${item.icon}</span>
+                                            <span class="text-[9px] text-slate-300 truncate w-full text-center mt-1">${item.name}</span>
+                                            ${item.qty > 1 ? `<span class="absolute top-0.5 right-1 text-[9px] bg-cyan-600 text-black px-1 rounded font-bold">x${item.qty}</span>` : ''}
+                                        </div>`;
+                                    } else {
+                                        return `<div class="bg-retroCard/30 border border-dashed border-slate-800 rounded flex items-center justify-center text-slate-700 text-xs">·</div>`;
+                                    }
+                                }).join('')}
+                            </div>
+                        </div>
+                        <div class="text-[10px] text-slate-400 text-center mt-2">Haz clic en un objeto consumible para usarlo.</div>
+                    </div>
+                </div>
+            </div>`;
+        }
 
-function teleportToLobby(){
-  goToLobby();
-}
+        function useInventoryItem(index) {
+            let item = game.player.inventory[index];
+            if (!item) return;
+            if (item.type === 'potion') {
+                playSound('potion');
+                if (item.effect === 'hp') {
+                    game.player.hp = Math.min(game.player.maxHp, game.player.hp + item.val);
+                    showToast('Objeto Usado', `Has restaurado ${item.val} PV.`);
+                } else if (item.effect === 'mp') {
+                    game.player.mp = Math.min(game.player.maxMp, game.player.mp + item.val);
+                    showToast('Objeto Usado', `Has restaurado ${item.val} PM.`);
+                } else if (item.effect === 'str') {
+                    game.player.str += item.val;
+                    showToast('Objeto Usado', `¡Tu fuerza aumentó temporalmente en +${item.val}!`);
+                }
+                item.qty--;
+                if (item.qty <= 0) {
+                    game.player.inventory.splice(index, 1);
+                }
+                render();
+            } else {
+                showToast('Aviso', 'Este objeto no se puede consumir directamente aquí. Equípalo en combate o desde el menú.');
+            }
+        }
 
-/* COMBATE TÁCTICO AVANZADO */
-function startBattle(){
-  let availableMonsters = MONSTER_POOL.filter(m => game.floor >= m.minFloor && game.floor <= m.maxFloor);
-  if(availableMonsters.length === 0) availableMonsters = MONSTER_POOL;
-  const tmpl = availableMonsters[random(0, availableMonsters.length - 1)];
+        function renderShopScreen(main) {
+            main.innerHTML = `
+            <div class="w-full">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="pixel-font text-2xl text-amber-400">TIENDA DE LA TORRE</h2>
+                    <div class="text-xs text-yellow-400 font-bold"><i class="fa-solid fa-coins"></i> ${game.player.gold} Oro</div>
+                </div>
 
-  let isBoss = (game.floor % 5 === 0);
-  game.enemy = {
-    name: isBoss ? `Señor Supremo Piso ${game.floor}` : tmpl.name,
-    icon: isBoss ? "👑" : tmpl.icon,
-    skinBg: isBoss ? "radial-gradient(circle at 50% 30%, #3a1038 0%, #0e0416 70%)" : tmpl.skinBg,
-    borderColor: isBoss ? "#9b59b6" : tmpl.borderColor,
-    avatarBg: isBoss ? "linear-gradient(135deg, #e74c3c, #8e44ad)" : tmpl.avatarBg,
-    shape: isBoss ? "50%" : tmpl.shape,
-    level: game.floor,
-    maxHp: (isBoss ? 150 : 60) + (game.floor * 25),
-    hp: (isBoss ? 150 : 60) + (game.floor * 25),
-    attack: (isBoss ? 18 : 12) + (game.floor * 5),
-    defense: 3 + Math.floor(game.floor / 2)
-  };
+                <div class="bg-retroCard p-3 rounded-xl border border-amber-500/50 pixel-border mb-3">
+                    <div class="text-xs text-slate-400 mb-2">Adquiere suministros y equipamiento para sobrevivir a los pisos superiores.</div>
+                    <div class="space-y-2 max-h-[300px] overflow-y-auto pr-1">
+                        ${SHOP_ITEMS.map((item, idx) => `
+                        <div class="flex items-center justify-between bg-retroDark p-2.5 rounded border border-retroBorder hover:border-amber-500 transition">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-2xl">${item.icon}</span>
+                                <div>
+                                    <div class="font-bold text-xs text-amber-200">${item.name}</div>
+                                    <div class="text-[10px] text-slate-400">${item.desc}</div>
+                                    <div class="text-[10px] text-yellow-400 font-bold">${item.price} Oro</div>
+                                </div>
+                            </div>
+                            <button onclick="buyItem(${idx})" class="bg-amber-600 hover:bg-amber-500 text-black px-3 py-1 rounded text-xs font-bold pixel-font">COMPRAR</button>
+                        </div>`).join('')}
+                    </div>
+                </div>
 
-  game.turn = 1;
-  game.battleActive = true;
-  game.player.defending = false;
-  game.player.block = false;
+                <button onclick="playSound('click'); game.screen='lobby'; render();" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold py-2 rounded pixel-font text-lg tracking-wider border border-slate-600">[ VOLVER AL LOBBY ]</button>
+            </div>`;
+        }
 
-  $("enemyName").textContent = game.enemy.name.toUpperCase();
-  $("enemyName").style.color = game.enemy.borderColor;
-  $("enemyLevel").textContent = `NV. ${game.enemy.level}`;
+        function buyItem(idx) {
+            let item = SHOP_ITEMS[idx];
+            if (game.player.gold >= item.price) {
+                game.player.gold -= item.price;
+                playSound('victory');
+                
+                // If it's equipment, auto-equip or add to inventory
+                if (item.type === 'weapon' || item.type === 'armor') {
+                    // Check if it's armor slot
+                    let slot = item.slot || 'armor';
+                    if (item.type === 'weapon') slot = 'weapon';
+                    
+                    // Equip directly or replace
+                    game.player.equipment[slot] = item;
+                    // Apply stats
+                    if (item.atk) game.player.str += item.atk;
+                    if (item.def) game.player.def += item.def;
+                    if (item.spd) game.player.spd += item.spd;
+                    showToast('¡Compra Exitosa!', `Has comprado y equipado: ${item.name}`);
+                } else {
+                    // Add potion to inventory
+                    let existing = game.player.inventory.find(i => i.id === item.id);
+                    if (existing) {
+                        existing.qty++;
+                    } else {
+                        if (game.player.inventory.length >= 16) {
+                            showToast('Mochila Llena', 'No tienes espacio en la mochila.');
+                            game.player.gold += item.price; // refund
+                            return;
+                        }
+                        game.player.inventory.push({ ...item, qty: 1 });
+                    }
+                    showToast('¡Compra Exitosa!', `Has adquirido ${item.name}`);
+                }
+                render();
+            } else {
+                showToast('Fondos Insuficientes', 'No tienes suficiente oro para comprar este objeto.');
+            }
+        }
 
-  const sceneBox = $("battleSceneBox");
-  sceneBox.style.background = game.enemy.skinBg;
-  sceneBox.style.borderColor = game.enemy.borderColor;
+        function initFloor() {
+            game.grid = [];
+            // 7x7 grid generation
+            for(let y=0; y<7; y++) {
+                let row = [];
+                for(let x=0; x<7; x++) {
+                    row.push({ type: 'empty', explored: false });
+                }
+                game.grid.push(row);
+            }
+            game.playerPos = { x: 3, y: 6 };
+            game.grid[6][3].explored = true;
+            game.grid[6][3].type = 'start';
+            
+            // Place exit stairs at top
+            let exitX = Math.floor(Math.random() * 7);
+            game.grid[0][exitX].type = 'exit';
 
-  const avatarEl = $("enemyAvatar");
-  avatarEl.textContent = game.enemy.icon;
-  avatarEl.style.background = game.enemy.avatarBg;
-  avatarEl.style.borderRadius = game.enemy.shape;
-  avatarEl.style.border = `2px solid ${game.enemy.borderColor}`;
+            // Place random encounters / chests
+            for(let y=1; y<6; y++) {
+                for(let x=0; x<7; x++) {
+                    let r = Math.random();
+                    if (r < 0.25) game.grid[y][x].type = 'monster';
+                    else if (r < 0.35) game.grid[y][x].type = 'chest';
+                }
+            }
+        }
 
-  $("battlePlayerName").textContent = game.player.name;
-  $("combatLog").innerHTML = "";
+        function renderFloorScreen(main) {
+            main.innerHTML = `
+            <div class="w-full flex flex-col items-center">
+                <!-- Top HUD -->
+                <div class="w-full flex justify-between items-center bg-retroCard p-2.5 rounded-xl border border-retroBorder mb-2 pixel-border">
+                    <div>
+                        <div class="pixel-font text-cyan-400 text-lg">TORRE // PISO ${game.floor}</div>
+                        <div class="text-[10px] text-slate-400">PV: ${game.player.hp}/${game.player.maxHp}</div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="playSound('click'); game.screen='inventory'; render();" class="bg-purple-900/60 border border-purple-500 px-3 py-1 rounded text-xs text-purple-300 font-bold flex items-center space-x-1">
+                            <i class="fa-solid fa-backpack"></i> <span class="hidden sm:inline">Mochila</span>
+                        </button>
+                        <button onclick="playSound('click'); game.screen='lobby'; render();" class="bg-slate-800 border border-slate-600 px-3 py-1 rounded text-xs text-slate-300">[ LOBBY ]</button>
+                    </div>
+                </div>
 
-  logCombat(`¡Un ${game.enemy.name} salvaje apareció en el piso!`, "info");
-  updateBattleHUD();
-  showScreen("screenBattle");
-}
+                <!-- 7x7 Grid View -->
+                <div class="bg-retroCard p-3 rounded-xl border border-retroBorder pixel-border mb-3">
+                    <div class="grid grid-cols-7 gap-1.5 w-[280px] h-[280px]">
+                        ${game.grid.map((row, y) => row.map((cell, x) => {
+                            let isPlayer = (game.playerPos.x === x && game.playerPos.y === y);
+                            let bg = 'bg-retroDark border-slate-800';
+                            let icon = '';
+                            if (isPlayer) {
+                                bg = 'bg-cyan-950 border-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.5)]';
+                                icon = '<span class="text-xs">🧙‍♂️</span>';
+                            } else if (cell.type === 'exit') {
+                                bg = 'bg-amber-950/60 border-amber-500';
+                                icon = '<span class="text-xs">🚪</span>';
+                            } else if (cell.type === 'chest') {
+                                bg = 'bg-yellow-950/40 border-yellow-600';
+                                icon = '<span class="text-xs">📦</span>';
+                            } else if (cell.type === 'monster') {
+                                bg = 'bg-red-950/30 border-red-800';
+                                icon = '<span class="text-xs">👾</span>';
+                            }
+                            return `<div class="border rounded flex items-center justify-center ${bg} transition">${icon}</div>`;
+                        }).join('')).join('')}
+                    </div>
+                </div>
 
-function updateBattleHUD(){
-  $("battleHpText").textContent = `${game.player.hp}/${game.player.maxHp}`;
-  $("battleHp").style.width = `${clamp(game.player.hp/game.player.maxHp*100, 0, 100)}%`;
-  $("enemyHpText").textContent = `${game.enemy.hp}/${game.enemy.maxHp}`;
-  $("enemyHp").style.width = `${clamp(game.enemy.hp/game.enemy.maxHp*100, 0, 100)}%`;
-  $("turnText").textContent = `TURNO ${game.turn}`;
-  $("battlePotionCount").textContent = getPotionCount();
-}
+                <!-- Repositioned D-Pad & Backpack Quick Button Layout -->
+                <div class="w-full flex items-center justify-between px-4">
+                    <!-- Backpack Quick Button on the left side of D-Pad area -->
+                    <button onclick="playSound('click'); game.screen='inventory'; render();" class="w-16 h-16 bg-purple-900/80 hover:bg-purple-800 border-2 border-purple-400 rounded-xl flex flex-col items-center justify-center shadow-lg active:scale-95 transition" title="Mochila / Inventario">
+                        <i class="fa-solid fa-backpack text-purple-200 text-xl mb-0.5"></i>
+                        <span class="text-[9px] text-purple-200 pixel-font">MOCHILA</span>
+                    </button>
 
-function logCombat(text, type=""){
-  const logBox = $("combatLog");
-  const p = document.createElement("p");
-  if(type) p.className = type;
-  p.textContent = "> " + text;
-  logBox.appendChild(p);
-  logBox.scrollTop = logBox.scrollHeight;
-}
+                    <!-- D-Pad moved towards left/center -->
+                    <div class="grid grid-cols-3 gap-1 w-36 h-36 bg-retroCard p-2 rounded-xl border border-retroBorder pixel-border shadow-xl">
+                        <div></div>
+                        <button onclick="movePlayer(0, -1)" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded flex items-center justify-center text-cyan-400 active:bg-cyan-600 active:text-black"><i class="fa-solid fa-arrow-up"></i></button>
+                        <div></div>
+                        <button onclick="movePlayer(-1, 0)" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded flex items-center justify-center text-cyan-400 active:bg-cyan-600 active:text-black"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="bg-retroDark rounded flex items-center justify-center text-cyan-500 text-xs">·</div>
+                        <button onclick="movePlayer(1, 0)" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded flex items-center justify-center text-cyan-400 active:bg-cyan-600 active:text-black"><i class="fa-solid fa-arrow-right"></i></button>
+                        <div></div>
+                        <button onclick="movePlayer(0, 1)" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded flex items-center justify-center text-cyan-400 active:bg-cyan-600 active:text-black"><i class="fa-solid fa-arrow-down"></i></button>
+                        <div></div>
+                    </div>
+                </div>
+                <div class="text-[10px] text-slate-500 mt-2">Usa el D-Pad para navegar o abre la mochila izquierda.</div>
+            </div>`;
+        }
 
-function basicAttack(){
-  if(!game.battleActive) return;
-  const p = game.player;
-  const e = game.enemy;
-  let totalAtk = getPlayerTotalAttack();
-  let dmg = Math.max(1, (totalAtk + random(0, 6)) - e.defense);
-  e.hp = Math.max(0, e.hp - dmg);
-  logCombat(`Atacas y causas ${dmg} de daño.`, "good");
-  floatingDamage(dmg, false);
+        function movePlayer(dx, dy) {
+            let nx = game.playerPos.x + dx;
+            let ny = game.playerPos.y + dy;
+            if (nx < 0 || nx > 6 || ny < 0 || ny > 6) return;
+            
+            game.playerPos.x = nx;
+            game.playerPos.y = ny;
+            let cell = game.grid[ny][nx];
 
-  updateBattleHUD();
-  if(e.hp <= 0){ winBattle(); return; }
-  enemyTurn();
-}
+            if (cell.type === 'exit') {
+                playSound('victory');
+                game.floor++;
+                
+                // Check if NPC appears every 10 floors (Floor 10, 20, 30...)
+                if (game.floor % 10 === 0) {
+                    triggerRandomNpc();
+                } else {
+                    showToast('¡Piso Superado!', `Has ascendido al Piso ${game.floor}`);
+                    initFloor();
+                }
+                render();
+                return;
+            } else if (cell.type === 'monster') {
+                cell.type = 'empty';
+                startCombat();
+                return;
+            } else if (cell.type === 'chest') {
+                cell.type = 'empty';
+                let goldFound = 30 + Math.floor(Math.random() * 40);
+                game.player.gold += goldFound;
+                playSound('victory');
+                showToast('¡Cofre Encontrado!', `Has obtenido ${goldFound} monedas de oro.`);
+            }
+            render();
+        }
 
-function useSkill(){
-  if(!game.battleActive) return;
-  const p = game.player;
-  const e = game.enemy;
-  let totalAtk = getPlayerTotalAttack();
-  let dmg = Math.max(1, (totalAtk * 2.4 + game.skillLevel * 6) - e.defense);
-  e.hp = Math.max(0, e.hp - dmg);
-  logCombat(`¡Ejecutas Habilidad Especial! Causas ${dmg} de daño crítico.`, "good");
-  floatingDamage(dmg, false);
+        const NPC_POOL = [
+            { name: 'Vendedor Errante Zeno', dialogue: '¡Saludos viajero! He recorrido 50 pisos de esta maldita torre. ¿Buscas un trato especial antes de continuar?', offerType: 'heal', cost: 50 },
+            { name: 'Oráculo de la Torre', dialogue: 'El destino de este nivel está escrito en código binario. Te otorgaré sabiduría y bendición por tu valentía.', offerType: 'buff', cost: 40 },
+            { name: 'Herrero Legendario Vane', dialogue: 'Tus armas muestran desgaste. Puedo afilar tu espada con acero cuántico si tienes algo de oro.', offerType: 'upgrade', cost: 70 }
+        ];
 
-  updateBattleHUD();
-  if(e.hp <= 0){ winBattle(); return; }
-  enemyTurn();
-}
+        function triggerRandomNpc() {
+            let randomNpc = NPC_POOL[Math.floor(Math.random() * NPC_POOL.length)];
+            game.npc = randomNpc;
+            game.screen = 'npc';
+        }
 
-function defend(){
-  if(!game.battleActive) return;
-  game.player.defending = true;
-  logCombat("Adoptas postura defensiva para mitigar daño.", "info");
-  enemyTurn();
-}
+        function renderNpcScreen(main) {
+            let npc = game.npc;
+            main.innerHTML = `
+            <div class="w-full text-center">
+                <div class="bg-retroCard p-5 rounded-xl border border-cyan-500 pixel-border mb-4">
+                    <div class="w-20 h-20 bg-retroDark rounded-full border-2 border-cyan-400 mx-auto flex items-center justify-center mb-3 text-3xl shadow-[0_0_15px_rgba(6,182,212,0.4)]">
+                        🧙‍♂️
+                    </div>
+                    <div class="pixel-font text-xl text-cyan-300 mb-1">${npc.name}</div>
+                    <div class="text-xs text-slate-300 bg-retroDark p-3 rounded border border-retroBorder italic mb-4">"${npc.dialogue}"</div>
+                    
+                    <div class="space-y-2">
+                        <button onclick="interactNpc('accept')" class="w-full bg-cyan-600 hover:bg-cyan-500 text-black font-bold py-2.5 rounded pixel-font text-lg">ACEPTAR INTERACCIÓN (${npc.cost} Oro)</button>
+                        <button onclick="interactNpc('leave')" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2 rounded pixel-font text-base border border-slate-600">CONTINUAR ASCENSO</button>
+                    </div>
+                </div>
+            </div>`;
+        }
 
-function enemyTurn(){
-  if(!game.battleActive) return;
-  const p = game.player;
-  const e = game.enemy;
+        function interactNpc(action) {
+            if (action === 'accept') {
+                if (game.player.gold >= game.npc.cost) {
+                    game.player.gold -= game.npc.cost;
+                    playSound('victory');
+                    if (game.npc.offerType === 'heal') {
+                        game.player.hp = game.player.maxHp;
+                        showToast('Bendición', '¡Salud completamente restaurada!');
+                    } else if (game.npc.offerType === 'buff') {
+                        game.player.str += 5;
+                        game.player.def += 5;
+                        showToast('Bendición', '¡Tus estadísticas de Fuerza y Defensa aumentaron permanentemente!');
+                    } else if (game.npc.offerType === 'upgrade') {
+                        game.player.str += 10;
+                        showToast('Mejora Épica', '¡Tu equipo fue mejorado! +10 Fuerza.');
+                    }
+                } else {
+                    showToast('Falta de Oro', 'No tienes suficiente oro para aceptar esta oferta.');
+                    return;
+                }
+            }
+            game.screen = 'floor';
+            initFloor();
+            render();
+        }
 
-  setTimeout(() => {
-    if(Math.random() < p.dodge){
-      logCombat("¡Esquivas el ataque enemigo con agilidad!", "good");
-      finishTurn();
-      return;
-    }
-    let totalDef = getPlayerTotalDefense();
-    let dmg = Math.max(1, e.attack - (p.defending ? totalDef + 8 : totalDef));
-    p.defending = false;
-    p.hp = Math.max(0, p.hp - dmg);
-    logCombat(`El ${e.name} te ataca e inflige ${dmg} de daño.`, "bad");
-    floatingDamage(dmg, true);
-    updateBattleHUD();
+        function startCombat() {
+            let template = MONSTER_TYPES[Math.floor(Math.random() * MONSTER_TYPES.length)];
+            let enemyLevel = Math.max(1, game.floor - Math.floor(Math.random() * 2));
+            game.enemy = {
+                name: template.name,
+                type: template.type,
+                level: enemyLevel,
+                hp: template.hp + (enemyLevel * 15),
+                maxHp: template.hp + (enemyLevel * 15),
+                atk: template.atk + (enemyLevel * 3),
+                def: template.def + enemyLevel,
+                exp: template.exp * enemyLevel,
+                gold: template.gold * enemyLevel,
+                drop: template.drop
+            };
+            game.combatTurn = 1;
+            game.screen = 'combat';
+            playSound('hit');
+            render();
+        }
 
-    if(p.hp <= 0){ loseBattle(); return; }
-    finishTurn();
-  }, 500);
-}
+        function renderCombatScreen(main) {
+            let e = game.enemy;
+            let p = game.player;
+            let hpPct = Math.max(0, Math.min(100, (p.hp / p.maxHp) * 100));
+            let enemyHpPct = Math.max(0, Math.min(100, (e.hp / e.maxHp) * 100));
 
-function finishTurn(){
-  game.turn++;
-  updateBattleHUD();
-}
+            main.innerHTML = `
+            <div class="w-full">
+                <div class="flex justify-between items-center mb-2">
+                    <div class="pixel-font text-red-400 text-lg">COMBATE TÁCTICO</div>
+                    <div class="text-xs text-yellow-400 font-bold">TURNO ${game.combatTurn}</div>
+                </div>
 
-function winBattle(){
-  game.battleActive = false;
-  const expGain = 50 * game.floor;
-  const goldGain = 30 * game.floor;
-  game.player.exp += expGain;
-  game.player.gold += goldGain;
+                <!-- Player Health Bar -->
+                <div class="bg-retroCard p-2.5 rounded-xl border border-retroBorder mb-2 pixel-border">
+                    <div class="flex justify-between text-xs mb-1">
+                        <span class="text-cyan-300 font-bold">${p.name}</span>
+                        <span class="text-red-400">${p.hp}/${p.maxHp} PV</span>
+                    </div>
+                    <div class="w-full bg-retroDark h-2 rounded overflow-hidden border border-slate-700">
+                        <div class="bg-red-500 h-full transition-all duration-300" style="width: ${hpPct}%"></div>
+                    </div>
+                </div>
 
-  const lootTable = ["Jalea Esencial", "Colmillo de Bestia", "Núcleo Energético"];
-  const droppedName = lootTable[random(0, lootTable.length - 1)];
-  let existingItem = game.materials.find(i => i.name === droppedName);
-  if(existingItem) existingItem.count++;
-  else game.materials.push({name: droppedName, count: 1, sellPrice: 20 * game.floor});
+                <!-- Enemy Card with Pixel Art -->
+                <div class="bg-retroCard p-4 rounded-xl border border-red-500/50 pixel-border text-center mb-3">
+                    <div class="mb-2">
+                        ${renderPixelMonster(e.type, 90)}
+                    </div>
+                    <div class="pixel-font text-xl text-amber-300 font-bold">${e.name}</div>
+                    <div class="text-[10px] text-slate-400 mb-2">Nv. ${e.level}</div>
+                    <div class="flex justify-between text-[10px] text-slate-400 mb-1">
+                        <span>PV ENEMIGO</span>
+                        <span class="text-red-400">${e.hp}/${e.maxHp}</span>
+                    </div>
+                    <div class="w-full bg-retroDark h-2 rounded overflow-hidden border border-slate-700">
+                        <div class="bg-red-600 h-full transition-all duration-300" style="width: ${enemyHpPct}%"></div>
+                    </div>
+                </div>
 
-  if(Math.random() < 0.18){
-    game.books.push({name: "Libro de Clase Rara", rarity: "Rara", classType: "Paladín"});
-    logCombat("¡El enemigo dejó caer un Libro de Clase Rara!", "systemlog");
-  }
+                <!-- Action Buttons -->
+                <div class="grid grid-cols-2 gap-2 mb-2">
+                    <button onclick="combatAction('attack')" class="bg-red-950/80 hover:bg-red-900 border border-red-600 text-red-300 font-bold py-3 rounded pixel-font text-lg transition shadow-lg">⚔️ ATACAR</button>
+                    <button onclick="combatAction('skill')" class="bg-purple-950/80 hover:bg-purple-900 border border-purple-600 text-purple-300 font-bold py-3 rounded pixel-font text-lg transition shadow-lg">⚡ HABILIDAD</button>
+                    <button onclick="combatAction('potion')" class="bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-600 text-emerald-300 font-bold py-3 rounded pixel-font text-lg transition shadow-lg">🔴 POCIÓN</button>
+                    <button onclick="combatAction('defend')" class="bg-blue-950/80 hover:bg-blue-900 border border-blue-600 text-blue-300 font-bold py-3 rounded pixel-font text-lg transition shadow-lg">🛡️ DEFENDER</button>
+                </div>
+            </div>`;
+        }
 
-  let levelUpMsg = "";
-  if(game.player.exp >= game.player.nextExp){
-    game.player.level++;
-    game.player.skillPoints += 2;
-    game.player.exp = 0;
-    game.player.nextExp = Math.floor(game.player.nextExp * 1.35);
-    game.player.maxHp += 25;
-    game.player.hp = game.player.maxHp;
-    levelUpMsg = `\n🌟 ¡SUBISTE AL NIVEL ${game.player.level}! (+2 SP)`;
-  }
+        function combatAction(action) {
+            let p = game.player;
+            let e = game.enemy;
 
-  if(game.floor === game.maxFloorReached){
-    game.maxFloorReached = Math.min(100, game.maxFloorReached + 1);
-  }
+            if (action === 'attack') {
+                let damage = Math.max(5, p.str - Math.floor(e.def / 2) + Math.floor(Math.random() * 6));
+                e.hp -= damage;
+                playSound('hit');
+                showToast('Ataque', `Infliges ${damage} de daño a ${e.name}.`);
+            } else if (action === 'skill') {
+                if (p.mp >= p.skillCost) {
+                    p.mp -= p.skillCost;
+                    let damage = Math.max(12, (p.str * 1.5) - e.def + Math.floor(Math.random() * 10));
+                    e.hp -= damage;
+                    playSound('victory');
+                    showToast('Habilidad Táctica', `¡${p.skillName}! Infliges ${damage} de daño.`);
+                } else {
+                    showToast('Mana Insuficiente', 'No tienes suficiente PM para usar esta habilidad.');
+                    return;
+                }
+            } else if (action === 'potion') {
+                let pot = p.inventory.find(i => i.id === 'pot_hp');
+                if (pot && pot.qty > 0) {
+                    playSound('potion');
+                    p.hp = Math.min(p.maxHp, p.hp + 50);
+                    pot.qty--;
+                    if (pot.qty <= 0) p.inventory = p.inventory.filter(i => i.id !== 'pot_hp');
+                    showToast('Poción', 'Has consumido una Poción de Vida (+50 PV).');
+                } else {
+                    showToast('Sin Pociones', 'No te quedan pociones de vida en la mochila.');
+                    return;
+                }
+            } else if (action === 'defend') {
+                playSound('click');
+                showToast('Defensa', 'Adoptas postura defensiva reduciendo el daño entrante.');
+            }
 
-  saveSlot(currentSlot);
-  checkQuests();
+            // Check if enemy defeated
+            if (e.hp <= 0) {
+                playSound('victory');
+                p.exp += e.exp;
+                p.gold += e.gold;
+                
+                // Add monster drop to inventory
+                let dropItem = { id: 'drop_' + Date.now(), name: e.drop, type: 'material', qty: 1, icon: '💎', desc: 'Objeto obtenido tras derrotar a un monstruo.' };
+                let existing = p.inventory.find(i => i.name === e.drop);
+                if (existing) existing.qty++;
+                else if (p.inventory.length < 16) p.inventory.push(dropItem);
 
-  $("victoryRewardText").innerHTML = `
-    Has superado el combate.<br>
-    • EXP: +${expGain}<br>
-    • Oro: +${goldGain} 🪙<br>
-    • Botín: <b>1x ${droppedName}</b>
-    ${levelUpMsg}
-  `;
-  showScreen("screenVictory");
-}
+                // Level up check
+                if (p.exp >= p.maxExp) {
+                    p.level++;
+                    p.exp = 0;
+                    p.maxExp = Math.floor(p.maxExp * 1.3);
+                    p.maxHp += 25;
+                    p.hp = p.maxHp;
+                    p.maxMp += 15;
+                    p.mp = p.maxMp;
+                    p.str += 4;
+                    p.spd += 3;
+                    showToast('¡SUBES DE NIVEL!', `¡Has alcanzado el Nivel ${p.level}! Estadísticas mejoradas.`);
+                } else {
+                    showToast('¡Victoria!', `Has derrotado a ${e.name}. Obtienes ${e.exp} EXP y ${e.gold} Oro.`);
+                }
 
-function loseBattle(){
-  game.battleActive = false;
-  alert("Has sido derrotado en combate.\nEl Sistema te devuelve al Lobby para recuperarte.");
-  game.player.hp = Math.ceil(game.player.maxHp * 0.5);
-  goToLobby();
-}
+                game.screen = 'floor';
+                render();
+                return;
+            }
 
-function fleeBattle(){
-  if(!game.battleActive) return;
-  if(Math.random() < 0.75){
-    game.battleActive = false;
-    alert("Has escapado con éxito.");
-    openExplore();
-  } else {
-    logCombat("¡Fallo al intentar huir!", "bad");
-    enemyTurn();
-  }
-}
+            // Enemy Counter-attack
+            let enemyDmg = Math.max(3, e.atk - Math.floor(p.def / 2) + Math.floor(Math.random() * 4));
+            if (action === 'defend') enemyDmg = Math.floor(enemyDmg * 0.5);
+            p.hp -= enemyDmg;
+            game.combatTurn++;
 
-function returnToExploreMap(){
-  openExplore();
-}
+            if (p.hp <= 0) {
+                playSound('hit');
+                showToast('Derrota', 'Has caído en combate. Regresando al lobby...');
+                p.hp = Math.floor(p.maxHp * 0.5);
+                game.screen = 'lobby';
+                render();
+                return;
+            }
 
-function floatingDamage(amount, onPlayer){
-  const scene = document.querySelector(".battle-scene");
-  if(!scene) return;
-  const d = document.createElement("div");
-  d.className = "damage";
-  d.textContent = "-" + amount;
-  d.style.left = onPlayer ? "28%" : "68%";
-  d.style.top = "42%";
-  scene.appendChild(d);
-  setTimeout(() => d.remove(), 600);
-}
-</script>
+            render();
+        }
 
-<!-- Script para registrar el Service Worker (Habilita PWA / Offline) -->
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('Service Worker registrado con éxito:', reg.scope))
-        .catch(err => console.log('Error al registrar el Service Worker:', err));
-    });
-  }
-</script>
+        // Toast Helpers
+        function showToast(title, msg) {
+            document.getElementById('toast-title').innerText = title;
+            document.getElementById('toast-msg').innerText = msg;
+            document.getElementById('toast-modal').classList.remove('hidden');
+        }
 
+        function closeToast() {
+            document.getElementById('toast-modal').classList.add('hidden');
+            render();
+        }
+
+        // Run on load
+        window.onload = function() {
+            initGame();
+        };
+    </script>
 </body>
 </html>
