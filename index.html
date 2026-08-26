@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TORRE:SYSTEM // ULTIMATE PIXEL EDITION V8</title>
+    <title>TORRE:SYSTEM // ULTIMATE PIXEL EDITION V9</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -28,7 +28,7 @@
             }
         }
     </script>
-    <!-- FontAwesome for icons -->
+    <!-- FontAwesome icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
@@ -69,8 +69,8 @@
         
         <!-- HEADER -->
         <header id="header-container" class="text-center py-2 border-b border-retroBorder mb-3">
-            <h1 class="pixel-font text-3xl md:text-4xl text-cyan-400 font-bold tracking-widest drop-shadow-[0_0_10px_rgba(6,182,212,0.6)]">TORRE:SYSTEM // V8.0</h1>
-            <p id="sub-header" class="text-xs text-slate-400 tracking-wider">SISTEMA TÁCTICO DE SUPERVIVENCIA EN TORRES</p>
+            <h1 class="pixel-font text-3xl md:text-4xl text-cyan-400 font-bold tracking-widest drop-shadow-[0_0_10px_rgba(6,182,212,0.6)]">TORRE:SYSTEM // V9.0</h1>
+            <p id="sub-header" class="text-xs text-slate-400 tracking-wider">EXPEDICIÓN PÍXEL TÁCTICA Y FORJA DE HÉROES</p>
         </header>
 
         <!-- DYNAMIC SCREEN CONTAINER -->
@@ -80,16 +80,30 @@
 
         <!-- FOOTER -->
         <footer class="text-center py-2 text-[10px] text-slate-500 border-t border-retroBorder/50 mt-2">
-            TORRE:SYSTEM ULTIMATE PIXEL EDITION &bull; ENGINE V8.0
+            TORRE:SYSTEM ULTIMATE PIXEL EDITION &bull; ENGINE V9.0
         </footer>
     </div>
 
-    <!-- NOTIFICATION MODAL (Replaces alert()) -->
+    <!-- NOTIFICATION MODAL -->
     <div id="toast-modal" class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 hidden">
         <div class="bg-retroCard border-2 border-retroBorder p-5 rounded max-w-sm w-full text-center pixel-card shadow-2xl">
             <h3 id="toast-title" class="pixel-font text-2xl text-yellow-400 mb-2">NOTIFICACIÓN</h3>
             <p id="toast-msg" class="text-sm text-slate-300 mb-4">Mensaje del sistema...</p>
             <button onclick="closeToast()" class="bg-cyan-600 hover:bg-cyan-500 text-black font-bold px-6 py-2 rounded pixel-font text-lg tracking-wider pixel-btn">ACEPTAR</button>
+        </div>
+    </div>
+
+    <!-- STAIRS MODAL -->
+    <div id="stairs-modal" class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 hidden">
+        <div class="bg-retroCard border-2 border-cyan-500/80 p-5 rounded max-w-sm w-full text-center pixel-card shadow-2xl space-y-3">
+            <h3 class="pixel-font text-2xl text-cyan-400">ESCALERAS DE LA TORRE</h3>
+            <p class="text-xs text-slate-300">Has alcanzado un acceso entre niveles. ¿Qué acción deseas realizar?</p>
+            <div class="space-y-2 pt-2">
+                <button onclick="confirmStairsAction('up')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-black font-bold py-2.5 rounded pixel-font text-lg pixel-btn">⬆️ SUBIR DE PISO</button>
+                <button id="btn-stairs-down" onclick="confirmStairsAction('down')" class="w-full bg-blue-600 hover:bg-blue-500 text-black font-bold py-2.5 rounded pixel-font text-lg pixel-btn">⬇️ BAJAR DE PISO</button>
+                <button onclick="confirmStairsAction('lobby')" class="w-full bg-amber-600 hover:bg-amber-500 text-black font-bold py-2.5 rounded pixel-font text-lg pixel-btn">🏰 REGRESAR AL LOBBY</button>
+                <button onclick="closeStairsModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2 rounded pixel-font text-sm pixel-btn">PERMANECER AQUÍ</button>
+            </div>
         </div>
     </div>
 
@@ -102,8 +116,22 @@
         </div>
     </div>
 
-    <!-- MAIN GAME SCRIPT -->
+    <!-- NPC DIALOG MODAL -->
+    <div id="npc-modal" class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 hidden">
+        <div class="bg-retroCard border-2 border-cyan-500/80 p-5 rounded max-w-md w-full text-center pixel-card shadow-2xl space-y-3">
+            <div id="npc-avatar-container" class="text-5xl mb-1">🧙‍♂️</div>
+            <h3 id="npc-name" class="pixel-font text-2xl text-cyan-300">NPC VIAJERO</h3>
+            <p id="npc-dialog" class="text-xs text-slate-300 bg-slate-900 p-3 rounded border border-slate-700 leading-relaxed text-left">
+                "¡Ah, un explorador! Toma este regalo para ayudarte en tu travesía."
+            </p>
+            <div id="npc-actions" class="flex space-x-2 pt-2">
+                <button onclick="closeNpcModal()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-black font-bold py-2 rounded pixel-font text-lg pixel-btn">CONTINUAR</button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // WEB AUDIO API SOUND SYSTEM
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playSound(type) {
             if (!audioCtx) return;
@@ -163,10 +191,102 @@
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
                 osc.start(now);
                 osc.stop(now + 0.4);
+            } else if (type === 'craft') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(520, now);
+                osc.frequency.exponentialRampToValueAtTime(1040, now + 0.25);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+                osc.start(now);
+                osc.stop(now + 0.25);
             }
         }
 
-        // Available Advanced Classes (Unlocked at Church after Floor 10 & Level 10 with Class Book)
+        // DYNAMIC PIXEL HERO PAPERDOLL GRAPHIC GENERATOR
+        function generateHeroAvatarSVG(equipment, classId = 'adventurer', size = 80) {
+            const hasHelmet = equipment && equipment.helmet;
+            const hasArmor = equipment && equipment.armor;
+            const hasWeapon = equipment && equipment.weapon;
+            const hasShield = equipment && equipment.boots; // boots or shield slot
+
+            let helmetSVG = hasHelmet ? `<rect x="30" y="8" width="20" height="12" fill="#94a3b8"/><rect x="34" y="14" width="12" height="4" fill="#1e293b"/>` : `<rect x="32" y="8" width="16" height="8" fill="#d97706"/>`;
+            let armorSVG = hasArmor ? `<rect x="26" y="28" width="28" height="22" fill="#475569"/><rect x="32" y="32" width="16" height="14" fill="#cbd5e1"/>` : `<rect x="28" y="28" width="24" height="22" fill="#2563eb"/>`;
+            let weaponSVG = hasWeapon ? `<rect x="56" y="16" width="6" height="30" fill="#e2e8f0"/><rect x="53" y="38" width="12" height="4" fill="#b45309"/>` : `<rect x="56" y="26" width="4" height="20" fill="#78350f"/>`;
+            let shieldSVG = hasShield ? `<path d="M16 28 L24 28 L24 46 L20 50 L16 46 Z" fill="#b91c1c" stroke="#fef08a" stroke-width="2"/>` : ``;
+
+            return `
+                <svg width="${size}" height="${size}" viewBox="0 0 80 80" class="inline-block drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)]">
+                    <!-- Base Shadow -->
+                    <ellipse cx="40" cy="72" rx="22" ry="6" fill="#000000" opacity="0.6"/>
+                    <!-- Legs -->
+                    <rect x="30" y="50" width="8" height="18" fill="#1e293b"/>
+                    <rect x="42" y="50" width="8" height="18" fill="#1e293b"/>
+                    <rect x="28" y="64" width="10" height="6" fill="#475569"/>
+                    <rect x="42" y="64" width="10" height="6" fill="#475569"/>
+                    <!-- Torso & Armor -->
+                    ${armorSVG}
+                    <!-- Arms -->
+                    <rect x="18" y="28" width="8" height="18" fill="#3b82f6"/>
+                    <rect x="54" y="28" width="8" height="18" fill="#3b82f6"/>
+                    <!-- Head & Skin -->
+                    <rect x="30" y="12" width="20" height="18" fill="#fde047"/>
+                    <!-- Eyes -->
+                    <rect x="34" y="18" width="3" height="4" fill="#0f172a"/>
+                    <rect x="43" y="18" width="3" height="4" fill="#0f172a"/>
+                    <!-- Helmet / Hair -->
+                    ${helmetSVG}
+                    <!-- Offhand / Shield -->
+                    ${shieldSVG}
+                    <!-- Weapon -->
+                    ${weaponSVG}
+                </svg>
+            `;
+        }
+
+        function generateMonsterSVG(monsterType, size = 90) {
+            if (monsterType === 'slime') {
+                return `
+                    <svg width="${size}" height="${size}" viewBox="0 0 80 80" class="inline-block animate-bounce">
+                        <ellipse cx="40" cy="70" rx="26" ry="6" fill="#000" opacity="0.4"/>
+                        <path d="M 20 50 Q 20 20 40 20 Q 60 20 60 50 Q 60 65 40 65 Q 20 65 20 50 Z" fill="#10b981"/>
+                        <circle cx="32" cy="42" r="4" fill="#fff"/>
+                        <circle cx="48" cy="42" r="4" fill="#fff"/>
+                        <circle cx="33" cy="43" r="2" fill="#000"/>
+                        <circle cx="49" cy="43" r="2" fill="#000"/>
+                        <path d="M 26 28 Q 32 22 40 28" stroke="#a7f3d0" stroke-width="3" fill="none"/>
+                    </svg>
+                `;
+            } else if (monsterType === 'goblin') {
+                return `
+                    <svg width="${size}" height="${size}" viewBox="0 0 80 80" class="inline-block">
+                        <ellipse cx="40" cy="72" rx="20" ry="6" fill="#000" opacity="0.5"/>
+                        <rect x="32" y="45" width="6" height="20" fill="#15803d"/>
+                        <rect x="42" y="45" width="6" height="20" fill="#15803d"/>
+                        <rect x="28" y="28" width="24" height="20" fill="#78350f"/>
+                        <polygon points="12,20 28,26 26,34" fill="#15803d"/>
+                        <polygon points="68,20 52,26 54,34" fill="#15803d"/>
+                        <rect x="26" y="16" width="28" height="20" fill="#15803d"/>
+                        <rect x="30" y="22" width="6" height="4" fill="#facc15"/>
+                        <rect x="44" y="22" width="6" height="4" fill="#facc15"/>
+                        <polygon points="34,32 40,28 46,32" fill="#fff"/>
+                    </svg>
+                `;
+            } else {
+                return `
+                    <svg width="${size}" height="${size}" viewBox="0 0 80 80" class="inline-block animate-pulse">
+                        <ellipse cx="40" cy="72" rx="28" ry="7" fill="#000" opacity="0.6"/>
+                        <rect x="20" y="20" width="40" height="45" fill="#dc2626" rx="6"/>
+                        <rect x="26" y="26" width="28" height="16" fill="#0f172a"/>
+                        <circle cx="32" cy="34" r="4" fill="#ef4444"/>
+                        <circle cx="48" cy="34" r="4" fill="#ef4444"/>
+                        <polygon points="40,8 30,20 50,20" fill="#f59e0b"/>
+                        <rect x="10" y="30" width="10" height="25" fill="#7f1d1d"/>
+                        <rect x="60" y="30" width="10" height="25" fill="#7f1d1d"/>
+                    </svg>
+                `;
+            }
+        }
+
         const AVAILABLE_CLASSES = {
             warrior: { id: 'warrior', name: 'Guerrero', icon: '🛡️', color: 'text-red-400', border: 'border-red-500', bonusHp: 80, bonusStr: 12, bonusDef: 8, activeSkill: 'Estocada Brutal', activeCost: 15, activeDesc: 'Golpe pesado con 170% de Fuerza.' },
             rogue: { id: 'rogue', name: 'Asesino', icon: '🗡️', color: 'text-emerald-400', border: 'border-emerald-500', bonusHp: 40, bonusStr: 10, bonusSpd: 14, activeSkill: 'Puñalada Sombra', activeCost: 12, activeDesc: 'Ataque rápido, letal y preciso.' },
@@ -189,45 +309,61 @@
             { id: 't_crit', name: 'Enfoque Táctico', cost: 3, desc: '+4 Suerte de Crítico permanente', applied: 0, effect: (p) => p.luck += 4 }
         ];
 
+        const CRAFTING_RECIPES = [
+            { id: 'cr_sword', name: 'Espada de Slime Forjada', type: 'weapon', slot: 'weapon', atk: 18, reqMat: 'Gelatina Azul', reqCount: 2, gold: 80, icon: '🗡️', desc: 'Arma flexible reforzada con gelatina alquímica (+18 ATK).' },
+            { id: 'cr_helmet', name: 'Casco de Acero Goblin', type: 'helmet', slot: 'helmet', def: 10, reqMat: 'Oreja de Goblin', reqCount: 2, gold: 100, icon: '🪖', desc: 'Casco resistente obtenido de restos de armaduras (+10 DEF).' },
+            { id: 'cr_shield', name: 'Escudo de Titanio Mecánico', type: 'boots', slot: 'boots', def: 16, reqMat: 'Engranaje de Titanio', reqCount: 1, gold: 200, icon: '🛡️', desc: 'Gran defensa forjada de jefes guardianes (+16 DEF).' }
+        ];
+
         const SHOP_ITEMS = [
             { id: 'pot_hp', name: 'Poción de Vida', type: 'potion', effect: 'hp', val: 50, price: 35, icon: '🔴', desc: 'Restaura 50 PV.' },
             { id: 'pot_mp', name: 'Poción de Mana', type: 'potion', effect: 'mp', val: 30, price: 30, icon: '🔵', desc: 'Restaura 30 PM.' },
             { id: 'book_class', name: 'Libro de Clase Antiguo', type: 'book', price: 350, icon: '📖', desc: 'Permite elegir una clase avanzada en la Iglesia (Requisito: Nivel 10 / Piso 10).' },
             { id: 'eq_sword1', name: 'Espada de Hierro', type: 'weapon', slot: 'weapon', atk: 10, price: 120, icon: '🗡️', desc: 'Arma afilada. +10 ATK.' },
+            { id: 'eq_helmet1', name: 'Yelmo de Explorador', type: 'helmet', slot: 'helmet', def: 6, price: 90, icon: '🪖', desc: 'Yelmo protector. +6 DEF.' },
             { id: 'eq_armor1', name: 'Cota de Malla', type: 'armor', slot: 'armor', def: 12, price: 180, icon: '🛡️', desc: 'Armadura corporal. +12 DEF.' }
         ];
 
         const MONSTER_TYPES = [
-            { name: 'Slime Azul Ácido', hp: 75, atk: 13, def: 4, exp: 35, gold: 20, type: 'slime', drop: 'Gelatina Azul', dropValue: 18 },
-            { name: 'Slime Verde Tóxico', hp: 90, atk: 16, def: 5, exp: 45, gold: 26, type: 'slime', drop: 'Núcleo de Slime', dropValue: 22 },
-            { name: 'Goblin Explorador', hp: 100, atk: 19, def: 7, exp: 55, gold: 32, type: 'goblin', drop: 'Oreja de Goblin', dropValue: 28 },
-            { name: 'Goblin Asaltante', hp: 120, atk: 22, def: 9, exp: 70, gold: 42, type: 'goblin', drop: 'Daga Rota', dropValue: 38 }
+            { id: 'slime_blue', name: 'Slime Azul Ácido', hp: 75, atk: 13, def: 4, exp: 35, gold: 20, type: 'slime', drop: 'Gelatina Azul', dropValue: 18, lore: 'Limo elemental viscoso que habita en los primeros niveles.' },
+            { id: 'slime_green', name: 'Slime Verde Tóxico', hp: 90, atk: 16, def: 5, exp: 45, gold: 26, type: 'slime', drop: 'Núcleo de Slime', dropValue: 22, lore: 'Acumula toxinas de las ruinas antiguas.' },
+            { id: 'goblin_scout', name: 'Goblin Explorador', hp: 100, atk: 19, def: 7, exp: 55, gold: 32, type: 'goblin', drop: 'Oreja de Goblin', dropValue: 28, lore: 'Rápido y astuto, patrulla en busca de invasores.' },
+            { id: 'goblin_raider', name: 'Goblin Asaltante', hp: 120, atk: 22, def: 9, exp: 70, gold: 42, type: 'goblin', drop: 'Daga Rota', dropValue: 38, lore: 'Guerrero fiero equipado con armamento saqueado.' }
         ];
 
         const BOSS_TYPES = [
-            { name: 'Goblin Rey Cibernético', hp: 420, atk: 38, def: 17, exp: 320, gold: 240, type: 'boss', drop: 'Corona de Acero Goblin', dropValue: 200 },
-            { name: 'Slime Prime Mutante', hp: 520, atk: 34, def: 20, exp: 380, gold: 280, type: 'boss', drop: 'Núcleo Líquido Cuántico', dropValue: 220 },
-            { name: 'Guardián Mecánico de la Torre', hp: 680, atk: 46, def: 25, exp: 550, gold: 450, type: 'boss', drop: 'Engranaje de Titanio', dropValue: 350 }
+            { id: 'boss_goblin', name: 'Goblin Rey Cibernético', hp: 420, atk: 38, def: 17, exp: 320, gold: 240, type: 'boss', drop: 'Corona de Acero Goblin', dropValue: 200, lore: 'Soberano de las tribus goblins con mejoras cibernéticas.' },
+            { id: 'boss_slime', name: 'Slime Prime Mutante', hp: 520, atk: 34, def: 20, exp: 380, gold: 280, type: 'boss', drop: 'Núcleo Líquido Cuántico', dropValue: 220, lore: 'Masa gigantesca de energía slime inestable.' },
+            { id: 'boss_mech', name: 'Guardián Mecánico de la Torre', hp: 680, atk: 46, def: 25, exp: 550, gold: 450, type: 'boss', drop: 'Engranaje de Titanio', dropValue: 350, lore: 'Autómata antiguo programado para erradicar intrusos.' }
+        ];
+
+        const FLOOR_NPCS_POOL = [
+            { name: 'Sabio Erudito Corvus', icon: '🧙‍♂️', dialog: '¡Saludos, joven viajero! La torre cambia constantemente, pero tu valentía permanecerá intacta. Toma estas pociones.', reward: { item: { id: 'pot_hp', name: 'Poción de Vida', type: 'potion', effect: 'hp', val: 50, price: 35, icon: '🔴', desc: 'Restaura 50 PV.' } } },
+            { name: 'Mercader Nómada Dax', icon: '🧝‍♂️', dialog: '¡Vaya! No esperaba encontrar a nadie en estos pisos. Te regalo un puñado de monedas de mi colección.', reward: { gold: 120 } }
         ];
 
         let game = {
-            screen: 'title', // title, saves, create, lobby, floor, combat, inventory, shop, quests, npc, training, church
+            screen: 'title', // title, saves, create, lobby, floor, combat, inventory, shop, forge, bestiary, quests, npc, training, church
             currentSlot: 0,
             slots: [null, null, null],
             player: null,
             floor: 1,
+            floorsState: {}, // Stores grid, fog, environment per floor number
             grid: [],
             fog: [],
+            environment: [],
             playerPos: { x: 3, y: 6 },
             enemy: null,
             combatTurn: 1,
             combatLogText: 'Inicia el combate táctico...',
+            bestiaryUnlocked: {},
             quests: [
                 { id: 'q1', title: 'Caza de Slimes', desc: 'Derrota 3 Slimes en la torre.', targetType: 'slime', targetCount: 3, current: 0, rewardGold: 140, completed: false },
                 { id: 'q2', title: 'Explorador Audaz', desc: 'Llega al piso 5 de la torre.', targetType: 'floor', targetCount: 5, current: 1, rewardGold: 200, completed: false }
             ]
         };
 
+        // MODAL HELPERS
         function showToast(title, msg) {
             document.getElementById('toast-title').innerText = title;
             document.getElementById('toast-msg').innerText = msg;
@@ -238,6 +374,56 @@
         function closeToast() {
             document.getElementById('toast-modal').classList.add('hidden');
             playSound('click');
+        }
+
+        function openStairsModal() {
+            const btnDown = document.getElementById('btn-stairs-down');
+            if (game.floor <= 1) {
+                btnDown.classList.add('opacity-50', 'pointer-events-none');
+            } else {
+                btnDown.classList.remove('opacity-50', 'pointer-events-none');
+            }
+            document.getElementById('stairs-modal').classList.remove('hidden');
+            playSound('click');
+        }
+
+        function closeStairsModal() {
+            document.getElementById('stairs-modal').classList.add('hidden');
+            playSound('click');
+        }
+
+        function confirmStairsAction(action) {
+            closeStairsModal();
+            if (action === 'up') {
+                const isBossFloor = (game.floor % 10 === 0);
+                if (isBossFloor && game.enemy && game.enemy.hp > 0) {
+                    showToast('BLOQUEADO', '¡Debes derrotar al jefe del piso antes de subir!');
+                    return;
+                }
+                game.floor++;
+                checkFloorQuests();
+                showToast('ASCENSO', `Has subido al Piso ${game.floor}.`);
+                loadOrCreateFloor(game.floor);
+            } else if (action === 'down') {
+                if (game.floor > 1) {
+                    game.floor--;
+                    showToast('DESCENSO', `Has bajado al Piso ${game.floor}.`);
+                    loadOrCreateFloor(game.floor);
+                }
+            } else if (action === 'lobby') {
+                game.screen = 'lobby';
+                renderScreen();
+            }
+        }
+
+        function checkFloorQuests() {
+            game.quests.forEach(q => {
+                if (q.targetType === 'floor' && game.floor >= q.targetCount && !q.completed) {
+                    q.completed = true;
+                    game.player.gold += q.rewardGold;
+                    showToast('¡MISIÓN CUMPLIDA!', `Completaste "${q.title}" y ganaste ${q.rewardGold}g.`);
+                }
+            });
         }
 
         function openCombatPotionModal() {
@@ -284,6 +470,11 @@
             }
         }
 
+        function closeNpcModal() {
+            document.getElementById('npc-modal').classList.add('hidden');
+            playSound('click');
+        }
+
         function renderScreen() {
             const mainView = document.getElementById('main-view');
             mainView.innerHTML = '';
@@ -304,6 +495,10 @@
                 renderInventoryScreen(mainView);
             } else if (game.screen === 'shop') {
                 renderShopScreen(mainView);
+            } else if (game.screen === 'forge') {
+                renderForgeScreen(mainView);
+            } else if (game.screen === 'bestiary') {
+                renderBestiaryScreen(mainView);
             } else if (game.screen === 'quests') {
                 renderQuestsScreen(mainView);
             } else if (game.screen === 'npc') {
@@ -319,16 +514,16 @@
             container.innerHTML = `
                 <div class="flex flex-col items-center justify-center text-center space-y-6 w-full max-w-md py-6">
                     <div class="pixel-card p-6 rounded-lg w-full border-2 border-cyan-500/50 shadow-[0_0_20px_rgba(6,182,212,0.2)]">
-                        <div class="text-6xl mb-3 animate-pulse">🏰⚡</div>
+                        <div class="mb-3">${generateHeroAvatarSVG({ weapon: true, helmet: true }, 'warrior', 90)}</div>
                         <h2 class="pixel-font text-3xl text-cyan-300 font-bold mb-1">TORRE:SYSTEM</h2>
-                        <p class="text-xs text-slate-400 mb-6">EDICIÓN PIXEL ULTIMATE V8</p>
+                        <p class="text-xs text-slate-400 mb-6">EDICIÓN PIXEL ULTIMATE V9</p>
                         <button onclick="goToSaves()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-black font-bold py-3 px-6 rounded pixel-font text-2xl tracking-wider pixel-btn border-2 border-cyan-400">
                             JUGAR
                         </button>
                     </div>
                     <div class="text-[11px] text-slate-500 space-y-1">
-                        <p>&bull; Comienza como Aventurero &bull; Elige Clase en la Iglesia (Piso 10+)</p>
-                        <p>&bull; Zona de Entrenamiento &bull; Jefes y Tesoros Épicos</p>
+                        <p>&bull; Avatar de Héroe Dinámico &bull; Herrería y Forja de Equipo</p>
+                        <p>&bull; Grimorio de Bestias &bull; Escalas e Historia Mantenida</p>
                     </div>
                 </div>
             `;
@@ -347,9 +542,12 @@
                 if (save) {
                     slotsHtml += `
                         <div class="pixel-card p-4 rounded mb-3 flex items-center justify-between border border-slate-700">
-                            <div>
-                                <span class="pixel-font text-xl text-yellow-400">RANURA ${i+1}: ${save.name}</span>
-                                <p class="text-xs text-slate-400">Clase: ${save.className} | Niv: ${save.level} | Piso: ${save.floor} | Oro: ${save.gold}g</p>
+                            <div class="flex items-center space-x-3">
+                                ${generateHeroAvatarSVG(save.equipment, save.classId, 50)}
+                                <div>
+                                    <span class="pixel-font text-xl text-yellow-400">RANURA ${i+1}: ${save.name}</span>
+                                    <p class="text-xs text-slate-400">Clase: ${save.className} | Niv: ${save.level} | Piso: ${save.floor} | Oro: ${save.gold}g</p>
+                                </div>
                             </div>
                             <div class="flex space-x-2">
                                 <button onclick="loadGameSlot(${i})" class="bg-green-600 hover:bg-green-500 text-black px-3 py-1 rounded text-xs font-bold pixel-font pixel-btn">CARGAR</button>
@@ -401,7 +599,7 @@
             renderScreen();
         }
 
-        let tempHeroName = 'Héroe';
+        let tempHeroName = 'Héroe Pixel';
         let tempTrait = null;
 
         function renderCreateScreen(container) {
@@ -413,14 +611,16 @@
                 <div class="w-full max-w-md">
                     <h3 class="pixel-font text-2xl text-cyan-400 mb-3 text-center">CREAR NUEVO AVENTURERO</h3>
                     <div class="space-y-3 mb-4">
+                        <div class="flex justify-center mb-2">
+                            ${generateHeroAvatarSVG({ helmet: false, armor: false, weapon: false }, 'adventurer', 80)}
+                        </div>
                         <div>
                             <label class="block text-xs text-slate-400 mb-1 pixel-font">NOMBRE DEL HÉROE:</label>
                             <input type="text" id="hero-name-input" value="${tempHeroName}" class="w-full bg-slate-900 border-2 border-slate-700 p-2 rounded text-cyan-300 pixel-font text-lg focus:outline-none focus:border-cyan-400" />
                         </div>
-                        <div class="pixel-card p-4 rounded border-2 border-cyan-500/40 text-center">
-                            <span class="text-4xl block mb-2">🛡️</span>
+                        <div class="pixel-card p-3 rounded border-2 border-cyan-500/40 text-center">
                             <h4 class="pixel-font text-lg text-cyan-300">CLASE INICIAL: AVENTURERO</h4>
-                            <p class="text-[11px] text-slate-300 mt-1">Comenzarás tu viaje como un Aventurero novato. Al alcanzar el Piso 10 y Nivel 10, podrás visitar la <b>Iglesia</b> para elegir una Clase Avanzada definitiva utilizando un Libro de Clase.</p>
+                            <p class="text-[11px] text-slate-300 mt-1">Comienzas como un Aventurero. Al alcanzar el Piso 10 y Nivel 10, podrás consagrarte en la <b>Iglesia</b> utilizando un Libro de Clase.</p>
                         </div>
                         <div class="pixel-card p-3 rounded border-2 border-purple-500/50">
                             <span class="text-xs text-purple-300 pixel-font font-bold">RASGO ÚNICO ASIGNADO:</span>
@@ -475,6 +675,7 @@
             game.player = newPlayer;
             game.slots[game.currentSlot] = JSON.parse(JSON.stringify(newPlayer));
             game.floor = 1;
+            game.floorsState = {};
             game.screen = 'lobby';
             playSound('victory');
             renderScreen();
@@ -485,9 +686,9 @@
 
             container.innerHTML = `
                 <div class="w-full max-w-md space-y-3">
-                    <div class="pixel-card p-4 rounded border-2 border-slate-700 flex items-center justify-between">
+                    <div class="pixel-card p-3 rounded border-2 border-slate-700 flex items-center justify-between">
                         <div class="flex items-center space-x-3">
-                            <span class="text-4xl">🛡️</span>
+                            ${generateHeroAvatarSVG(p.equipment, p.classId, 60)}
                             <div>
                                 <h4 class="pixel-font text-xl text-cyan-300">${p.name}</h4>
                                 <p class="text-xs text-slate-400">Niv. ${p.level} ${p.className} | SP: <span class="text-yellow-400 font-bold">${p.skillPoints}</span></p>
@@ -500,17 +701,21 @@
                     </div>
 
                     <div class="grid grid-cols-2 gap-2">
-                        <button onclick="enterFloor()" class="pixel-card p-3 rounded text-center hover:border-cyan-400 bg-slate-900 pixel-btn">
+                        <button onclick="enterFloor()" class="pixel-card p-3 rounded text-center hover:border-cyan-400 bg-slate-900 pixel-btn col-span-2 border-2 border-cyan-500/60">
                             <span class="text-2xl block mb-1">🗼</span>
-                            <span class="pixel-font text-base text-cyan-300">ENTRAR A LA TORRE</span>
+                            <span class="pixel-font text-lg text-cyan-300">ENTRAR A LA TORRE (PISO ${game.floor})</span>
                         </button>
                         <button onclick="game.screen='inventory'; renderScreen();" class="pixel-card p-3 rounded text-center hover:border-purple-400 bg-slate-900 pixel-btn">
                             <span class="text-2xl block mb-1">🎒</span>
-                            <span class="pixel-font text-base text-purple-300">MOCHILA & ESTADÍSTICAS</span>
+                            <span class="pixel-font text-base text-purple-300">MOCHILA & HÉROE</span>
+                        </button>
+                        <button onclick="game.screen='forge'; renderScreen();" class="pixel-card p-3 rounded text-center hover:border-orange-400 bg-slate-900 pixel-btn">
+                            <span class="text-2xl block mb-1">⚒️</span>
+                            <span class="pixel-font text-base text-orange-300">HERRERÍA Y FORJA</span>
                         </button>
                         <button onclick="game.screen='training'; renderScreen();" class="pixel-card p-3 rounded text-center hover:border-emerald-400 bg-slate-900 pixel-btn">
                             <span class="text-2xl block mb-1">🏋️‍♂️</span>
-                            <span class="pixel-font text-base text-emerald-300">ZONA DE ENTRENAMIENTO</span>
+                            <span class="pixel-font text-base text-emerald-300">ENTRENAMIENTO</span>
                         </button>
                         <button onclick="game.screen='church'; renderScreen();" class="pixel-card p-3 rounded text-center hover:border-amber-400 bg-slate-900 pixel-btn">
                             <span class="text-2xl block mb-1">⛪</span>
@@ -520,16 +725,20 @@
                             <span class="text-2xl block mb-1">🪙</span>
                             <span class="pixel-font text-base text-yellow-300">TIENDA GENERAL</span>
                         </button>
-                        <button onclick="game.screen='quests'; renderScreen();" class="pixel-card p-3 rounded text-center hover:border-blue-400 bg-slate-900 pixel-btn">
-                            <span class="text-2xl block mb-1">📜</span>
-                            <span class="pixel-font text-base text-blue-300">MISIONES</span>
+                        <button onclick="game.screen='bestiary'; renderScreen();" class="pixel-card p-3 rounded text-center hover:border-red-400 bg-slate-900 pixel-btn">
+                            <span class="text-2xl block mb-1">📖</span>
+                            <span class="pixel-font text-base text-red-300">GRIMORIO</span>
                         </button>
                     </div>
 
-                    <button onclick="game.screen='npc'; renderScreen();" class="w-full pixel-card p-2.5 rounded text-center hover:border-cyan-400 bg-slate-900 pixel-btn flex items-center justify-center space-x-2">
-                        <span class="text-xl">🤖</span>
-                        <span class="pixel-font text-base text-cyan-300">HABLAR CON IA ORÁCULO</span>
-                    </button>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="game.screen='quests'; renderScreen();" class="pixel-card p-2.5 rounded text-center hover:border-blue-400 bg-slate-900 pixel-btn">
+                            <span class="pixel-font text-sm text-blue-300">📜 MISIONES</span>
+                        </button>
+                        <button onclick="game.screen='npc'; renderScreen();" class="pixel-card p-2.5 rounded text-center hover:border-cyan-400 bg-slate-900 pixel-btn">
+                            <span class="pixel-font text-sm text-cyan-300">🤖 ORÁCULO IA</span>
+                        </button>
+                    </div>
 
                     <button onclick="game.screen='saves'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-400 py-2 rounded pixel-font text-xs pixel-btn">GUARDAR Y SALIR AL MENÚ</button>
                 </div>
@@ -538,44 +747,65 @@
 
         function enterFloor() {
             game.screen = 'floor';
-            generateFloorMap();
+            loadOrCreateFloor(game.floor);
             playSound('click');
             renderScreen();
         }
 
-        function generateFloorMap() {
+        function loadOrCreateFloor(floorNum) {
+            if (game.floorsState[floorNum]) {
+                // Restore saved floor state
+                const saved = game.floorsState[floorNum];
+                game.grid = saved.grid;
+                game.fog = saved.fog;
+                game.environment = saved.environment;
+                game.playerPos = { x: 3, y: 6 };
+
+                // Random Respawn mechanics upon re-entering explored floors
+                respawnFloorEntities();
+            } else {
+                // Generate brand new floor
+                generateNewFloor(floorNum);
+            }
+            revealAdjacentFog();
+        }
+
+        function generateNewFloor(floorNum) {
             const size = 7;
             game.grid = [];
             game.fog = [];
-            
+            game.environment = [];
+
+            const envOptions = ['🌲', '🪨', '🌱', '🏛️', ' '];
+
             for (let y = 0; y < size; y++) {
                 let row = [];
                 let fogRow = [];
+                let envRow = [];
                 for (let x = 0; x < size; x++) {
                     row.push('empty');
                     fogRow.push(false);
+                    let randEnv = envOptions[Math.floor(Math.random() * envOptions.length)];
+                    envRow.push(randEnv);
                 }
                 game.grid.push(row);
                 game.fog.push(fogRow);
+                game.environment.push(envRow);
             }
 
             game.playerPos = { x: 3, y: 6 };
-            revealAdjacentFog();
 
-            const isBossFloor = (game.floor % 10 === 0);
+            const isBossFloor = (floorNum % 10 === 0);
 
             if (isBossFloor) {
                 game.grid[2][3] = 'boss';
                 game.grid[1][3] = 'stairs_up';
-                if (game.floor > 1) {
-                    game.grid[6][1] = 'stairs_down';
-                }
+                if (floorNum > 1) game.grid[6][1] = 'stairs_down';
             } else {
                 game.grid[1][3] = 'stairs_up';
-                if (game.floor > 1) {
-                    game.grid[6][1] = 'stairs_down';
-                }
+                if (floorNum > 1) game.grid[6][1] = 'stairs_down';
 
+                // Place Monsters
                 let monstersPlaced = 0;
                 while (monstersPlaced < 3) {
                     let rx = Math.floor(Math.random() * size);
@@ -586,13 +816,47 @@
                     }
                 }
 
+                // Place Chest or Trap Chest
                 let chestPlaced = false;
                 while (!chestPlaced) {
                     let rx = Math.floor(Math.random() * size);
                     let ry = Math.floor(Math.random() * 5) + 1;
                     if (game.grid[ry][rx] === 'empty' && !(rx === 3 && ry === 6)) {
-                        game.grid[ry][rx] = 'chest';
+                        game.grid[ry][rx] = (Math.random() < 0.2) ? 'trap_chest' : 'chest';
                         chestPlaced = true;
+                    }
+                }
+
+                // Place NPC (1 NPC per 10 floors bracket)
+                let floorBracket = Math.floor((floorNum - 1) / 10);
+                if (!game.floorsState[`npc_spawned_${floorBracket}`] && Math.random() < 0.5) {
+                    game.floorsState[`npc_spawned_${floorBracket}`] = true;
+                    let rx = Math.floor(Math.random() * size);
+                    let ry = Math.floor(Math.random() * 5) + 1;
+                    if (game.grid[ry][rx] === 'empty') {
+                        game.grid[ry][rx] = 'npc';
+                    }
+                }
+            }
+
+            // Save floor state
+            game.floorsState[floorNum] = {
+                grid: game.grid,
+                fog: game.fog,
+                environment: game.environment
+            };
+        }
+
+        function respawnFloorEntities() {
+            // Respawn monsters on empty spots with 40% chance
+            for (let y = 1; y < 6; y++) {
+                for (let x = 0; x < 7; x++) {
+                    if (game.grid[y][x] === 'empty' && !(x === game.playerPos.x && y === game.playerPos.y)) {
+                        if (Math.random() < 0.08) {
+                            game.grid[y][x] = 'monster';
+                        } else if (Math.random() < 0.02) {
+                            game.grid[y][x] = 'chest';
+                        }
                     }
                 }
             }
@@ -612,6 +876,11 @@
                         game.fog[ny][nx] = true;
                     }
                 }
+            }
+            // Update stored state
+            if (game.floorsState[game.floor]) {
+                game.floorsState[game.floor].fog = game.fog;
+                game.floorsState[game.floor].grid = game.grid;
             }
         }
 
@@ -637,6 +906,7 @@
                 game.screen = 'combat';
                 game.combatTurn = 1;
                 game.combatLogText = `¡Un ${game.enemy.name} salvaje apareció en el piso ${game.floor}!`;
+                game.bestiaryUnlocked[game.enemy.id] = true;
                 playSound('boss');
             } else if (tile === 'boss') {
                 const baseBoss = BOSS_TYPES[Math.floor((game.floor / 10 - 1) % BOSS_TYPES.length)];
@@ -647,45 +917,62 @@
                 game.screen = 'combat';
                 game.combatTurn = 1;
                 game.combatLogText = `¡JEFE DE PISO: ${game.enemy.name}! Derrótalo para avanzar.`;
+                game.bestiaryUnlocked[game.enemy.id] = true;
                 playSound('boss');
             } else if (tile === 'chest') {
                 game.grid[ny][nx] = 'empty';
                 let goldFound = 40 + game.floor * 15;
                 game.player.gold += goldFound;
-                // Chance for Class book drop in floors 20+
-                if (game.floor >= 20 && Math.random() < 0.25) {
+                if (game.floor >= 10 && Math.random() < 0.3) {
                     game.player.inventory.push({ id: 'book_class', name: 'Libro de Clase Antiguo', type: 'book', price: 350, icon: '📖', desc: 'Permite elegir una clase avanzada en la Iglesia.' });
-                    showToast('¡TESORO LENDARIO!', `¡Encontraste ${goldFound}g y un 📖 Libro de Clase Antiguo!`);
+                    showToast('¡TESORO LEGENDARIO!', `¡Encontraste ${goldFound}g y un 📖 Libro de Clase Antiguo!`);
                 } else {
                     showToast('¡TESORO ENCONTRADO!', `Has abierto un cofre y encontrado ${goldFound} monedas de oro.`);
                 }
                 playSound('victory');
-            } else if (tile === 'stairs_up') {
-                const isBossFloor = (game.floor % 10 === 0);
-                if (isBossFloor && game.enemy && game.enemy.hp > 0) {
-                    showToast('BLOQUEADO', '¡Debes derrotar al jefe del piso antes de subir!');
+            } else if (tile === 'trap_chest') {
+                game.grid[ny][nx] = 'empty';
+                if (Math.random() < 0.5) {
+                    let trapDmg = 20 + game.floor * 5;
+                    game.player.hp = Math.max(1, game.player.hp - trapDmg);
+                    playSound('hit');
+                    showToast('⚠️ COFRE TRAMPA', `¡El cofre estaba cargado con estallido místico! Sufriste ${trapDmg} de daño.`);
                 } else {
-                    game.floor++;
-                    game.quests.forEach(q => {
-                        if (q.targetType === 'floor' && game.floor >= q.targetCount && !q.completed) {
-                            q.completed = true;
-                            game.player.gold += q.rewardGold;
-                            showToast('¡MISIÓN CUMPLIDA!', `Completaste "${q.title}" y ganaste ${q.rewardGold}g.`);
-                        }
-                    });
-                    showToast('ASCENSO', `Has subido al Piso ${game.floor}.`);
-                    generateFloorMap();
+                    // Mimic fight
+                    const baseMon = MONSTER_TYPES[0];
+                    game.enemy = { id: 'mimic', name: 'Mímico Voraz', hp: 150 + game.floor * 15, maxHp: 150 + game.floor * 15, atk: 25 + game.floor * 3, def: 12, exp: 90, gold: 120, type: 'slime', drop: 'Gelatina Azul', dropValue: 30 };
+                    game.screen = 'combat';
+                    game.combatTurn = 1;
+                    game.combatLogText = `¡EL COFRE ERA UN MÍMICO VIVO!`;
+                    playSound('boss');
                 }
-            } else if (tile === 'stairs_down') {
-                if (game.floor > 1) {
-                    game.floor--;
-                    showToast('DESCENSO', `Has bajado al Piso ${game.floor}.`);
-                    generateFloorMap();
-                }
+            } else if (tile === 'npc') {
+                game.grid[ny][nx] = 'empty';
+                triggerNpcInteract();
+            } else if (tile === 'stairs_up' || tile === 'stairs_down') {
+                openStairsModal();
             }
 
             playSound('click');
             renderScreen();
+        }
+
+        function triggerNpcInteract() {
+            const npcData = FLOOR_NPCS_POOL[Math.floor(Math.random() * FLOOR_NPCS_POOL.length)];
+            document.getElementById('npc-avatar-container').innerText = npcData.icon;
+            document.getElementById('npc-name').innerText = npcData.name;
+            document.getElementById('npc-dialog').innerText = `"${npcData.dialog}"`;
+
+            if (npcData.reward.gold) {
+                game.player.gold += npcData.reward.gold;
+                showToast('REGALO DE NPC', `¡El NPC te entregó ${npcData.reward.gold} monedas de oro!`);
+            } else if (npcData.reward.item) {
+                game.player.inventory.push(JSON.parse(JSON.stringify(npcData.reward.item)));
+                showToast('REGALO DE NPC', `¡El NPC te entregó ${npcData.reward.item.name}!`);
+            }
+
+            document.getElementById('npc-modal').classList.remove('hidden');
+            playSound('victory');
         }
 
         function renderFloorScreen(container) {
@@ -698,6 +985,7 @@
                     let isPlayer = (game.playerPos.x === x && game.playerPos.y === y);
                     let isExplored = game.fog[y] && game.fog[y][x];
                     let tile = game.grid[y][x];
+                    let envIcon = game.environment[y] ? game.environment[y][x] : ' ';
                     
                     let cellContent = '';
                     let cellBg = 'bg-slate-900 border-slate-800';
@@ -706,17 +994,20 @@
                         cellContent = '?';
                         cellBg = 'bg-slate-950 border-slate-900 text-slate-700';
                     } else if (isPlayer) {
-                        cellContent = '🛡️';
+                        cellContent = generateHeroAvatarSVG(game.player.equipment, game.player.classId, 32);
                         cellBg = 'bg-cyan-950 border-cyan-500 animate-pulse';
                     } else if (tile === 'monster') {
-                        cellContent = '👾';
+                        cellContent = generateMonsterSVG('slime', 32);
                         cellBg = 'bg-red-950/60 border-red-700';
                     } else if (tile === 'boss') {
-                        cellContent = '👹';
+                        cellContent = generateMonsterSVG('boss', 36);
                         cellBg = 'bg-red-900 border-red-500 animate-bounce';
-                    } else if (tile === 'chest') {
+                    } else if (tile === 'chest' || tile === 'trap_chest') {
                         cellContent = '🎁';
                         cellBg = 'bg-yellow-950 border-yellow-600';
+                    } else if (tile === 'npc') {
+                        cellContent = '🧙‍♂️';
+                        cellBg = 'bg-purple-950 border-purple-500 animate-pulse';
                     } else if (tile === 'stairs_up') {
                         cellContent = '🪜⬆️';
                         cellBg = 'bg-emerald-950 border-emerald-500';
@@ -724,11 +1015,11 @@
                         cellContent = '🪜⬇️';
                         cellBg = 'bg-blue-950 border-blue-500';
                     } else {
-                        cellContent = '&bull;';
-                        cellBg = 'bg-slate-900 border-slate-800 text-slate-700';
+                        cellContent = `<span class="opacity-40 text-xs">${envIcon}</span>`;
+                        cellBg = 'bg-slate-900 border-slate-800 text-slate-600';
                     }
 
-                    gridHtml += `<div class="w-10 h-10 md:w-12 md:h-12 border-2 ${cellBg} rounded flex items-center justify-center text-lg font-bold">${cellContent}</div>`;
+                    gridHtml += `<div class="w-10 h-10 md:w-12 md:h-12 border-2 ${cellBg} rounded flex items-center justify-center text-lg font-bold relative overflow-hidden">${cellContent}</div>`;
                 }
                 gridHtml += `</div>`;
             }
@@ -740,11 +1031,11 @@
                         <span class="text-xs text-yellow-400 font-bold">${game.player.hp}/${game.player.maxHp} PV</span>
                     </div>
 
-                    <div class="pixel-card p-3 rounded mb-4 inline-block border-2 border-slate-700">
+                    <div class="pixel-card p-3 rounded mb-3 inline-block border-2 border-slate-700">
                         ${gridHtml}
                     </div>
 
-                    <!-- Crisp Retro Pixel D-Pad Controls -->
+                    <!-- Crisp D-Pad Controls -->
                     <div class="grid grid-cols-3 gap-2 max-w-[220px] mx-auto mb-3">
                         <div></div>
                         <button onclick="movePlayer(0, -1)" class="pixel-card bg-slate-900 hover:bg-slate-800 text-cyan-300 py-3 rounded pixel-font text-2xl pixel-btn border-2 border-cyan-500/50">⬆</button>
@@ -765,20 +1056,24 @@
 
             container.innerHTML = `
                 <div class="w-full max-w-md">
-                    <div class="pixel-card p-4 rounded mb-3 border-2 border-red-500/60 flex justify-between items-center">
+                    <div class="pixel-card p-4 rounded mb-3 border-2 border-red-500/60 flex justify-between items-center bg-slate-950">
                         <div>
                             <h4 class="pixel-font text-xl text-red-400">${e.name}</h4>
                             <p class="text-xs text-slate-400">PV: ${e.hp} / ${e.maxHp}</p>
                         </div>
-                        <span class="text-4xl animate-pulse">👹</span>
+                        <div>
+                            ${generateMonsterSVG(e.type, 64)}
+                        </div>
                     </div>
 
-                    <div class="pixel-card p-4 rounded mb-3 border-2 border-cyan-500/60 flex justify-between items-center">
+                    <div class="pixel-card p-4 rounded mb-3 border-2 border-cyan-500/60 flex justify-between items-center bg-slate-950">
                         <div>
                             <h4 class="pixel-font text-xl text-cyan-300">${p.name} (${p.className})</h4>
                             <p class="text-xs text-slate-400">PV: ${p.hp} / ${p.maxHp} | PM: ${p.mp} / ${p.maxMp}</p>
                         </div>
-                        <span class="text-4xl">🛡️</span>
+                        <div>
+                            ${generateHeroAvatarSVG(p.equipment, p.classId, 60)}
+                        </div>
                     </div>
 
                     <div class="pixel-card p-3 rounded mb-4 bg-slate-950 border border-slate-700 text-xs text-cyan-300 h-20 overflow-y-auto">
@@ -848,12 +1143,12 @@
                 let expNeeded = p.level * 100;
                 if (p.exp >= expNeeded) {
                     p.level++;
-                    p.skillPoints += 2; // Gain 2 Skill Points for Training Area
+                    p.skillPoints += 2;
                     p.maxHp += 20;
                     p.hp = p.maxHp;
                     p.maxMp += 10;
                     p.mp = p.maxMp;
-                    showToast('¡SUBES DE NIVEL!', `¡Has alcanzado el Nivel ${p.level}! Recibiste +2 Puntos de Habilidad (SP) para entrenar.`);
+                    showToast('¡SUBES DE NIVEL!', `¡Has alcanzado el Nivel ${p.level}! Recibiste +2 SP para entrenar.`);
                 }
 
                 if (e.drop) {
@@ -884,7 +1179,8 @@
                 return;
             }
 
-            let dmgToPlayer = Math.max(3, e.atk - Math.floor((p.def + (p.equipment.armor ? p.equipment.armor.def : 0)) / 2) + Math.floor(Math.random() * 5));
+            let totalDef = p.def + (p.equipment.armor ? p.equipment.armor.def : 0) + (p.equipment.helmet ? p.equipment.helmet.def : 0) + (p.equipment.boots ? p.equipment.boots.def : 0);
+            let dmgToPlayer = Math.max(3, e.atk - Math.floor(totalDef / 2) + Math.floor(Math.random() * 5));
             p.hp -= dmgToPlayer;
             game.combatLogText += ` | ${e.name} ripostó y te causó ${dmgToPlayer} de daño.`;
             playSound('hit');
@@ -912,18 +1208,17 @@
                         <span class="text-cyan-300 font-bold">${p.equipment.weapon ? p.equipment.weapon.icon + ' ' + p.equipment.weapon.name : 'Ninguna'}</span>
                     </div>
                     <div class="pixel-card p-2 rounded border border-slate-700">
+                        <span class="text-slate-400 block">Yelmo/Casco:</span>
+                        <span class="text-cyan-300 font-bold">${p.equipment.helmet ? p.equipment.helmet.icon + ' ' + p.equipment.helmet.name : 'Ninguno'}</span>
+                    </div>
+                    <div class="pixel-card p-2 rounded border border-slate-700">
                         <span class="text-slate-400 block">Armadura:</span>
                         <span class="text-cyan-300 font-bold">${p.equipment.armor ? p.equipment.armor.icon + ' ' + p.equipment.armor.name : 'Ninguna'}</span>
                     </div>
-                </div>
-            `;
-
-            let statsHtml = `
-                <div class="pixel-card p-3 rounded mb-3 border border-slate-700 text-xs space-y-1">
-                    <span class="pixel-font text-sm text-yellow-400 block mb-1">ESTADÍSTICAS & RASGO:</span>
-                    <p class="text-slate-300"><b>Clase:</b> ${p.className} | <b>Nivel:</b> ${p.level} (EXP: ${p.exp}/${p.level * 100})</p>
-                    <p class="text-slate-300"><b>Rasgo Único:</b> <span class="text-purple-400">${p.trait ? p.trait.name : 'Ninguno'}</span></p>
-                    <p class="text-slate-300"><b>ATK:</b> ${p.str} | <b>DEF:</b> ${p.def} | <b>MAG:</b> ${p.mag} | <b>SPD:</b> ${p.spd} | <b>Suerte:</b> ${p.luck}</p>
+                    <div class="pixel-card p-2 rounded border border-slate-700">
+                        <span class="text-slate-400 block">Escudo/Botas:</span>
+                        <span class="text-cyan-300 font-bold">${p.equipment.boots ? p.equipment.boots.icon + ' ' + p.equipment.boots.name : 'Ninguno'}</span>
+                    </div>
                 </div>
             `;
 
@@ -943,7 +1238,7 @@
                             </div>
                             <div class="flex space-x-1">
                                 ${item.type === 'potion' ? `<button onclick="usePotion(${idx})" class="bg-purple-600 hover:bg-purple-500 text-white px-2 py-1 rounded text-[10px] pixel-btn font-bold">USAR</button>` : ''}
-                                ${item.type === 'weapon' || item.type === 'armor' ? `<button onclick="equipItem(${idx})" class="bg-green-600 hover:bg-green-500 text-black px-2 py-1 rounded text-[10px] pixel-btn font-bold">EQUIPAR</button>` : ''}
+                                ${['weapon', 'helmet', 'armor', 'boots'].includes(item.type) ? `<button onclick="equipItem(${idx})" class="bg-green-600 hover:bg-green-500 text-black px-2 py-1 rounded text-[10px] pixel-btn font-bold">EQUIPAR</button>` : ''}
                             </div>
                         </div>
                     `;
@@ -952,8 +1247,18 @@
 
             container.innerHTML = `
                 <div class="w-full max-w-md">
-                    <h3 class="pixel-font text-2xl text-purple-400 mb-2 text-center">MOCHILA & ESTADÍSTICAS</h3>
-                    ${statsHtml}
+                    <h3 class="pixel-font text-2xl text-purple-400 mb-2 text-center">MOCHILA & HÉROE PIXEL</h3>
+                    <div class="flex items-center justify-around pixel-card p-3 rounded mb-3 border border-slate-700">
+                        <div class="text-center">
+                            ${generateHeroAvatarSVG(p.equipment, p.classId, 90)}
+                        </div>
+                        <div class="text-xs space-y-1">
+                            <p class="text-yellow-400 font-bold">${p.name} (${p.className})</p>
+                            <p class="text-slate-300">Nivel ${p.level} | EXP: ${p.exp}/${p.level * 100}</p>
+                            <p class="text-slate-300">PV: ${p.hp}/${p.maxHp} | PM: ${p.mp}/${p.maxMp}</p>
+                            <p class="text-slate-300">ATK: ${p.str} | DEF: ${p.def} | MAG: ${p.mag}</p>
+                        </div>
+                    </div>
                     ${eqHtml}
                     <div class="max-h-40 overflow-y-auto mb-3 space-y-1">${invHtml}</div>
                     <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn">VOLVER AL LOBBY</button>
@@ -979,7 +1284,7 @@
         function equipItem(index) {
             const p = game.player;
             const item = p.inventory[index];
-            let slotName = item.slot || (item.type === 'weapon' ? 'weapon' : 'armor');
+            let slotName = item.slot || item.type;
             
             if (p.equipment[slotName]) {
                 p.inventory.push(p.equipment[slotName]);
@@ -987,8 +1292,102 @@
             p.equipment[slotName] = item;
             p.inventory.splice(index, 1);
             playSound('victory');
-            showToast('EQUIPADO', `Te has equipado ${item.name}.`);
+            showToast('EQUIPADO', `Te has equipado ${item.name}. ¡Reflejado en tu avatar pixel!`);
             renderScreen();
+        }
+
+        function renderForgeScreen(container) {
+            const p = game.player;
+
+            let forgeHtml = '';
+            CRAFTING_RECIPES.forEach((rec, idx) => {
+                const matCount = p.inventory.filter(i => i.name === rec.reqMat).length;
+                const canCraft = (matCount >= rec.reqCount && p.gold >= rec.gold);
+
+                forgeHtml += `
+                    <div class="pixel-card p-3 rounded mb-2 border border-slate-700 text-xs flex justify-between items-center">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-2xl">${rec.icon}</span>
+                            <div>
+                                <span class="pixel-font text-base text-orange-400">${rec.name}</span>
+                                <p class="text-[10px] text-slate-300">${rec.desc}</p>
+                                <p class="text-[10px] text-slate-400">Requisito: ${rec.reqCount}x ${rec.reqMat} (Tienes: ${matCount}) + ${rec.gold}g</p>
+                            </div>
+                        </div>
+                        <button onclick="craftItem(${idx})" class="${canCraft ? 'bg-orange-600 hover:bg-orange-500 text-black' : 'bg-slate-800 text-slate-600 pointer-events-none'} px-3 py-1.5 rounded font-bold pixel-font pixel-btn">FORJAR</button>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = `
+                <div class="w-full max-w-md">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="pixel-font text-2xl text-orange-400">HERRERÍA Y FORJA</h3>
+                        <span class="text-xs text-yellow-400 font-bold">${p.gold}g 💰</span>
+                    </div>
+                    <p class="text-xs text-slate-300 mb-3">Forja armamento poderoso usando los drops recolectados de los monstruos en la torre.</p>
+                    <div class="space-y-2 mb-4 max-h-60 overflow-y-auto">${forgeHtml}</div>
+                    <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn">VOLVER AL LOBBY</button>
+                </div>
+            `;
+        }
+
+        function craftItem(index) {
+            const p = game.player;
+            const rec = CRAFTING_RECIPES[index];
+
+            let count = 0;
+            for (let i = p.inventory.length - 1; i >= 0; i--) {
+                if (p.inventory[i].name === rec.reqMat && count < rec.reqCount) {
+                    p.inventory.splice(i, 1);
+                    count++;
+                }
+            }
+
+            p.gold -= rec.gold;
+            p.inventory.push({
+                id: rec.id,
+                name: rec.name,
+                type: rec.type,
+                slot: rec.slot,
+                atk: rec.atk || 0,
+                def: rec.def || 0,
+                icon: rec.icon,
+                desc: rec.desc
+            });
+
+            playSound('craft');
+            showToast('¡OBJETO FORJADO!', `¡Has forjado con éxito ${rec.name}! Puedes equiparlo desde la mochila.`);
+            renderScreen();
+        }
+
+        function renderBestiaryScreen(container) {
+            let bestiaryHtml = '';
+
+            const allMonsters = [...MONSTER_TYPES, ...BOSS_TYPES];
+            allMonsters.forEach(m => {
+                const unlocked = game.bestiaryUnlocked[m.id];
+                bestiaryHtml += `
+                    <div class="pixel-card p-3 rounded mb-2 border border-slate-700 text-xs flex items-center space-x-3">
+                        <div class="w-12 h-12 flex items-center justify-center bg-slate-900 border border-slate-800 rounded">
+                            ${unlocked ? generateMonsterSVG(m.type, 36) : '<span class="text-2xl text-slate-600">❓</span>'}
+                        </div>
+                        <div class="flex-grow">
+                            <span class="pixel-font text-base ${unlocked ? 'text-red-400' : 'text-slate-500'}">${unlocked ? m.name : '??? (Monstruo Desconocido)'}</span>
+                            <p class="text-[10px] text-slate-400">${unlocked ? m.lore : 'Derrota a esta bestia en la torre para registrar sus datos.'}</p>
+                            ${unlocked ? `<p class="text-[10px] text-yellow-400">PV: ${m.hp} | ATK: ${m.atk} | Drop: ${m.drop}</p>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = `
+                <div class="w-full max-w-md">
+                    <h3 class="pixel-font text-2xl text-red-400 mb-3 text-center">GRIMORIO DE BESTIAS</h3>
+                    <div class="space-y-2 mb-4 max-h-60 overflow-y-auto">${bestiaryHtml}</div>
+                    <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn">VOLVER AL LOBBY</button>
+                </div>
+            `;
         }
 
         function renderTrainingScreen(container) {
@@ -1050,7 +1449,7 @@
                             <h4 class="pixel-font text-xl text-amber-300">TEMPLO DE LA CLASE SAGRADA</h4>
                             <p class="text-xs text-slate-300">Para elegir tu Clase Avanzada definitiva, debes cumplir con los siguientes requisitos:</p>
                             <p class="text-xs text-yellow-300">&bull; Nivel 10 y Piso 10 o Superior (${p.level >= 10 && p.floor >= 10 ? '✅ Cumplido' : '❌ Nivel/Piso insuficiente'})</p>
-                            <p class="text-xs text-yellow-300">&bull; Poseer un 📖 Libro de Clase en tu mochila (${hasClassBook ? '✅ Poseído' : '❌ Falta Libro de Clase (Cómpralo en Tienda o Búscalo en Pisos 20+)'})</p>
+                            <p class="text-xs text-yellow-300">&bull; Poseer un 📖 Libro de Clase en tu mochila (${hasClassBook ? '✅ Poseído' : '❌ Falta Libro de Clase'})</p>
                         </div>
                     `;
                 } else {
@@ -1072,10 +1471,10 @@
                 }
             } else {
                 classCards = `
-                    <div class="pixel-card p-4 rounded border-2 border-cyan-500/50 text-center">
+                    <div class="pixel-card p-4 rounded border-2 border-cyan-500/50 text-center space-y-2">
                         <span class="text-4xl">✨</span>
                         <h4 class="pixel-font text-xl text-cyan-300">CLASE CONSAGRADA: ${p.className}</h4>
-                        <p class="text-xs text-slate-300 mt-2">Ya has seleccionado tu senda definitiva en la Torre.</p>
+                        <p class="text-xs text-slate-300">Ya has seleccionado tu senda definitiva en la Torre.</p>
                     </div>
                 `;
             }
@@ -1093,7 +1492,6 @@
             const p = game.player;
             const c = AVAILABLE_CLASSES[classKey];
             
-            // Remove 1 class book from inventory
             const bookIdx = p.inventory.findIndex(i => i.type === 'book');
             if (bookIdx > -1) {
                 p.inventory.splice(bookIdx, 1);
@@ -1111,7 +1509,7 @@
             if (c.bonusSpd) p.spd += c.bonusSpd;
 
             playSound('victory');
-            showToast('¡CONSAGRACIÓN EXITOSA!', `¡Ahora eres un flamante ${c.name}! Tus atributos y habilidades han mejorado.`);
+            showToast('¡CONSAGRACIÓN EXITOSA!', `¡Ahora eres un ${c.name}! Atributos y aspecto actualizados.`);
             renderScreen();
         }
 
@@ -1220,11 +1618,11 @@
         function renderNpcScreen(container) {
             container.innerHTML = `
                 <div class="w-full max-w-md text-center">
-                    <div class="pixel-card p-5 rounded border-2 border-blue-500/60 mb-4">
+                    <div class="pixel-card p-5 rounded border-2 border-blue-500/60 mb-4 space-y-3">
                         <span class="text-5xl mb-2 block animate-bounce">🤖</span>
-                        <h3 class="pixel-font text-2xl text-blue-300 mb-2">IA ORÁCULO TÁCTICA</h3>
-                        <p class="text-xs text-slate-300 leading-relaxed">
-                            "Saludos, intrépido superviviente. Recuerda que comienzas como Aventurero y puedes visitar la **Iglesia** al alcanzar el Piso 10 y Nivel 10 con un Libro de Clase. Entrena tus atributos en la **Zona de Entrenamiento** gastando SP."
+                        <h3 class="pixel-font text-2xl text-blue-300">ORÁCULO TÁCTICO V9</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed text-left">
+                            "Bienvenido a V9. Ahora puedes forjar equipo único en la **Herrería**, consultar monstruos derrotados en el **Grimorio**, y tus accesorios equipados cambiarán la apariencia de tu héroe en tiempo real."
                         </p>
                     </div>
                     <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn">REGRESAR</button>
