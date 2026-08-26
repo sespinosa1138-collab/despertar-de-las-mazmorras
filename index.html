@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TORRE:SYSTEM // ULTIMATE PIXEL EDITION V9</title>
+    <title>TORRE:SYSTEM // ULTIMATE GRAPHIC EDITION V11</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -12,17 +12,18 @@
             theme: {
                 extend: {
                     colors: {
-                        retroDark: '#050811',
+                        retroDark: '#030712',
                         retroCard: '#0f172a',
                         retroBorder: '#1e293b',
                         retroGreen: '#10b981',
                         retroBlue: '#3b82f6',
                         retroPurple: '#8b5cf6',
                         retroGold: '#f59e0b',
-                        retroRed: '#ef4444'
+                        retroRed: '#ef4444',
+                        retroCyan: '#06b6d4'
                     },
                     fontFamily: {
-                        mono: ['Courier New', 'Courier', 'monospace']
+                        mono: ['VT323', 'Courier New', 'monospace']
                     }
                 }
             }
@@ -30,104 +31,161 @@
     </script>
     <!-- FontAwesome icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Pixel Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
         .pixel-font { font-family: 'VT323', monospace; letter-spacing: 1px; }
+        .pixel-title { font-family: 'Press Start 2P', cursive; }
+        
         .crt-overlay {
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.28) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
             background-size: 100% 3px, 3px 100%;
             pointer-events: none;
         }
+
         .pixel-card {
             background: #0f172a;
             border: 2px solid #334155;
             box-shadow: 4px 4px 0px #020617;
         }
+
+        .pixel-card-glow {
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.2), 4px 4px 0px #020617;
+        }
+
         .pixel-btn {
             position: relative;
-            transition: all 0.1s ease;
+            transition: all 0.08s ease;
             box-shadow: 3px 3px 0px #020617;
+            user-select: none;
         }
         .pixel-btn:hover {
             transform: translate(-1px, -1px);
             box-shadow: 4px 4px 0px #020617;
+            filter: brightness(1.1);
         }
         .pixel-btn:active {
             transform: translate(2px, 2px);
             box-shadow: 1px 1px 0px #020617;
         }
+
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-track { background: #090d16; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
 
-        .pixel-art{image-rendering:pixelated;shape-rendering:crispEdges}.potion-sprite{image-rendering:pixelated;filter:drop-shadow(0 2px 0 rgba(0,0,0,.6))}.sprite-frame{image-rendering:pixelated}
+        .pixel-art { image-rendering: pixelated; shape-rendering: crispEdges; }
+
+        /* Custom Visual Animations */
+        @keyframes floatIdle {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
+        }
+        .animate-float { animation: floatIdle 3s ease-in-out infinite; }
+
+        @keyframes pulseAura {
+            0%, 100% { filter: drop-shadow(0 0 4px rgba(6, 182, 212, 0.4)); }
+            50% { filter: drop-shadow(0 0 12px rgba(6, 182, 212, 0.8)); }
+        }
+        .animate-aura { animation: pulseAura 2.5s infinite; }
+
+        @keyframes bossPulse {
+            0%, 100% { filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.6)); transform: scale(1); }
+            50% { filter: drop-shadow(0 0 18px rgba(239, 68, 68, 0.9)); transform: scale(1.03); }
+        }
+        .animate-boss { animation: bossPulse 2s ease-in-out infinite; }
+
+        /* Dynamic Floor Themes */
+        .theme-bosque { background: radial-gradient(circle at center, #064e3b 0%, #022c22 70%, #050811 100%); }
+        .theme-ruinas { background: radial-gradient(circle at center, #334155 0%, #1e293b 70%, #050811 100%); }
+        .theme-minas { background: radial-gradient(circle at center, #1e1b4b 0%, #0f172a 70%, #050811 100%); }
+        .theme-pantano { background: radial-gradient(circle at center, #14532d 0%, #064e3b 70%, #050811 100%); }
+        .theme-ciudad { background: radial-gradient(circle at center, #581c87 0%, #2e1065 70%, #050811 100%); }
+        .theme-fortaleza { background: radial-gradient(circle at center, #881337 0%, #4c0519 70%, #050811 100%); }
+        .theme-cumbres { background: radial-gradient(circle at center, #0369a1 0%, #0c4a6e 70%, #050811 100%); }
+        .theme-abismo { background: radial-gradient(circle at center, #9a3412 0%, #7c2d12 70%, #050811 100%); }
+        .theme-astral { background: radial-gradient(circle at center, #4c1d95 0%, #1e1b4b 70%, #050811 100%); }
+        .theme-nucleo { background: radial-gradient(circle at center, #0e7490 0%, #164e63 70%, #050811 100%); }
+
+        /* Damage Floating Text Animation */
+        @keyframes floatUpDamage {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            50% { opacity: 1; transform: translateY(-20px) scale(1.2); }
+            100% { opacity: 0; transform: translateY(-40px) scale(0.9); }
+        }
+        .dmg-float { animation: floatUpDamage 0.8s forwards ease-out; }
     </style>
 </head>
 <body class="bg-retroDark text-slate-100 font-mono min-h-screen flex flex-col items-center justify-between overflow-x-hidden select-none relative">
     
-    <div class="crt-overlay absolute inset-0 z-50 pointer-events-none"></div>
+    <!-- CRT Screen Overlay -->
+    <div class="crt-overlay fixed inset-0 z-50 pointer-events-none"></div>
 
-    <div id="app" class="w-full max-w-md md:max-w-xl lg:max-w-2xl min-h-screen flex flex-col justify-between p-4 relative z-10">
+    <!-- MAIN GAME CONTAINER -->
+    <div id="app" class="w-full max-w-md md:max-w-xl lg:max-w-2xl min-h-screen flex flex-col justify-between p-3 md:p-5 relative z-10">
         
         <!-- HEADER -->
-        <header id="header-container" class="text-center py-2 border-b border-retroBorder mb-3">
-            <h1 class="pixel-font text-3xl md:text-4xl text-cyan-400 font-bold tracking-widest drop-shadow-[0_0_10px_rgba(6,182,212,0.6)]">TORRE:SYSTEM // V9.0</h1>
-            <p id="sub-header" class="text-xs text-slate-400 tracking-wider">EXPEDICIÓN PÍXEL TÁCTICA Y FORJA DE HÉROES</p>
+        <header id="header-container" class="text-center py-2 border-b-2 border-retroBorder mb-3 bg-retroCard/60 rounded px-2 backdrop-blur-sm">
+            <h1 class="pixel-font text-3xl md:text-4xl text-cyan-400 font-bold tracking-widest drop-shadow-[0_0_12px_rgba(6,182,212,0.8)]">TORRE:SYSTEM // V11.0</h1>
+            <p id="sub-header" class="text-xs text-slate-300 tracking-wider font-semibold">GRAPHIC EDITION &bull; FORJA DE HÉROES & BESTIARIO</p>
         </header>
 
         <!-- DYNAMIC SCREEN CONTAINER -->
-        <main id="main-view" class="flex-grow flex flex-col justify-center items-center my-2">
+        <main id="main-view" class="flex-grow flex flex-col justify-center items-center my-2 relative">
             <!-- Dynamically populated by JS -->
         </main>
 
         <!-- FOOTER -->
-        <footer class="text-center py-2 text-[10px] text-slate-500 border-t border-retroBorder/50 mt-2">
-            TORRE:SYSTEM ULTIMATE PIXEL EDITION &bull; ENGINE V9.0
+        <footer class="text-center py-2 text-[11px] text-slate-400 border-t border-retroBorder/60 mt-2 flex justify-between items-center px-2">
+            <span>TORRE:SYSTEM GRAPHIC V11.0</span>
+            <span class="text-cyan-400">[WASD / FLECHAS AL NAVEGAR]</span>
         </footer>
     </div>
 
     <!-- NOTIFICATION MODAL -->
-    <div id="toast-modal" class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 hidden">
-        <div class="bg-retroCard border-2 border-retroBorder p-5 rounded max-w-sm w-full text-center pixel-card shadow-2xl">
-            <h3 id="toast-title" class="pixel-font text-2xl text-yellow-400 mb-2">NOTIFICACIÓN</h3>
-            <p id="toast-msg" class="text-sm text-slate-300 mb-4">Mensaje del sistema...</p>
-            <button onclick="closeToast()" class="bg-cyan-600 hover:bg-cyan-500 text-black font-bold px-6 py-2 rounded pixel-font text-lg tracking-wider pixel-btn">ACEPTAR</button>
+    <div id="toast-modal" class="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4 hidden backdrop-blur-xs">
+        <div class="bg-retroCard border-2 border-cyan-500/80 p-5 rounded max-w-sm w-full text-center pixel-card shadow-2xl">
+            <h3 id="toast-title" class="pixel-font text-2xl text-yellow-400 mb-2 font-bold tracking-wide">NOTIFICACIÓN</h3>
+            <p id="toast-msg" class="text-sm text-slate-200 mb-5 leading-relaxed">Mensaje del sistema...</p>
+            <button onclick="closeToast()" class="bg-cyan-500 hover:bg-cyan-400 text-black font-bold px-6 py-2 rounded pixel-font text-lg tracking-wider pixel-btn border border-cyan-300">ACEPTAR</button>
         </div>
     </div>
 
     <!-- STAIRS MODAL -->
-    <div id="stairs-modal" class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 hidden">
-        <div class="bg-retroCard border-2 border-cyan-500/80 p-5 rounded max-w-sm w-full text-center pixel-card shadow-2xl space-y-3">
-            <h3 class="pixel-font text-2xl text-cyan-400">ESCALERAS DE LA TORRE</h3>
+    <div id="stairs-modal" class="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4 hidden backdrop-blur-xs">
+        <div class="bg-retroCard border-2 border-cyan-500 p-5 rounded max-w-sm w-full text-center pixel-card shadow-2xl space-y-3">
+            <h3 class="pixel-font text-2xl text-cyan-300">ESCALERAS DE LA TORRE</h3>
             <p class="text-xs text-slate-300">Has alcanzado un acceso entre niveles. ¿Qué acción deseas realizar?</p>
             <div class="space-y-2 pt-2">
-                <button onclick="confirmStairsAction('up')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-black font-bold py-2.5 rounded pixel-font text-lg pixel-btn">⬆️ SUBIR DE PISO</button>
-                <button id="btn-stairs-down" onclick="confirmStairsAction('down')" class="w-full bg-blue-600 hover:bg-blue-500 text-black font-bold py-2.5 rounded pixel-font text-lg pixel-btn">⬇️ BAJAR DE PISO</button>
-                <button onclick="confirmStairsAction('lobby')" class="w-full bg-amber-600 hover:bg-amber-500 text-black font-bold py-2.5 rounded pixel-font text-lg pixel-btn">🏰 REGRESAR AL LOBBY</button>
-                <button onclick="closeStairsModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2 rounded pixel-font text-sm pixel-btn">PERMANECER AQUÍ</button>
+                <button onclick="confirmStairsAction('up')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-slate-900 font-bold py-2.5 rounded pixel-font text-lg pixel-btn border border-emerald-400">⬆️ SUBIR DE PISO</button>
+                <button id="btn-stairs-down" onclick="confirmStairsAction('down')" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded pixel-font text-lg pixel-btn border border-blue-400">⬇️ BAJAR DE PISO</button>
+                <button onclick="confirmStairsAction('lobby')" class="w-full bg-amber-600 hover:bg-amber-500 text-slate-900 font-bold py-2.5 rounded pixel-font text-lg pixel-btn border border-amber-400">🏰 REGRESAR AL LOBBY</button>
+                <button onclick="closeStairsModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2 rounded pixel-font text-sm pixel-btn border border-slate-600">PERMANECER AQUÍ</button>
             </div>
         </div>
     </div>
 
     <!-- IN-COMBAT POTION MODAL -->
-    <div id="combat-potion-modal" class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 hidden">
-        <div class="bg-retroCard border-2 border-retroBorder p-5 rounded max-w-sm w-full text-center pixel-card shadow-2xl">
-            <h3 class="pixel-font text-2xl text-purple-400 mb-3">MOCHILA EN COMBATE</h3>
+    <div id="combat-potion-modal" class="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4 hidden backdrop-blur-xs">
+        <div class="bg-retroCard border-2 border-purple-500 p-5 rounded max-w-sm w-full text-center pixel-card shadow-2xl">
+            <h3 class="pixel-font text-2xl text-purple-300 mb-3">MOCHILA EN COMBATE</h3>
             <div id="combat-potion-list" class="space-y-2 mb-4 text-left max-h-60 overflow-y-auto"></div>
             <button onclick="closeCombatPotionModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold py-2 rounded pixel-font text-base border border-slate-600 pixel-btn">VOLVER AL COMBATE</button>
         </div>
     </div>
 
     <!-- NPC DIALOG MODAL -->
-    <div id="npc-modal" class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 hidden">
+    <div id="npc-modal" class="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4 hidden backdrop-blur-xs">
         <div class="bg-retroCard border-2 border-cyan-500/80 p-5 rounded max-w-md w-full text-center pixel-card shadow-2xl space-y-3">
-            <div id="npc-avatar-container" class="text-5xl mb-1">🧙‍♂️</div>
+            <div id="npc-avatar-container" class="text-5xl mb-1 drop-shadow-[0_0_10px_rgba(6,182,212,0.5)]">🧙‍♂️</div>
             <h3 id="npc-name" class="pixel-font text-2xl text-cyan-300">NPC VIAJERO</h3>
-            <p id="npc-dialog" class="text-xs text-slate-300 bg-slate-900 p-3 rounded border border-slate-700 leading-relaxed text-left">
+            <p id="npc-dialog" class="text-xs text-slate-200 bg-slate-950 p-3 rounded border border-slate-700 leading-relaxed text-left">
                 "¡Ah, un explorador! Toma este regalo para ayudarte en tu travesía."
             </p>
             <div id="npc-actions" class="flex space-x-2 pt-2">
-                <button onclick="closeNpcModal()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-black font-bold py-2 rounded pixel-font text-lg pixel-btn">CONTINUAR</button>
+                <button onclick="closeNpcModal()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-slate-900 font-bold py-2 rounded pixel-font text-lg pixel-btn border border-cyan-400">CONTINUAR</button>
             </div>
         </div>
     </div>
@@ -204,86 +262,188 @@
             }
         }
 
-        // DYNAMIC PIXEL HERO PAPERDOLL GRAPHIC GENERATOR
-        function generateHeroAvatarSVG(equipment, classId = 'adventurer', size = 80) {
+        // ENHANCED HIGH-PIXEL HERO PAPERDOLL GENERATOR
+        function generateHeroAvatarSVG(equipment, classId = 'adventurer', size = 90) {
             const hasHelmet = equipment && equipment.helmet;
             const hasArmor = equipment && equipment.armor;
             const hasWeapon = equipment && equipment.weapon;
-            const hasShield = equipment && equipment.boots; // boots or shield slot
+            const hasShield = equipment && equipment.boots;
 
-            let helmetSVG = hasHelmet ? `<rect x="30" y="8" width="20" height="12" fill="#94a3b8"/><rect x="34" y="14" width="12" height="4" fill="#1e293b"/>` : `<rect x="32" y="8" width="16" height="8" fill="#d97706"/>`;
-            let armorSVG = hasArmor ? `<rect x="26" y="28" width="28" height="22" fill="#475569"/><rect x="32" y="32" width="16" height="14" fill="#cbd5e1"/>` : `<rect x="28" y="28" width="24" height="22" fill="#2563eb"/>`;
-            let weaponSVG = hasWeapon ? `<rect x="56" y="16" width="6" height="30" fill="#e2e8f0"/><rect x="53" y="38" width="12" height="4" fill="#b45309"/>` : `<rect x="56" y="26" width="4" height="20" fill="#78350f"/>`;
-            let shieldSVG = hasShield ? `<path d="M16 28 L24 28 L24 46 L20 50 L16 46 Z" fill="#b91c1c" stroke="#fef08a" stroke-width="2"/>` : ``;
+            // Class Colors & Effects
+            let classHue = '#3b82f6';
+            let eyeColor = '#00f0ff';
+            let capeColor = '#1e1b4b';
+
+            if (classId === 'warrior') classHue = '#ef4444';
+            else if (classId === 'rogue' || classId === 'assassin') classHue = '#10b981';
+            else if (classId === 'mage') classHue = '#06b6d4';
+            else if (classId === 'paladin') classHue = '#f59e0b';
+            else if (classId === 'berserker') classHue = '#dc2626';
+            else if (classId === 'abyss') classHue = '#8b5cf6';
+            else if (classId === 'chrono') classHue = '#ec4899';
+            else if (classId === 'dragonknight') classHue = '#b91c1c';
+
+            // Helmet render
+            let helmetSVG = `<rect x="30" y="8" width="20" height="10" fill="#d97706"/><rect x="34" y="6" width="12" height="4" fill="#f59e0b"/>`;
+            if (hasHelmet) {
+                helmetSVG = `
+                    <path d="M 28 8 L 52 8 L 54 20 L 26 20 Z" fill="#64748b"/>
+                    <rect x="30" y="4" width="20" height="6" fill="#94a3b8"/>
+                    <rect x="32" y="14" width="16" height="4" fill="#0f172a"/>
+                    <polygon points="40,2 36,8 44,8" fill="${classHue}"/>
+                `;
+            }
+
+            // Armor render
+            let armorSVG = `<rect x="26" y="28" width="28" height="22" fill="${classHue}" rx="2"/><rect x="32" y="32" width="16" height="14" fill="#60a5fa" rx="1"/>`;
+            if (hasArmor) {
+                armorSVG = `
+                    <rect x="24" y="26" width="32" height="26" fill="#475569" rx="3"/>
+                    <rect x="28" y="28" width="24" height="20" fill="#94a3b8" rx="2"/>
+                    <path d="M 32 30 L 48 30 L 40 44 Z" fill="${classHue}"/>
+                    <circle cx="40" cy="35" r="3" fill="#facc15"/>
+                `;
+            }
+
+            // Weapon render
+            let weaponSVG = `<rect x="56" y="24" width="4" height="22" fill="#78350f"/><rect x="54" y="22" width="8" height="4" fill="#d97706"/>`;
+            if (hasWeapon) {
+                weaponSVG = `
+                    <rect x="57" y="10" width="6" height="38" fill="#e2e8f0" rx="1"/>
+                    <rect x="59" y="8" width="2" height="40" fill="#ffffff"/>
+                    <rect x="53" y="38" width="14" height="5" fill="#b45309" rx="1"/>
+                    <circle cx="60" cy="40.5" r="2.5" fill="${classHue}"/>
+                    <rect x="58" y="43" width="4" height="10" fill="#451a03"/>
+                `;
+            }
+
+            // Shield/Offhand render
+            let shieldSVG = ``;
+            if (hasShield) {
+                shieldSVG = `
+                    <path d="M 14 26 L 26 26 L 26 44 L 20 50 L 14 44 Z" fill="#b91c1c" stroke="#fef08a" stroke-width="2"/>
+                    <polygon points="20,30 24,38 16,38" fill="#fef08a"/>
+                `;
+            }
 
             return `
-                <svg width="${size}" height="${size}" viewBox="0 0 80 80" class="inline-block drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)]">
-                    <!-- Base Shadow -->
-                    <ellipse cx="40" cy="72" rx="22" ry="6" fill="#000000" opacity="0.6"/>
-                    <!-- Legs -->
-                    <rect x="30" y="50" width="8" height="18" fill="#1e293b"/>
-                    <rect x="42" y="50" width="8" height="18" fill="#1e293b"/>
-                    <rect x="28" y="64" width="10" height="6" fill="#475569"/>
-                    <rect x="42" y="64" width="10" height="6" fill="#475569"/>
-                    <!-- Torso & Armor -->
+                <svg width="${size}" height="${size}" viewBox="0 0 80 80" class="inline-block drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)] animate-aura">
+                    <!-- Cape -->
+                    <path d="M 22 28 C 16 45, 18 60, 24 66 L 56 66 C 62 60, 64 45, 58 28 Z" fill="${capeColor}" opacity="0.9"/>
+                    <!-- Shadow Base -->
+                    <ellipse cx="40" cy="73" rx="24" ry="6" fill="#000000" opacity="0.6"/>
+                    <!-- Legs & Boots -->
+                    <rect x="29" y="50" width="9" height="18" fill="#1e293b"/>
+                    <rect x="42" y="50" width="9" height="18" fill="#1e293b"/>
+                    <rect x="27" y="64" width="12" height="7" fill="#334155" rx="1"/>
+                    <rect x="41" y="64" width="12" height="7" fill="#334155" rx="1"/>
+                    <!-- Armor / Torso -->
                     ${armorSVG}
                     <!-- Arms -->
-                    <rect x="18" y="28" width="8" height="18" fill="#3b82f6"/>
-                    <rect x="54" y="28" width="8" height="18" fill="#3b82f6"/>
-                    <!-- Head & Skin -->
-                    <rect x="30" y="12" width="20" height="18" fill="#fde047"/>
-                    <!-- Eyes -->
-                    <rect x="34" y="18" width="3" height="4" fill="#0f172a"/>
-                    <rect x="43" y="18" width="3" height="4" fill="#0f172a"/>
+                    <rect x="17" y="28" width="8" height="18" fill="${classHue}" rx="2"/>
+                    <rect x="55" y="28" width="8" height="18" fill="${classHue}" rx="2"/>
+                    <!-- Head & Face -->
+                    <rect x="30" y="12" width="20" height="18" fill="#fde047" rx="2"/>
+                    <!-- Glowing Eyes -->
+                    <rect x="33" y="18" width="4" height="4" fill="${eyeColor}"/>
+                    <rect x="43" y="18" width="4" height="4" fill="${eyeColor}"/>
                     <!-- Helmet / Hair -->
                     ${helmetSVG}
-                    <!-- Offhand / Shield -->
+                    <!-- Shield / Offhand -->
                     ${shieldSVG}
-                    <!-- Weapon -->
+                    <!-- Main Weapon -->
                     ${weaponSVG}
                 </svg>
             `;
         }
 
-        function generateMonsterSVG(monsterType, size = 90) {
+        // DETAILED MONSTER & BOSS SVG GENERATOR
+        function generateMonsterSVG(monsterType, size = 95) {
             if (monsterType === 'slime') {
                 return `
                     <svg width="${size}" height="${size}" viewBox="0 0 80 80" class="inline-block animate-bounce">
-                        <ellipse cx="40" cy="70" rx="26" ry="6" fill="#000" opacity="0.4"/>
-                        <path d="M 20 50 Q 20 20 40 20 Q 60 20 60 50 Q 60 65 40 65 Q 20 65 20 50 Z" fill="#10b981"/>
-                        <circle cx="32" cy="42" r="4" fill="#fff"/>
-                        <circle cx="48" cy="42" r="4" fill="#fff"/>
-                        <circle cx="33" cy="43" r="2" fill="#000"/>
-                        <circle cx="49" cy="43" r="2" fill="#000"/>
-                        <path d="M 26 28 Q 32 22 40 28" stroke="#a7f3d0" stroke-width="3" fill="none"/>
+                        <ellipse cx="40" cy="72" rx="26" ry="6" fill="#000" opacity="0.5"/>
+                        <path d="M 18 52 C 16 26, 64 26, 62 52 C 64 68, 16 68, 18 52 Z" fill="#10b981"/>
+                        <path d="M 24 45 C 25 32, 55 32, 56 45 C 55 58, 25 58, 24 45 Z" fill="#34d399" opacity="0.5"/>
+                        <circle cx="32" cy="42" r="5" fill="#fff"/>
+                        <circle cx="48" cy="42" r="5" fill="#fff"/>
+                        <circle cx="34" cy="43" r="2.5" fill="#050811"/>
+                        <circle cx="50" cy="43" r="2.5" fill="#050811"/>
+                        <ellipse cx="38" cy="30" rx="8" ry="3" fill="#a7f3d0" opacity="0.8"/>
                     </svg>
                 `;
             } else if (monsterType === 'goblin') {
                 return `
+                    <svg width="${size}" height="${size}" viewBox="0 0 80 80" class="inline-block animate-float">
+                        <ellipse cx="40" cy="73" rx="22" ry="6" fill="#000" opacity="0.5"/>
+                        <rect x="31" y="46" width="7" height="20" fill="#15803d"/>
+                        <rect x="42" y="46" width="7" height="20" fill="#15803d"/>
+                        <rect x="26" y="28" width="28" height="22" fill="#78350f" rx="2"/>
+                        <polygon points="8,18 28,26 24,36" fill="#22c55e"/>
+                        <polygon points="72,18 52,26 56,36" fill="#22c55e"/>
+                        <rect x="26" y="14" width="28" height="22" fill="#22c55e" rx="3"/>
+                        <rect x="30" y="20" width="7" height="5" fill="#facc15"/>
+                        <rect x="43" y="20" width="7" height="5" fill="#facc15"/>
+                        <circle cx="33" cy="22" r="2" fill="#000"/>
+                        <circle cx="46" cy="22" r="2" fill="#000"/>
+                        <polygon points="34,30 40,26 46,30" fill="#fff"/>
+                    </svg>
+                `;
+            } else if (monsterType === 'skeleton') {
+                return `
+                    <svg width="${size}" height="${size}" viewBox="0 0 80 80" class="inline-block animate-pulse">
+                        <ellipse cx="40" cy="72" rx="20" ry="5" fill="#000" opacity="0.5"/>
+                        <rect x="32" y="48" width="5" height="18" fill="#e2e8f0"/>
+                        <rect x="43" y="48" width="5" height="18" fill="#e2e8f0"/>
+                        <rect x="28" y="28" width="24" height="20" fill="#334155" rx="2"/>
+                        <!-- Ribs -->
+                        <line x1="32" y1="32" x2="48" y2="32" stroke="#e2e8f0" stroke-width="3"/>
+                        <line x1="32" y1="37" x2="48" y2="37" stroke="#e2e8f0" stroke-width="3"/>
+                        <line x1="32" y1="42" x2="48" y2="42" stroke="#e2e8f0" stroke-width="3"/>
+                        <rect x="28" y="10" width="24" height="20" fill="#f8fafc" rx="4"/>
+                        <rect x="31" y="16" width="6" height="7" fill="#020617"/>
+                        <rect x="43" y="16" width="6" height="7" fill="#020617"/>
+                        <polygon points="36,25 40,23 44,25" fill="#020617"/>
+                    </svg>
+                `;
+            } else if (monsterType === 'orc') {
+                return `
                     <svg width="${size}" height="${size}" viewBox="0 0 80 80" class="inline-block">
-                        <ellipse cx="40" cy="72" rx="20" ry="6" fill="#000" opacity="0.5"/>
-                        <rect x="32" y="45" width="6" height="20" fill="#15803d"/>
-                        <rect x="42" y="45" width="6" height="20" fill="#15803d"/>
-                        <rect x="28" y="28" width="24" height="20" fill="#78350f"/>
-                        <polygon points="12,20 28,26 26,34" fill="#15803d"/>
-                        <polygon points="68,20 52,26 54,34" fill="#15803d"/>
-                        <rect x="26" y="16" width="28" height="20" fill="#15803d"/>
-                        <rect x="30" y="22" width="6" height="4" fill="#facc15"/>
-                        <rect x="44" y="22" width="6" height="4" fill="#facc15"/>
-                        <polygon points="34,32 40,28 46,32" fill="#fff"/>
+                        <ellipse cx="40" cy="74" rx="26" ry="6" fill="#000" opacity="0.6"/>
+                        <rect x="22" y="24" width="36" height="30" fill="#166534" rx="4"/>
+                        <rect x="20" y="20" width="10" height="12" fill="#475569" rx="2"/>
+                        <rect x="50" y="20" width="10" height="12" fill="#475569" rx="2"/>
+                        <rect x="26" y="10" width="28" height="20" fill="#15803d" rx="3"/>
+                        <rect x="30" y="16" width="6" height="4" fill="#ef4444"/>
+                        <rect x="44" y="16" width="6" height="4" fill="#ef4444"/>
+                        <polygon points="32,28 35,22 38,28" fill="#fff"/>
+                        <polygon points="42,28 45,22 48,28" fill="#fff"/>
+                    </svg>
+                `;
+            } else if (monsterType === 'dragon' || monsterType === 'boss') {
+                return `
+                    <svg width="${size}" height="${size}" viewBox="0 0 80 80" class="inline-block animate-boss">
+                        <ellipse cx="40" cy="74" rx="30" ry="8" fill="#000" opacity="0.7"/>
+                        <path d="M 10 30 Q 5 10 25 22 Q 40 5 55 22 Q 75 10 70 30 Z" fill="#991b1b"/>
+                        <rect x="22" y="24" width="36" height="36" fill="#dc2626" rx="6"/>
+                        <rect x="28" y="30" width="24" height="18" fill="#0f172a" rx="2"/>
+                        <circle cx="34" cy="38" r="5" fill="#facc15"/>
+                        <circle cx="46" cy="38" r="5" fill="#facc15"/>
+                        <circle cx="34" cy="38" r="2" fill="#ef4444"/>
+                        <circle cx="46" cy="38" r="2" fill="#ef4444"/>
+                        <polygon points="40,6 30,22 50,22" fill="#f59e0b"/>
+                        <polygon points="26,48 30,56 34,48 38,56 42,48 46,56 50,48" fill="#fff"/>
                     </svg>
                 `;
             } else {
                 return `
                     <svg width="${size}" height="${size}" viewBox="0 0 80 80" class="inline-block animate-pulse">
-                        <ellipse cx="40" cy="72" rx="28" ry="7" fill="#000" opacity="0.6"/>
-                        <rect x="20" y="20" width="40" height="45" fill="#dc2626" rx="6"/>
-                        <rect x="26" y="26" width="28" height="16" fill="#0f172a"/>
-                        <circle cx="32" cy="34" r="4" fill="#ef4444"/>
-                        <circle cx="48" cy="34" r="4" fill="#ef4444"/>
-                        <polygon points="40,8 30,20 50,20" fill="#f59e0b"/>
-                        <rect x="10" y="30" width="10" height="25" fill="#7f1d1d"/>
-                        <rect x="60" y="30" width="10" height="25" fill="#7f1d1d"/>
+                        <ellipse cx="40" cy="72" rx="24" ry="6" fill="#000" opacity="0.5"/>
+                        <circle cx="40" cy="40" r="26" fill="#8b5cf6" opacity="0.8"/>
+                        <circle cx="40" cy="40" r="18" fill="#4c1d95"/>
+                        <circle cx="32" cy="36" r="4" fill="#06b6d4"/>
+                        <circle cx="48" cy="36" r="4" fill="#06b6d4"/>
+                        <path d="M 28 50 Q 40 60 52 50" stroke="#a855f7" stroke-width="4" fill="none"/>
                     </svg>
                 `;
             }
@@ -293,7 +453,9 @@
             warrior: { id: 'warrior', name: 'Guerrero', icon: '🛡️', color: 'text-red-400', border: 'border-red-500', bonusHp: 80, bonusStr: 12, bonusDef: 8, activeSkill: 'Estocada Brutal', activeCost: 15, activeDesc: 'Golpe pesado con 170% de Fuerza.' },
             rogue: { id: 'rogue', name: 'Asesino', icon: '🗡️', color: 'text-emerald-400', border: 'border-emerald-500', bonusHp: 40, bonusStr: 10, bonusSpd: 14, activeSkill: 'Puñalada Sombra', activeCost: 12, activeDesc: 'Ataque rápido, letal y preciso.' },
             mage: { id: 'mage', name: 'Mago Arcano', icon: '🧙‍♂️', color: 'text-cyan-400', border: 'border-cyan-500', bonusHp: 20, bonusMag: 20, bonusMp: 50, activeSkill: 'Rayo de Fuego', activeCost: 18, activeDesc: 'Lanza una descarga mágica destructiva.' },
-            paladin: { id: 'paladin', name: 'Paladín', icon: '⚔️', color: 'text-amber-400', border: 'border-amber-500', bonusHp: 70, bonusStr: 8, bonusDef: 12, activeSkill: 'Juicio Sagrado', activeCost: 16, activeDesc: 'Daño físico y sagrado combinado.' }
+            paladin: { id: 'paladin', name: 'Paladín', icon: '⚔️', color: 'text-amber-400', border: 'border-amber-500', bonusHp: 70, bonusStr: 8, bonusDef: 12, activeSkill: 'Juicio Sagrado', activeCost: 16, activeDesc: 'Daño físico y sagrado combinado.' },
+            berserker: { id: 'berserker', name: 'Berserker', icon: '🪓', color: 'text-rose-500', border: 'border-rose-600', bonusHp: 110, bonusStr: 22, bonusDef: 4, activeSkill: 'Furia Sangrienta', activeCost: 20, activeDesc: 'Daño masivo a costa de concentración.' },
+            chrono: { id: 'chrono', name: 'Cronomante', icon: '⏳', color: 'text-purple-400', border: 'border-purple-500', bonusHp: 50, bonusMag: 28, bonusMp: 80, activeSkill: 'Fisura Temporal', activeCost: 25, activeDesc: 'Altera el tiempo y golpea con energía.' }
         };
 
         const RANDOM_TRAITS_POOL = [
@@ -318,29 +480,31 @@
         ];
 
         const SHOP_ITEMS = [
-            { id: 'pot_hp', name: 'Poción de Vida', type: 'potion', effect: 'hp', val: 50, price: 35, icon: '🔴', desc: 'Restaura 50 PV.' },
-            { id: 'pot_mp', name: 'Poción de Mana', type: 'potion', effect: 'mp', val: 30, price: 30, icon: '🔵', desc: 'Restaura 30 PM.' },
+            { id: 'pot_hp', name: 'Poción de Vida', type: 'potion', effect: 'hp', val: 60, price: 35, icon: '🔴', desc: 'Restaura 60 PV.' },
+            { id: 'pot_mp', name: 'Poción de Mana', type: 'potion', effect: 'mp', val: 40, price: 30, icon: '🔵', desc: 'Restaura 40 PM.' },
             { id: 'book_class', name: 'Libro de Clase Antiguo', type: 'book', price: 350, icon: '📖', desc: 'Permite elegir una clase avanzada en la Iglesia (Requisito: Nivel 10 / Piso 10).' },
-            { id: 'eq_sword1', name: 'Espada de Hierro', type: 'weapon', slot: 'weapon', atk: 10, price: 120, icon: '🗡️', desc: 'Arma afilada. +10 ATK.' },
-            { id: 'eq_helmet1', name: 'Yelmo de Explorador', type: 'helmet', slot: 'helmet', def: 6, price: 90, icon: '🪖', desc: 'Yelmo protector. +6 DEF.' },
-            { id: 'eq_armor1', name: 'Cota de Malla', type: 'armor', slot: 'armor', def: 12, price: 180, icon: '🛡️', desc: 'Armadura corporal. +12 DEF.' }
+            { id: 'eq_sword1', name: 'Espada de Hierro', type: 'weapon', slot: 'weapon', atk: 12, price: 120, icon: '🗡️', desc: 'Arma afilada. +12 ATK.' },
+            { id: 'eq_helmet1', name: 'Yelmo de Explorador', type: 'helmet', slot: 'helmet', def: 7, price: 90, icon: '🪖', desc: 'Yelmo protector. +7 DEF.' },
+            { id: 'eq_armor1', name: 'Cota de Malla', type: 'armor', slot: 'armor', def: 14, price: 180, icon: '🛡️', desc: 'Armadura corporal. +14 DEF.' }
         ];
 
         const MONSTER_TYPES = [
             { id: 'slime_blue', name: 'Slime Azul Ácido', hp: 75, atk: 13, def: 4, exp: 35, gold: 20, type: 'slime', drop: 'Gelatina Azul', dropValue: 18, lore: 'Limo elemental viscoso que habita en los primeros niveles.' },
-            { id: 'slime_green', name: 'Slime Verde Tóxico', hp: 90, atk: 16, def: 5, exp: 45, gold: 26, type: 'slime', drop: 'Núcleo de Slime', dropValue: 22, lore: 'Acumula toxinas de las ruinas antiguas.' },
+            { id: 'slime_green', name: 'Slime Verde Tóxico', hp: 90, atk: 16, def: 5, exp: 45, gold: 26, type: 'slime', drop: 'Gelatina Azul', dropValue: 22, lore: 'Acumula toxinas de las ruinas antiguas.' },
             { id: 'goblin_scout', name: 'Goblin Explorador', hp: 100, atk: 19, def: 7, exp: 55, gold: 32, type: 'goblin', drop: 'Oreja de Goblin', dropValue: 28, lore: 'Rápido y astuto, patrulla en busca de invasores.' },
-            { id: 'goblin_raider', name: 'Goblin Asaltante', hp: 120, atk: 22, def: 9, exp: 70, gold: 42, type: 'goblin', drop: 'Daga Rota', dropValue: 38, lore: 'Guerrero fiero equipado con armamento saqueado.' }
+            { id: 'goblin_raider', name: 'Goblin Asaltante', hp: 120, atk: 22, def: 9, exp: 70, gold: 42, type: 'goblin', drop: 'Oreja de Goblin', dropValue: 38, lore: 'Guerrero fiero equipado con armamento saqueado.' },
+            { id: 'skel_warrior', name: 'Esqueleto Guerrero', hp: 150, atk: 28, def: 12, exp: 90, gold: 55, type: 'skeleton', drop: 'Hueso Antiguo', dropValue: 45, lore: 'Guardia no-muerto resucitado en los niveles intermedios.' },
+            { id: 'orc_guard', name: 'Orco Berserker', hp: 210, atk: 35, def: 16, exp: 130, gold: 80, type: 'orc', drop: 'Engranaje de Titanio', dropValue: 70, lore: 'Bruto formidable con armadura pesada.' }
         ];
 
         const BOSS_TYPES = [
             { id: 'boss_goblin', name: 'Goblin Rey Cibernético', hp: 420, atk: 38, def: 17, exp: 320, gold: 240, type: 'boss', drop: 'Corona de Acero Goblin', dropValue: 200, lore: 'Soberano de las tribus goblins con mejoras cibernéticas.' },
-            { id: 'boss_slime', name: 'Slime Prime Mutante', hp: 520, atk: 34, def: 20, exp: 380, gold: 280, type: 'boss', drop: 'Núcleo Líquido Cuántico', dropValue: 220, lore: 'Masa gigantesca de energía slime inestable.' },
+            { id: 'boss_slime', name: 'Slime Prime Mutante', hp: 520, atk: 34, def: 20, exp: 380, gold: 280, type: 'boss', drop: 'Gelatina Azul', dropValue: 220, lore: 'Masa gigantesca de energía slime inestable.' },
             { id: 'boss_mech', name: 'Guardián Mecánico de la Torre', hp: 680, atk: 46, def: 25, exp: 550, gold: 450, type: 'boss', drop: 'Engranaje de Titanio', dropValue: 350, lore: 'Autómata antiguo programado para erradicar intrusos.' }
         ];
 
         const FLOOR_NPCS_POOL = [
-            { name: 'Sabio Erudito Corvus', icon: '🧙‍♂️', dialog: '¡Saludos, joven viajero! La torre cambia constantemente, pero tu valentía permanecerá intacta. Toma estas pociones.', reward: { item: { id: 'pot_hp', name: 'Poción de Vida', type: 'potion', effect: 'hp', val: 50, price: 35, icon: '🔴', desc: 'Restaura 50 PV.' } } },
+            { name: 'Sabio Erudito Corvus', icon: '🧙‍♂️', dialog: '¡Saludos, joven viajero! La torre cambia constantemente, pero tu valentía permanecerá intacta. Toma estas pociones.', reward: { item: { id: 'pot_hp', name: 'Poción de Vida', type: 'potion', effect: 'hp', val: 60, price: 35, icon: '🔴', desc: 'Restaura 60 PV.' } } },
             { name: 'Mercader Nómada Dax', icon: '🧝‍♂️', dialog: '¡Vaya! No esperaba encontrar a nadie en estos pisos. Te regalo un puñado de monedas de mi colección.', reward: { gold: 120 } }
         ];
 
@@ -350,7 +514,7 @@
             slots: [null, null, null],
             player: null,
             floor: 1,
-            floorsState: {}, // Stores grid, fog, environment per floor number
+            floorsState: {},
             grid: [],
             fog: [],
             environment: [],
@@ -365,7 +529,26 @@
             ]
         };
 
-        // MODAL HELPERS
+        // Load persisted saves from LocalStorage
+        function loadSavedSlotsFromStorage() {
+            try {
+                const stored = localStorage.getItem('TORRE_SYSTEM_SLOTS_V11');
+                if (stored) {
+                    game.slots = JSON.parse(stored);
+                }
+            } catch (e) {
+                console.error('Save storage read error', e);
+            }
+        }
+
+        function saveSlotsToStorage() {
+            try {
+                localStorage.setItem('TORRE_SYSTEM_SLOTS_V11', JSON.stringify(game.slots));
+            } catch (e) {
+                console.error('Save storage write error', e);
+            }
+        }
+
         function showToast(title, msg) {
             document.getElementById('toast-title').innerText = title;
             document.getElementById('toast-msg').innerText = msg;
@@ -403,18 +586,31 @@
                     return;
                 }
                 game.floor++;
+                game.player.floor = game.floor;
+                saveCurrentGame();
                 checkFloorQuests();
                 showToast('ASCENSO', `Has subido al Piso ${game.floor}.`);
                 loadOrCreateFloor(game.floor);
             } else if (action === 'down') {
                 if (game.floor > 1) {
                     game.floor--;
+                    game.player.floor = game.floor;
+                    saveCurrentGame();
                     showToast('DESCENSO', `Has bajado al Piso ${game.floor}.`);
                     loadOrCreateFloor(game.floor);
                 }
             } else if (action === 'lobby') {
+                saveCurrentGame();
                 game.screen = 'lobby';
                 renderScreen();
+            }
+        }
+
+        function saveCurrentGame() {
+            if (game.player && game.currentSlot !== null) {
+                game.player.floor = game.floor;
+                game.slots[game.currentSlot] = JSON.parse(JSON.stringify(game.player));
+                saveSlotsToStorage();
             }
         }
 
@@ -477,296 +673,15 @@
             playSound('click');
         }
 
-        function renderScreen() {
-            const mainView = document.getElementById('main-view');
-            mainView.innerHTML = '';
-
-            if (game.screen === 'title') {
-                renderTitleScreen(mainView);
-            } else if (game.screen === 'saves') {
-                renderSavesScreen(mainView);
-            } else if (game.screen === 'create') {
-                renderCreateScreen(mainView);
-            } else if (game.screen === 'lobby') {
-                renderLobbyScreen(mainView);
-            } else if (game.screen === 'floor') {
-                renderFloorScreen(mainView);
-            } else if (game.screen === 'combat') {
-                renderCombatScreen(mainView);
-            } else if (game.screen === 'inventory') {
-                renderInventoryScreen(mainView);
-            } else if (game.screen === 'shop') {
-                renderShopScreen(mainView);
-            } else if (game.screen === 'forge') {
-                renderForgeScreen(mainView);
-            } else if (game.screen === 'bestiary') {
-                renderBestiaryScreen(mainView);
-            } else if (game.screen === 'quests') {
-                renderQuestsScreen(mainView);
-            } else if (game.screen === 'npc') {
-                renderNpcScreen(mainView);
-            } else if (game.screen === 'training') {
-                renderTrainingScreen(mainView);
-            } else if (game.screen === 'church') {
-                renderChurchScreen(mainView);
-            }
-        }
-
-        function renderTitleScreen(container) {
-            container.innerHTML = `
-                <div class="flex flex-col items-center justify-center text-center space-y-6 w-full max-w-md py-6">
-                    <div class="pixel-card p-6 rounded-lg w-full border-2 border-cyan-500/50 shadow-[0_0_20px_rgba(6,182,212,0.2)]">
-                        <div class="mb-3">${generateHeroAvatarSVG({ weapon: true, helmet: true }, 'warrior', 90)}</div>
-                        <h2 class="pixel-font text-3xl text-cyan-300 font-bold mb-1">TORRE:SYSTEM</h2>
-                        <p class="text-xs text-slate-400 mb-6">EDICIÓN PIXEL ULTIMATE V9</p>
-                        <button onclick="goToSaves()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-black font-bold py-3 px-6 rounded pixel-font text-2xl tracking-wider pixel-btn border-2 border-cyan-400">
-                            JUGAR
-                        </button>
-                    </div>
-                    <div class="text-[11px] text-slate-500 space-y-1">
-                        <p>&bull; Avatar de Héroe Dinámico &bull; Herrería y Forja de Equipo</p>
-                        <p>&bull; Grimorio de Bestias &bull; Escalas e Historia Mantenida</p>
-                    </div>
-                </div>
-            `;
-        }
-
-        function goToSaves() {
-            game.screen = 'saves';
-            playSound('click');
-            renderScreen();
-        }
-
-        function renderSavesScreen(container) {
-            let slotsHtml = '';
-            for (let i = 0; i < 3; i++) {
-                const save = game.slots[i];
-                if (save) {
-                    slotsHtml += `
-                        <div class="pixel-card p-4 rounded mb-3 flex items-center justify-between border border-slate-700">
-                            <div class="flex items-center space-x-3">
-                                ${generateHeroAvatarSVG(save.equipment, save.classId, 50)}
-                                <div>
-                                    <span class="pixel-font text-xl text-yellow-400">RANURA ${i+1}: ${save.name}</span>
-                                    <p class="text-xs text-slate-400">Clase: ${save.className} | Niv: ${save.level} | Piso: ${save.floor} | Oro: ${save.gold}g</p>
-                                </div>
-                            </div>
-                            <div class="flex space-x-2">
-                                <button onclick="loadGameSlot(${i})" class="bg-green-600 hover:bg-green-500 text-black px-3 py-1 rounded text-xs font-bold pixel-font pixel-btn">CARGAR</button>
-                                <button onclick="deleteGameSlot(${i})" class="bg-red-600 hover:bg-red-500 text-black px-3 py-1 rounded text-xs font-bold pixel-font pixel-btn">BORRAR</button>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    slotsHtml += `
-                        <div class="pixel-card p-4 rounded mb-3 flex items-center justify-between border border-dashed border-slate-700">
-                            <div>
-                                <span class="pixel-font text-xl text-slate-500">RANURA ${i+1}: VACÍA</span>
-                                <p class="text-xs text-slate-500">Sin partida guardada</p>
-                            </div>
-                            <button onclick="startNewGameInSlot(${i})" class="bg-cyan-600 hover:bg-cyan-500 text-black px-4 py-2 rounded text-xs font-bold pixel-font pixel-btn">NUEVA PARTIDA</button>
-                        </div>
-                    `;
-                }
-            }
-
-            container.innerHTML = `
-                <div class="w-full max-w-md">
-                    <h3 class="pixel-font text-2xl text-cyan-400 mb-4 text-center">SELECCIONAR RANURA DE PARTIDA</h3>
-                    <div class="space-y-2 mb-6">${slotsHtml}</div>
-                    <button onclick="game.screen='title'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-base pixel-btn">VOLVER AL MENÚ</button>
-                </div>
-            `;
-        }
-
-        function startNewGameInSlot(slotIdx) {
-            game.currentSlot = slotIdx;
-            game.screen = 'create';
-            playSound('click');
-            renderScreen();
-        }
-
-        function loadGameSlot(slotIdx) {
-            game.currentSlot = slotIdx;
-            game.player = JSON.parse(JSON.stringify(game.slots[slotIdx]));
-            game.floor = game.player.floor || 1;
-            game.screen = 'lobby';
-            playSound('victory');
-            renderScreen();
-        }
-
-        function deleteGameSlot(slotIdx) {
-            game.slots[slotIdx] = null;
-            playSound('hit');
-            renderScreen();
-        }
-
-        let tempHeroName = 'Héroe Pixel';
-        let tempTrait = null;
-
-        function renderCreateScreen(container) {
-            if (!tempTrait) {
-                tempTrait = RANDOM_TRAITS_POOL[Math.floor(Math.random() * RANDOM_TRAITS_POOL.length)];
-            }
-
-            container.innerHTML = `
-                <div class="w-full max-w-md">
-                    <h3 class="pixel-font text-2xl text-cyan-400 mb-3 text-center">CREAR NUEVO AVENTURERO</h3>
-                    <div class="space-y-3 mb-4">
-                        <div class="flex justify-center mb-2">
-                            ${generateHeroAvatarSVG({ helmet: false, armor: false, weapon: false }, 'adventurer', 80)}
-                        </div>
-                        <div>
-                            <label class="block text-xs text-slate-400 mb-1 pixel-font">NOMBRE DEL HÉROE:</label>
-                            <input type="text" id="hero-name-input" value="${tempHeroName}" class="w-full bg-slate-900 border-2 border-slate-700 p-2 rounded text-cyan-300 pixel-font text-lg focus:outline-none focus:border-cyan-400" />
-                        </div>
-                        <div class="pixel-card p-3 rounded border-2 border-cyan-500/40 text-center">
-                            <h4 class="pixel-font text-lg text-cyan-300">CLASE INICIAL: AVENTURERO</h4>
-                            <p class="text-[11px] text-slate-300 mt-1">Comienzas como un Aventurero. Al alcanzar el Piso 10 y Nivel 10, podrás consagrarte en la <b>Iglesia</b> utilizando un Libro de Clase.</p>
-                        </div>
-                        <div class="pixel-card p-3 rounded border-2 border-purple-500/50">
-                            <span class="text-xs text-purple-300 pixel-font font-bold">RASGO ÚNICO ASIGNADO:</span>
-                            <p class="text-sm text-yellow-300 font-bold">${tempTrait.name}</p>
-                            <p class="text-[11px] text-slate-300">${tempTrait.desc}</p>
-                        </div>
-                    </div>
-                    <div class="flex space-x-2">
-                        <button onclick="confirmCreateHero()" class="flex-grow bg-green-600 hover:bg-green-500 text-black font-bold py-2 rounded pixel-font text-xl pixel-btn">INICIAR AVENTURA</button>
-                        <button onclick="game.screen='saves'; renderScreen();" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded pixel-font text-base pixel-btn">CANCELAR</button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function confirmCreateHero() {
-            const nameInput = document.getElementById('hero-name-input');
-            if (nameInput && nameInput.value.trim() !== '') {
-                tempHeroName = nameInput.value.trim();
-            }
-            
-            let newPlayer = {
-                name: tempHeroName,
-                classId: 'adventurer',
-                className: 'Aventurero',
-                hp: 190,
-                maxHp: 190,
-                mp: 50,
-                maxMp: 50,
-                str: 14,
-                spd: 12,
-                mag: 10,
-                def: 12,
-                luck: 10,
-                gold: 150,
-                exp: 0,
-                level: 1,
-                skillPoints: 0,
-                floor: 1,
-                trait: tempTrait,
-                equipment: { weapon: null, helmet: null, armor: null, boots: null },
-                inventory: [
-                    { id: 'pot_hp', name: 'Poción de Vida', type: 'potion', effect: 'hp', val: 50, price: 35, icon: '🔴', desc: 'Restaura 50 PV.' },
-                    { id: 'pot_mp', name: 'Poción de Mana', type: 'potion', effect: 'mp', val: 30, price: 30, icon: '🔵', desc: 'Restaura 30 PM.' }
-                ]
-            };
-
-            if (tempTrait && tempTrait.effect) {
-                tempTrait.effect(newPlayer);
-            }
-
-            game.player = newPlayer;
-            game.slots[game.currentSlot] = JSON.parse(JSON.stringify(newPlayer));
-            game.floor = 1;
-            game.floorsState = {};
-            game.screen = 'lobby';
-            playSound('victory');
-            renderScreen();
-        }
-
-        function renderLobbyScreen(container) {
-            const p = game.player;
-
-            container.innerHTML = `
-                <div class="w-full max-w-md space-y-3">
-                    <div class="pixel-card p-3 rounded border-2 border-slate-700 flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            ${generateHeroAvatarSVG(p.equipment, p.classId, 60)}
-                            <div>
-                                <h4 class="pixel-font text-xl text-cyan-300">${p.name}</h4>
-                                <p class="text-xs text-slate-400">Niv. ${p.level} ${p.className} | SP: <span class="text-yellow-400 font-bold">${p.skillPoints}</span></p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-xs text-yellow-400 font-bold">${p.gold}g 💰</span>
-                            <p class="text-[11px] text-slate-400">Piso ${game.floor}</p>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2">
-                        <button onclick="enterFloor()" class="pixel-card p-3 rounded text-center hover:border-cyan-400 bg-slate-900 pixel-btn col-span-2 border-2 border-cyan-500/60">
-                            <span class="text-2xl block mb-1">🗼</span>
-                            <span class="pixel-font text-lg text-cyan-300">ENTRAR A LA TORRE (PISO ${game.floor})</span>
-                        </button>
-                        <button onclick="game.screen='inventory'; renderScreen();" class="pixel-card p-3 rounded text-center hover:border-purple-400 bg-slate-900 pixel-btn">
-                            <span class="text-2xl block mb-1">🎒</span>
-                            <span class="pixel-font text-base text-purple-300">MOCHILA & HÉROE</span>
-                        </button>
-                        <button onclick="game.screen='forge'; renderScreen();" class="pixel-card p-3 rounded text-center hover:border-orange-400 bg-slate-900 pixel-btn">
-                            <span class="text-2xl block mb-1">⚒️</span>
-                            <span class="pixel-font text-base text-orange-300">HERRERÍA Y FORJA</span>
-                        </button>
-                        <button onclick="game.screen='training'; renderScreen();" class="pixel-card p-3 rounded text-center hover:border-emerald-400 bg-slate-900 pixel-btn">
-                            <span class="text-2xl block mb-1">🏋️‍♂️</span>
-                            <span class="pixel-font text-base text-emerald-300">ENTRENAMIENTO</span>
-                        </button>
-                        <button onclick="game.screen='church'; renderScreen();" class="pixel-card p-3 rounded text-center hover:border-amber-400 bg-slate-900 pixel-btn">
-                            <span class="text-2xl block mb-1">⛪</span>
-                            <span class="pixel-font text-base text-amber-300">IGLESIA DE CLASES</span>
-                        </button>
-                        <button onclick="game.screen='shop'; renderScreen();" class="pixel-card p-3 rounded text-center hover:border-yellow-400 bg-slate-900 pixel-btn">
-                            <span class="text-2xl block mb-1">🪙</span>
-                            <span class="pixel-font text-base text-yellow-300">TIENDA GENERAL</span>
-                        </button>
-                        <button onclick="game.screen='bestiary'; renderScreen();" class="pixel-card p-3 rounded text-center hover:border-red-400 bg-slate-900 pixel-btn">
-                            <span class="text-2xl block mb-1">📖</span>
-                            <span class="pixel-font text-base text-red-300">GRIMORIO</span>
-                        </button>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2">
-                        <button onclick="game.screen='quests'; renderScreen();" class="pixel-card p-2.5 rounded text-center hover:border-blue-400 bg-slate-900 pixel-btn">
-                            <span class="pixel-font text-sm text-blue-300">📜 MISIONES</span>
-                        </button>
-                        <button onclick="game.screen='npc'; renderScreen();" class="pixel-card p-2.5 rounded text-center hover:border-cyan-400 bg-slate-900 pixel-btn">
-                            <span class="pixel-font text-sm text-cyan-300">🤖 ORÁCULO IA</span>
-                        </button>
-                    </div>
-
-                    <button onclick="game.screen='saves'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-400 py-2 rounded pixel-font text-xs pixel-btn">GUARDAR Y SALIR AL MENÚ</button>
-                </div>
-            `;
-        }
-
-        function enterFloor() {
-            game.screen = 'floor';
-            loadOrCreateFloor(game.floor);
-            playSound('click');
-            renderScreen();
-        }
-
         function loadOrCreateFloor(floorNum) {
             if (game.floorsState[floorNum]) {
-                // Restore saved floor state
                 const saved = game.floorsState[floorNum];
                 game.grid = saved.grid;
                 game.fog = saved.fog;
                 game.environment = saved.environment;
                 game.playerPos = { x: 3, y: 6 };
-
-                // Random Respawn mechanics upon re-entering explored floors
                 respawnFloorEntities();
             } else {
-                // Generate brand new floor
                 generateNewFloor(floorNum);
             }
             revealAdjacentFog();
@@ -778,7 +693,7 @@
             game.fog = [];
             game.environment = [];
 
-            const envOptions = ['🌲', '🪨', '🌱', '🏛️', ' '];
+            const envOptions = ['🌲', '🪨', '🌱', '🏛️', '🌿'];
 
             for (let y = 0; y < size; y++) {
                 let row = [];
@@ -796,7 +711,6 @@
             }
 
             game.playerPos = { x: 3, y: 6 };
-
             const isBossFloor = (floorNum % 10 === 0);
 
             if (isBossFloor) {
@@ -807,7 +721,6 @@
                 game.grid[1][3] = 'stairs_up';
                 if (floorNum > 1) game.grid[6][1] = 'stairs_down';
 
-                // Place Monsters
                 let monstersPlaced = 0;
                 while (monstersPlaced < 3) {
                     let rx = Math.floor(Math.random() * size);
@@ -818,20 +731,18 @@
                     }
                 }
 
-                // Place Chest or Trap Chest
                 let chestPlaced = false;
                 while (!chestPlaced) {
                     let rx = Math.floor(Math.random() * size);
                     let ry = Math.floor(Math.random() * 5) + 1;
                     if (game.grid[ry][rx] === 'empty' && !(rx === 3 && ry === 6)) {
-                        game.grid[ry][rx] = (Math.random() < 0.2) ? 'trap_chest' : 'chest';
+                        game.grid[ry][rx] = (Math.random() < 0.25) ? 'trap_chest' : 'chest';
                         chestPlaced = true;
                     }
                 }
 
-                // Place NPC (1 NPC per 10 floors bracket)
                 let floorBracket = Math.floor((floorNum - 1) / 10);
-                if (!game.floorsState[`npc_spawned_${floorBracket}`] && Math.random() < 0.5) {
+                if (!game.floorsState[`npc_spawned_${floorBracket}`] && Math.random() < 0.6) {
                     game.floorsState[`npc_spawned_${floorBracket}`] = true;
                     let rx = Math.floor(Math.random() * size);
                     let ry = Math.floor(Math.random() * 5) + 1;
@@ -841,7 +752,6 @@
                 }
             }
 
-            // Save floor state
             game.floorsState[floorNum] = {
                 grid: game.grid,
                 fog: game.fog,
@@ -850,7 +760,6 @@
         }
 
         function respawnFloorEntities() {
-            // Respawn monsters on empty spots with 40% chance
             for (let y = 1; y < 6; y++) {
                 for (let x = 0; x < 7; x++) {
                     if (game.grid[y][x] === 'empty' && !(x === game.playerPos.x && y === game.playerPos.y)) {
@@ -879,7 +788,6 @@
                     }
                 }
             }
-            // Update stored state
             if (game.floorsState[game.floor]) {
                 game.floorsState[game.floor].fog = game.fog;
                 game.floorsState[game.floor].grid = game.grid;
@@ -940,8 +848,6 @@
                     playSound('hit');
                     showToast('⚠️ COFRE TRAMPA', `¡El cofre estaba cargado con estallido místico! Sufriste ${trapDmg} de daño.`);
                 } else {
-                    // Mimic fight
-                    const baseMon = MONSTER_TYPES[0];
                     game.enemy = { id: 'mimic', name: 'Mímico Voraz', hp: 150 + game.floor * 15, maxHp: 150 + game.floor * 15, atk: 25 + game.floor * 3, def: 12, exp: 90, gold: 120, type: 'slime', drop: 'Gelatina Azul', dropValue: 30 };
                     game.screen = 'combat';
                     game.combatTurn = 1;
@@ -958,6 +864,16 @@
             playSound('click');
             renderScreen();
         }
+
+        // Global Keyboard Handler for Map Controls
+        window.addEventListener('keydown', (e) => {
+            if (game.screen === 'floor') {
+                if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') movePlayer(0, -1);
+                else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') movePlayer(0, 1);
+                else if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') movePlayer(-1, 0);
+                else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') movePlayer(1, 0);
+            }
+        });
 
         function triggerNpcInteract() {
             const npcData = FLOOR_NPCS_POOL[Math.floor(Math.random() * FLOOR_NPCS_POOL.length)];
@@ -977,12 +893,284 @@
             playSound('victory');
         }
 
+        function renderScreen() {
+            const mainView = document.getElementById('main-view');
+            mainView.innerHTML = '';
+
+            if (game.screen === 'title') renderTitleScreen(mainView);
+            else if (game.screen === 'saves') renderSavesScreen(mainView);
+            else if (game.screen === 'create') renderCreateScreen(mainView);
+            else if (game.screen === 'lobby') renderLobbyScreen(mainView);
+            else if (game.screen === 'floor') renderFloorScreen(mainView);
+            else if (game.screen === 'combat') renderCombatScreen(mainView);
+            else if (game.screen === 'inventory') renderInventoryScreen(mainView);
+            else if (game.screen === 'shop') renderShopScreen(mainView);
+            else if (game.screen === 'forge') renderForgeScreen(mainView);
+            else if (game.screen === 'bestiary') renderBestiaryScreen(mainView);
+            else if (game.screen === 'quests') renderQuestsScreen(mainView);
+            else if (game.screen === 'npc') renderNpcScreen(mainView);
+            else if (game.screen === 'training') renderTrainingScreen(mainView);
+            else if (game.screen === 'church') renderChurchScreen(mainView);
+        }
+
+        function renderTitleScreen(container) {
+            container.innerHTML = `
+                <div class="flex flex-col items-center justify-center text-center space-y-6 w-full max-w-md py-4">
+                    <div class="pixel-card pixel-card-glow p-6 rounded-lg w-full border-2 border-cyan-500/80 bg-slate-900/90">
+                        <div class="mb-4">${generateHeroAvatarSVG({ weapon: true, helmet: true }, 'warrior', 100)}</div>
+                        <h2 class="pixel-title text-xl md:text-2xl text-cyan-300 mb-2 leading-relaxed drop-shadow-[0_0_10px_rgba(6,182,212,0.8)]">TORRE:SYSTEM</h2>
+                        <p class="text-xs text-slate-300 mb-6 font-semibold tracking-wide">ULTIMATE GRAPHIC EDITION V11</p>
+                        <button onclick="goToSaves()" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold py-3.5 px-6 rounded pixel-font text-2xl tracking-wider pixel-btn border-2 border-cyan-300">
+                            ▶ JUGAR
+                        </button>
+                    </div>
+                    <div class="text-[12px] text-slate-400 space-y-1 bg-slate-900/80 p-3 rounded border border-slate-800 w-full">
+                        <p>&bull; Gráficos Píxel Art HD & Spatials Paperdoll</p>
+                        <p>&bull; 10 Zonas Ambientadas & Bestiario Ilustrado</p>
+                        <p>&bull; Forja Alquímica & Persistencia Completa</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function goToSaves() {
+            loadSavedSlotsFromStorage();
+            game.screen = 'saves';
+            playSound('click');
+            renderScreen();
+        }
+
+        function renderSavesScreen(container) {
+            let slotsHtml = '';
+            for (let i = 0; i < 3; i++) {
+                const save = game.slots[i];
+                if (save) {
+                    slotsHtml += `
+                        <div class="pixel-card p-3.5 rounded mb-3 flex items-center justify-between border-2 border-slate-700 bg-slate-900/80">
+                            <div class="flex items-center space-x-3">
+                                ${generateHeroAvatarSVG(save.equipment, save.classId, 55)}
+                                <div>
+                                    <span class="pixel-font text-xl text-yellow-300 font-bold">RANURA ${i+1}: ${save.name}</span>
+                                    <p class="text-xs text-slate-300">Clase: ${save.className} | Niv: ${save.level} | Piso: ${save.floor} | Oro: ${save.gold}g</p>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="loadGameSlot(${i})" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-3 py-1.5 rounded text-xs font-bold pixel-font pixel-btn border border-emerald-300">CARGAR</button>
+                                <button onclick="deleteGameSlot(${i})" class="bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded text-xs font-bold pixel-font pixel-btn border border-red-400">BORRAR</button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    slotsHtml += `
+                        <div class="pixel-card p-4 rounded mb-3 flex items-center justify-between border-2 border-dashed border-slate-700 bg-slate-900/50">
+                            <div>
+                                <span class="pixel-font text-xl text-slate-400 font-bold">RANURA ${i+1}: VACÍA</span>
+                                <p class="text-xs text-slate-500">Sin partida guardada</p>
+                            </div>
+                            <button onclick="startNewGameInSlot(${i})" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-4 py-2 rounded text-xs font-bold pixel-font pixel-btn border border-cyan-300">NUEVA PARTIDA</button>
+                        </div>
+                    `;
+                }
+            }
+
+            container.innerHTML = `
+                <div class="w-full max-w-md">
+                    <h3 class="pixel-font text-2xl text-cyan-400 mb-4 text-center font-bold">SELECCIONAR RANURA DE PARTIDA</h3>
+                    <div class="space-y-2 mb-6">${slotsHtml}</div>
+                    <button onclick="game.screen='title'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2.5 rounded pixel-font text-base pixel-btn border border-slate-600">VOLVER AL MENÚ</button>
+                </div>
+            `;
+        }
+
+        function startNewGameInSlot(slotIdx) {
+            game.currentSlot = slotIdx;
+            game.screen = 'create';
+            playSound('click');
+            renderScreen();
+        }
+
+        function loadGameSlot(slotIdx) {
+            game.currentSlot = slotIdx;
+            game.player = JSON.parse(JSON.stringify(game.slots[slotIdx]));
+            game.floor = game.player.floor || 1;
+            game.screen = 'lobby';
+            playSound('victory');
+            renderScreen();
+        }
+
+        function deleteGameSlot(slotIdx) {
+            game.slots[slotIdx] = null;
+            saveSlotsToStorage();
+            playSound('hit');
+            renderScreen();
+        }
+
+        let tempHeroName = 'Héroe Pixel';
+        let tempTrait = null;
+
+        function renderCreateScreen(container) {
+            if (!tempTrait) {
+                tempTrait = RANDOM_TRAITS_POOL[Math.floor(Math.random() * RANDOM_TRAITS_POOL.length)];
+            }
+
+            container.innerHTML = `
+                <div class="w-full max-w-md">
+                    <h3 class="pixel-font text-2xl text-cyan-400 mb-3 text-center font-bold">CREAR NUEVO AVENTURERO</h3>
+                    <div class="space-y-3 mb-4">
+                        <div class="flex justify-center mb-2">
+                            ${generateHeroAvatarSVG({ helmet: false, armor: false, weapon: false }, 'adventurer', 90)}
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-300 mb-1 pixel-font">NOMBRE DEL HÉROE:</label>
+                            <input type="text" id="hero-name-input" value="${tempHeroName}" class="w-full bg-slate-950 border-2 border-slate-700 p-2.5 rounded text-cyan-300 pixel-font text-lg focus:outline-none focus:border-cyan-400" />
+                        </div>
+                        <div class="pixel-card p-3.5 rounded border-2 border-cyan-500/60 text-center bg-slate-900/90">
+                            <h4 class="pixel-font text-lg text-cyan-300 font-bold">CLASE INICIAL: AVENTURERO</h4>
+                            <p class="text-[11px] text-slate-300 mt-1">Comienzas como un Aventurero. Al alcanzar el Piso 10 y Nivel 10, podrás consagrarte en la <b>Iglesia</b> utilizando un Libro de Clase.</p>
+                        </div>
+                        <div class="pixel-card p-3.5 rounded border-2 border-purple-500/60 bg-slate-900/90">
+                            <span class="text-xs text-purple-300 pixel-font font-bold">RASGO ÚNICO ASIGNADO:</span>
+                            <p class="text-sm text-yellow-300 font-bold">${tempTrait.name}</p>
+                            <p class="text-[11px] text-slate-300">${tempTrait.desc}</p>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="confirmCreateHero()" class="flex-grow bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2.5 rounded pixel-font text-xl pixel-btn border border-emerald-300">INICIAR AVENTURA</button>
+                        <button onclick="game.screen='saves'; renderScreen();" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2.5 rounded pixel-font text-base pixel-btn border border-slate-600">CANCELAR</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function confirmCreateHero() {
+            const nameInput = document.getElementById('hero-name-input');
+            if (nameInput && nameInput.value.trim() !== '') {
+                tempHeroName = nameInput.value.trim();
+            }
+            
+            let newPlayer = {
+                name: tempHeroName,
+                classId: 'adventurer',
+                className: 'Aventurero',
+                hp: 200,
+                maxHp: 200,
+                mp: 50,
+                maxMp: 50,
+                str: 15,
+                spd: 12,
+                mag: 10,
+                def: 12,
+                luck: 10,
+                gold: 150,
+                exp: 0,
+                level: 1,
+                skillPoints: 0,
+                floor: 1,
+                trait: tempTrait,
+                equipment: { weapon: null, helmet: null, armor: null, boots: null },
+                inventory: [
+                    { id: 'pot_hp', name: 'Poción de Vida', type: 'potion', effect: 'hp', val: 60, price: 35, icon: '🔴', desc: 'Restaura 60 PV.' },
+                    { id: 'pot_mp', name: 'Poción de Mana', type: 'potion', effect: 'mp', val: 40, price: 30, icon: '🔵', desc: 'Restaura 40 PM.' }
+                ]
+            };
+
+            if (tempTrait && tempTrait.effect) {
+                tempTrait.effect(newPlayer);
+            }
+
+            game.player = newPlayer;
+            saveCurrentGame();
+            game.floor = 1;
+            game.floorsState = {};
+            game.screen = 'lobby';
+            playSound('victory');
+            renderScreen();
+        }
+
+        function renderLobbyScreen(container) {
+            const p = game.player;
+
+            container.innerHTML = `
+                <div class="w-full max-w-md space-y-3">
+                    <div class="pixel-card pixel-card-glow p-3.5 rounded border-2 border-slate-700 flex items-center justify-between bg-slate-900/90">
+                        <div class="flex items-center space-x-3">
+                            ${generateHeroAvatarSVG(p.equipment, p.classId, 65)}
+                            <div>
+                                <h4 class="pixel-font text-xl text-cyan-300 font-bold">${p.name}</h4>
+                                <p class="text-xs text-slate-300">Niv. ${p.level} ${p.className} | SP: <span class="text-yellow-400 font-bold">${p.skillPoints}</span></p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-sm text-yellow-300 font-bold">${p.gold}g 💰</span>
+                            <p class="text-xs text-cyan-400 font-semibold">Piso ${game.floor}</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="enterFloor()" class="pixel-card p-3 rounded text-center hover:border-cyan-400 bg-slate-900 pixel-btn col-span-2 border-2 border-cyan-500/70">
+                            <span class="text-2xl block mb-1">🗼</span>
+                            <span class="pixel-font text-lg text-cyan-300 font-bold">ENTRAR A LA TORRE (PISO ${game.floor})</span>
+                        </button>
+                        <button onclick="game.screen='inventory'; renderScreen();" class="pixel-card p-3 rounded text-center hover:border-purple-400 bg-slate-900 pixel-btn border border-purple-500/50">
+                            <span class="text-2xl block mb-1">🎒</span>
+                            <span class="pixel-font text-base text-purple-300">MOCHILA & HÉROE</span>
+                        </button>
+                        <button onclick="game.screen='forge'; renderScreen();" class="pixel-card p-3 rounded text-center hover:border-orange-400 bg-slate-900 pixel-btn border border-orange-500/50">
+                            <span class="text-2xl block mb-1">⚒️</span>
+                            <span class="pixel-font text-base text-orange-300">HERRERÍA Y FORJA</span>
+                        </button>
+                        <button onclick="game.screen='training'; renderScreen();" class="pixel-card p-3 rounded text-center hover:border-emerald-400 bg-slate-900 pixel-btn border border-emerald-500/50">
+                            <span class="text-2xl block mb-1">🏋️‍♂️</span>
+                            <span class="pixel-font text-base text-emerald-300">ENTRENAMIENTO</span>
+                        </button>
+                        <button onclick="game.screen='church'; renderScreen();" class="pixel-card p-3 rounded text-center hover:border-amber-400 bg-slate-900 pixel-btn border border-amber-500/50">
+                            <span class="text-2xl block mb-1">⛪</span>
+                            <span class="pixel-font text-base text-amber-300">IGLESIA DE CLASES</span>
+                        </button>
+                        <button onclick="game.screen='shop'; renderScreen();" class="pixel-card p-3 rounded text-center hover:border-yellow-400 bg-slate-900 pixel-btn border border-yellow-500/50">
+                            <span class="text-2xl block mb-1">🪙</span>
+                            <span class="pixel-font text-base text-yellow-300">TIENDA GENERAL</span>
+                        </button>
+                        <button onclick="game.screen='bestiary'; renderScreen();" class="pixel-card p-3 rounded text-center hover:border-red-400 bg-slate-900 pixel-btn border border-red-500/50">
+                            <span class="text-2xl block mb-1">📖</span>
+                            <span class="pixel-font text-base text-red-300">GRIMORIO</span>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="game.screen='quests'; renderScreen();" class="pixel-card p-2.5 rounded text-center hover:border-blue-400 bg-slate-900 pixel-btn border border-blue-500/50">
+                            <span class="pixel-font text-sm text-blue-300">📜 MISIONES</span>
+                        </button>
+                        <button onclick="game.screen='npc'; renderScreen();" class="pixel-card p-2.5 rounded text-center hover:border-cyan-400 bg-slate-900 pixel-btn border border-cyan-500/50">
+                            <span class="pixel-font text-sm text-cyan-300">🤖 ORÁCULO IA</span>
+                        </button>
+                    </div>
+
+                    <button onclick="game.screen='saves'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2.5 rounded pixel-font text-xs pixel-btn border border-slate-600">GUARDAR Y SALIR AL MENÚ</button>
+                </div>
+            `;
+        }
+
+        function enterFloor() {
+            game.screen = 'floor';
+            loadOrCreateFloor(game.floor);
+            playSound('click');
+            renderScreen();
+        }
+
+        function getZoneThemeClass(floorNum) {
+            const zIdx = Math.floor((floorNum - 1) / 10) % 10;
+            const themes = ['theme-bosque', 'theme-ruinas', 'theme-minas', 'theme-pantano', 'theme-ciudad', 'theme-fortaleza', 'theme-cumbres', 'theme-abismo', 'theme-astral', 'theme-nucleo'];
+            return themes[zIdx];
+        }
+
         function renderFloorScreen(container) {
             let gridHtml = '';
             const isBossFloor = (game.floor % 10 === 0);
+            const themeClass = getZoneThemeClass(game.floor);
 
             for (let y = 0; y < 7; y++) {
-                gridHtml += `<div class="flex justify-center space-x-1 mb-1">`;
+                gridHtml += `<div class="flex justify-center space-x-1.5 mb-1.5">`;
                 for (let x = 0; x < 7; x++) {
                     let isPlayer = (game.playerPos.x === x && game.playerPos.y === y);
                     let isExplored = game.fog[y] && game.fog[y][x];
@@ -993,35 +1181,35 @@
                     let cellBg = 'bg-slate-900 border-slate-800';
 
                     if (!isExplored) {
-                        cellContent = '?';
-                        cellBg = 'bg-slate-950 border-slate-900 text-slate-700';
+                        cellContent = '<span class="text-slate-700">?</span>';
+                        cellBg = 'bg-slate-950/90 border-slate-900';
                     } else if (isPlayer) {
-                        cellContent = generateHeroAvatarSVG(game.player.equipment, game.player.classId, 32);
-                        cellBg = 'bg-cyan-950 border-cyan-500 animate-pulse';
+                        cellContent = generateHeroAvatarSVG(game.player.equipment, game.player.classId, 36);
+                        cellBg = 'bg-cyan-950/90 border-cyan-400 ring-2 ring-cyan-400/50 animate-pulse';
                     } else if (tile === 'monster') {
-                        cellContent = generateMonsterSVG('slime', 32);
-                        cellBg = 'bg-red-950/60 border-red-700';
+                        cellContent = generateMonsterSVG('slime', 34);
+                        cellBg = 'bg-red-950/70 border-red-600';
                     } else if (tile === 'boss') {
-                        cellContent = generateMonsterSVG('boss', 36);
-                        cellBg = 'bg-red-900 border-red-500 animate-bounce';
+                        cellContent = generateMonsterSVG('boss', 38);
+                        cellBg = 'bg-red-900/90 border-red-500 animate-bounce';
                     } else if (tile === 'chest' || tile === 'trap_chest') {
                         cellContent = '🎁';
-                        cellBg = 'bg-yellow-950 border-yellow-600';
+                        cellBg = 'bg-amber-950/70 border-amber-500';
                     } else if (tile === 'npc') {
                         cellContent = '🧙‍♂️';
-                        cellBg = 'bg-purple-950 border-purple-500 animate-pulse';
+                        cellBg = 'bg-purple-950/70 border-purple-400 animate-pulse';
                     } else if (tile === 'stairs_up') {
                         cellContent = '🪜⬆️';
-                        cellBg = 'bg-emerald-950 border-emerald-500';
+                        cellBg = 'bg-emerald-950/70 border-emerald-400';
                     } else if (tile === 'stairs_down') {
                         cellContent = '🪜⬇️';
-                        cellBg = 'bg-blue-950 border-blue-500';
+                        cellBg = 'bg-blue-950/70 border-blue-400';
                     } else {
                         cellContent = `<span class="opacity-40 text-xs">${envIcon}</span>`;
-                        cellBg = 'bg-slate-900 border-slate-800 text-slate-600';
+                        cellBg = 'bg-slate-900/80 border-slate-800 text-slate-500';
                     }
 
-                    gridHtml += `<div class="w-10 h-10 md:w-12 md:h-12 border-2 ${cellBg} rounded flex items-center justify-center text-lg font-bold relative overflow-hidden">${cellContent}</div>`;
+                    gridHtml += `<div class="w-10 h-10 md:w-12 md:h-12 border-2 ${cellBg} rounded flex items-center justify-center text-lg font-bold relative overflow-hidden transition-all duration-150">${cellContent}</div>`;
                 }
                 gridHtml += `</div>`;
             }
@@ -1029,25 +1217,25 @@
             container.innerHTML = `
                 <div class="w-full max-w-md text-center">
                     <div class="flex justify-between items-center mb-2 px-2">
-                        <span class="pixel-font text-xl text-cyan-400">${isBossFloor ? '⚠️ PISO DE JEFE' : 'TORRE: PISO ' + game.floor}</span>
-                        <span class="text-xs text-yellow-400 font-bold">${game.player.hp}/${game.player.maxHp} PV</span>
+                        <span class="pixel-font text-xl text-cyan-300 font-bold">${isBossFloor ? '⚠️ PISO DE JEFE' : 'TORRE: PISO ' + game.floor}</span>
+                        <span class="text-xs text-yellow-300 font-bold bg-slate-900 px-3 py-1 rounded border border-slate-700">${game.player.hp}/${game.player.maxHp} PV</span>
                     </div>
 
-                    <div class="pixel-card p-3 rounded mb-3 inline-block border-2 border-slate-700">
+                    <div class="pixel-card p-3 rounded mb-3 inline-block border-2 border-slate-700 ${themeClass} shadow-xl">
                         ${gridHtml}
                     </div>
 
-                    <!-- Crisp D-Pad Controls -->
+                    <!-- Visual D-Pad Controls -->
                     <div class="grid grid-cols-3 gap-2 max-w-[220px] mx-auto mb-3">
                         <div></div>
-                        <button onclick="movePlayer(0, -1)" class="pixel-card bg-slate-900 hover:bg-slate-800 text-cyan-300 py-3 rounded pixel-font text-2xl pixel-btn border-2 border-cyan-500/50">⬆</button>
+                        <button onclick="movePlayer(0, -1)" class="pixel-card bg-slate-900 hover:bg-slate-800 text-cyan-300 py-3 rounded pixel-font text-2xl pixel-btn border-2 border-cyan-500/60 font-bold">⬆</button>
                         <div></div>
-                        <button onclick="movePlayer(-1, 0)" class="pixel-card bg-slate-900 hover:bg-slate-800 text-cyan-300 py-3 rounded pixel-font text-2xl pixel-btn border-2 border-cyan-500/50">⬅</button>
-                        <button onclick="movePlayer(0, 1)" class="pixel-card bg-slate-900 hover:bg-slate-800 text-cyan-300 py-3 rounded pixel-font text-2xl pixel-btn border-2 border-cyan-500/50">⬇</button>
-                        <button onclick="movePlayer(1, 0)" class="pixel-card bg-slate-900 hover:bg-slate-800 text-cyan-300 py-3 rounded pixel-font text-2xl pixel-btn border-2 border-cyan-500/50">➡</button>
+                        <button onclick="movePlayer(-1, 0)" class="pixel-card bg-slate-900 hover:bg-slate-800 text-cyan-300 py-3 rounded pixel-font text-2xl pixel-btn border-2 border-cyan-500/60 font-bold">⬅</button>
+                        <button onclick="movePlayer(0, 1)" class="pixel-card bg-slate-900 hover:bg-slate-800 text-cyan-300 py-3 rounded pixel-font text-2xl pixel-btn border-2 border-cyan-500/60 font-bold">⬇</button>
+                        <button onclick="movePlayer(1, 0)" class="pixel-card bg-slate-900 hover:bg-slate-800 text-cyan-300 py-3 rounded pixel-font text-2xl pixel-btn border-2 border-cyan-500/60 font-bold">➡</button>
                     </div>
 
-                    <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn">REGRESAR AL LOBBY</button>
+                    <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn border border-slate-600">REGRESAR AL LOBBY</button>
                 </div>
             `;
         }
@@ -1056,37 +1244,56 @@
             const p = game.player;
             const e = game.enemy;
 
+            const enemyHpPct = Math.max(0, Math.min(100, Math.floor((e.hp / e.maxHp) * 100)));
+            const playerHpPct = Math.max(0, Math.min(100, Math.floor((p.hp / p.maxHp) * 100)));
+            const playerMpPct = Math.max(0, Math.min(100, Math.floor((p.mp / p.maxMp) * 100)));
+
             container.innerHTML = `
                 <div class="w-full max-w-md">
-                    <div class="pixel-card p-4 rounded mb-3 border-2 border-red-500/60 flex justify-between items-center bg-slate-950">
-                        <div>
-                            <h4 class="pixel-font text-xl text-red-400">${e.name}</h4>
-                            <p class="text-xs text-slate-400">PV: ${e.hp} / ${e.maxHp}</p>
+                    <!-- ENEMY CARD -->
+                    <div class="pixel-card p-4 rounded mb-3 border-2 border-red-500/80 flex justify-between items-center bg-slate-950/90 shadow-lg">
+                        <div class="w-1/2">
+                            <h4 class="pixel-font text-xl text-red-400 font-bold">${e.name}</h4>
+                            <p class="text-xs text-slate-300 mb-1">PV: ${e.hp} / ${e.maxHp}</p>
+                            <div class="w-full bg-slate-800 h-3 rounded overflow-hidden border border-slate-700">
+                                <div class="bg-red-500 h-full transition-all duration-300" style="width: ${enemyHpPct}%"></div>
+                            </div>
                         </div>
-                        <div>
-                            ${generateMonsterSVG(e.type, 64)}
-                        </div>
-                    </div>
-
-                    <div class="pixel-card p-4 rounded mb-3 border-2 border-cyan-500/60 flex justify-between items-center bg-slate-950">
-                        <div>
-                            <h4 class="pixel-font text-xl text-cyan-300">${p.name} (${p.className})</h4>
-                            <p class="text-xs text-slate-400">PV: ${p.hp} / ${p.maxHp} | PM: ${p.mp} / ${p.maxMp}</p>
-                        </div>
-                        <div>
-                            ${generateHeroAvatarSVG(p.equipment, p.classId, 60)}
+                        <div class="w-1/2 flex justify-end">
+                            ${generateMonsterSVG(e.type, 75)}
                         </div>
                     </div>
 
-                    <div class="pixel-card p-3 rounded mb-4 bg-slate-950 border border-slate-700 text-xs text-cyan-300 h-20 overflow-y-auto">
+                    <!-- HERO CARD -->
+                    <div class="pixel-card p-4 rounded mb-3 border-2 border-cyan-500/80 flex justify-between items-center bg-slate-950/90 shadow-lg">
+                        <div class="w-1/2 flex justify-start">
+                            ${generateHeroAvatarSVG(p.equipment, p.classId, 70)}
+                        </div>
+                        <div class="w-1/2 text-right">
+                            <h4 class="pixel-font text-xl text-cyan-300 font-bold">${p.name}</h4>
+                            <p class="text-[11px] text-slate-300 mb-1">${p.className} (Niv. ${p.level})</p>
+                            <!-- HP Bar -->
+                            <div class="w-full bg-slate-800 h-2.5 rounded overflow-hidden border border-slate-700 mb-1">
+                                <div class="bg-emerald-500 h-full transition-all duration-300" style="width: ${playerHpPct}%"></div>
+                            </div>
+                            <!-- MP Bar -->
+                            <div class="w-full bg-slate-800 h-2 rounded overflow-hidden border border-slate-700">
+                                <div class="bg-blue-500 h-full transition-all duration-300" style="width: ${playerMpPct}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COMBAT LOG -->
+                    <div class="pixel-card p-3 rounded mb-4 bg-slate-950 border border-slate-700 text-xs text-cyan-300 h-20 overflow-y-auto leading-relaxed">
                         <p>${game.combatLogText}</p>
                     </div>
 
+                    <!-- COMBAT CONTROLS -->
                     <div class="grid grid-cols-2 gap-2 mb-3">
-                        <button onclick="combatAction('attack')" class="bg-red-600 hover:bg-red-500 text-black font-bold py-3 rounded pixel-font text-lg pixel-btn">ATACAR</button>
-                        <button onclick="combatAction('skill')" class="bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 rounded pixel-font text-lg pixel-btn">HABILIDAD</button>
-                        <button onclick="openCombatPotionModal()" class="bg-blue-600 hover:bg-blue-500 text-black font-bold py-3 rounded pixel-font text-lg pixel-btn">MOCHILA</button>
-                        <button onclick="combatAction('flee')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 rounded pixel-font text-lg pixel-btn">HUIR</button>
+                        <button onclick="combatAction('attack')" class="bg-red-600 hover:bg-red-500 text-white font-bold py-3 rounded pixel-font text-lg pixel-btn border border-red-400">⚔️ ATACAR</button>
+                        <button onclick="combatAction('skill')" class="bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 rounded pixel-font text-lg pixel-btn border border-purple-400">✨ HABILIDAD</button>
+                        <button onclick="openCombatPotionModal()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded pixel-font text-lg pixel-btn border border-blue-400">🎒 MOCHILA</button>
+                        <button onclick="combatAction('flee')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 rounded pixel-font text-lg pixel-btn border border-slate-600">🏃 HUIR</button>
                     </div>
                 </div>
             `;
@@ -1141,7 +1348,6 @@
                 p.gold += rewardGold;
                 p.exp += rewardExp;
 
-                // Level up check
                 let expNeeded = p.level * 100;
                 if (p.exp >= expNeeded) {
                     p.level++;
@@ -1175,6 +1381,7 @@
                     }
                 });
 
+                saveCurrentGame();
                 showToast('¡VICTORIA!', `Derrotaste a ${e.name}! Ganaste ${rewardGold}g y ${rewardExp} EXP.`);
                 game.screen = 'floor';
                 renderScreen();
@@ -1193,6 +1400,7 @@
                 showToast('GAME OVER', 'Has caído en combate dentro de la torre...');
                 game.screen = 'lobby';
                 p.hp = p.maxHp;
+                saveCurrentGame();
                 renderScreen();
                 return;
             }
@@ -1205,19 +1413,19 @@
 
             let eqHtml = `
                 <div class="grid grid-cols-2 gap-2 mb-3 text-xs">
-                    <div class="pixel-card p-2 rounded border border-slate-700">
+                    <div class="pixel-card p-2 rounded border border-slate-700 bg-slate-950/80">
                         <span class="text-slate-400 block">Arma:</span>
                         <span class="text-cyan-300 font-bold">${p.equipment.weapon ? p.equipment.weapon.icon + ' ' + p.equipment.weapon.name : 'Ninguna'}</span>
                     </div>
-                    <div class="pixel-card p-2 rounded border border-slate-700">
+                    <div class="pixel-card p-2 rounded border border-slate-700 bg-slate-950/80">
                         <span class="text-slate-400 block">Yelmo/Casco:</span>
                         <span class="text-cyan-300 font-bold">${p.equipment.helmet ? p.equipment.helmet.icon + ' ' + p.equipment.helmet.name : 'Ninguno'}</span>
                     </div>
-                    <div class="pixel-card p-2 rounded border border-slate-700">
+                    <div class="pixel-card p-2 rounded border border-slate-700 bg-slate-950/80">
                         <span class="text-slate-400 block">Armadura:</span>
                         <span class="text-cyan-300 font-bold">${p.equipment.armor ? p.equipment.armor.icon + ' ' + p.equipment.armor.name : 'Ninguna'}</span>
                     </div>
-                    <div class="pixel-card p-2 rounded border border-slate-700">
+                    <div class="pixel-card p-2 rounded border border-slate-700 bg-slate-950/80">
                         <span class="text-slate-400 block">Escudo/Botas:</span>
                         <span class="text-cyan-300 font-bold">${p.equipment.boots ? p.equipment.boots.icon + ' ' + p.equipment.boots.name : 'Ninguno'}</span>
                     </div>
@@ -1230,7 +1438,7 @@
             } else {
                 p.inventory.forEach((item, idx) => {
                     invHtml += `
-                        <div class="pixel-card p-2 rounded mb-2 flex items-center justify-between border border-slate-700 text-xs">
+                        <div class="pixel-card p-2 rounded mb-2 flex items-center justify-between border border-slate-700 text-xs bg-slate-900/80">
                             <div class="flex items-center space-x-2">
                                 <span class="text-xl">${item.icon}</span>
                                 <div>
@@ -1240,7 +1448,7 @@
                             </div>
                             <div class="flex space-x-1">
                                 ${item.type === 'potion' ? `<button onclick="usePotion(${idx})" class="bg-purple-600 hover:bg-purple-500 text-white px-2 py-1 rounded text-[10px] pixel-btn font-bold">USAR</button>` : ''}
-                                ${['weapon', 'helmet', 'armor', 'boots'].includes(item.type) ? `<button onclick="equipItem(${idx})" class="bg-green-600 hover:bg-green-500 text-black px-2 py-1 rounded text-[10px] pixel-btn font-bold">EQUIPAR</button>` : ''}
+                                ${['weapon', 'helmet', 'armor', 'boots'].includes(item.type) ? `<button onclick="equipItem(${idx})" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-2 py-1 rounded text-[10px] pixel-btn font-bold">EQUIPAR</button>` : ''}
                             </div>
                         </div>
                     `;
@@ -1249,13 +1457,13 @@
 
             container.innerHTML = `
                 <div class="w-full max-w-md">
-                    <h3 class="pixel-font text-2xl text-purple-400 mb-2 text-center">MOCHILA & HÉROE PIXEL</h3>
-                    <div class="flex items-center justify-around pixel-card p-3 rounded mb-3 border border-slate-700">
+                    <h3 class="pixel-font text-2xl text-purple-400 mb-2 text-center font-bold">MOCHILA & HÉROE PIXEL</h3>
+                    <div class="flex items-center justify-around pixel-card p-3 rounded mb-3 border border-slate-700 bg-slate-900/90">
                         <div class="text-center">
                             ${generateHeroAvatarSVG(p.equipment, p.classId, 90)}
                         </div>
                         <div class="text-xs space-y-1">
-                            <p class="text-yellow-400 font-bold">${p.name} (${p.className})</p>
+                            <p class="text-yellow-300 font-bold">${p.name} (${p.className})</p>
                             <p class="text-slate-300">Nivel ${p.level} | EXP: ${p.exp}/${p.level * 100}</p>
                             <p class="text-slate-300">PV: ${p.hp}/${p.maxHp} | PM: ${p.mp}/${p.maxMp}</p>
                             <p class="text-slate-300">ATK: ${p.str} | DEF: ${p.def} | MAG: ${p.mag}</p>
@@ -1263,7 +1471,7 @@
                     </div>
                     ${eqHtml}
                     <div class="max-h-40 overflow-y-auto mb-3 space-y-1">${invHtml}</div>
-                    <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn">VOLVER AL LOBBY</button>
+                    <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn border border-slate-600">VOLVER AL LOBBY</button>
                 </div>
             `;
         }
@@ -1307,16 +1515,16 @@
                 const canCraft = (matCount >= rec.reqCount && p.gold >= rec.gold);
 
                 forgeHtml += `
-                    <div class="pixel-card p-3 rounded mb-2 border border-slate-700 text-xs flex justify-between items-center">
+                    <div class="pixel-card p-3 rounded mb-2 border border-slate-700 text-xs flex justify-between items-center bg-slate-900/80">
                         <div class="flex items-center space-x-2">
                             <span class="text-2xl">${rec.icon}</span>
                             <div>
-                                <span class="pixel-font text-base text-orange-400">${rec.name}</span>
+                                <span class="pixel-font text-base text-orange-400 font-bold">${rec.name}</span>
                                 <p class="text-[10px] text-slate-300">${rec.desc}</p>
                                 <p class="text-[10px] text-slate-400">Requisito: ${rec.reqCount}x ${rec.reqMat} (Tienes: ${matCount}) + ${rec.gold}g</p>
                             </div>
                         </div>
-                        <button onclick="craftItem(${idx})" class="${canCraft ? 'bg-orange-600 hover:bg-orange-500 text-black' : 'bg-slate-800 text-slate-600 pointer-events-none'} px-3 py-1.5 rounded font-bold pixel-font pixel-btn">FORJAR</button>
+                        <button onclick="craftItem(${idx})" class="${canCraft ? 'bg-orange-500 hover:bg-orange-400 text-slate-950 border border-orange-300' : 'bg-slate-800 text-slate-600 pointer-events-none'} px-3 py-1.5 rounded font-bold pixel-font pixel-btn">FORJAR</button>
                     </div>
                 `;
             });
@@ -1324,12 +1532,12 @@
             container.innerHTML = `
                 <div class="w-full max-w-md">
                     <div class="flex justify-between items-center mb-3">
-                        <h3 class="pixel-font text-2xl text-orange-400">HERRERÍA Y FORJA</h3>
-                        <span class="text-xs text-yellow-400 font-bold">${p.gold}g 💰</span>
+                        <h3 class="pixel-font text-2xl text-orange-400 font-bold">HERRERÍA Y FORJA</h3>
+                        <span class="text-xs text-yellow-300 font-bold">${p.gold}g 💰</span>
                     </div>
                     <p class="text-xs text-slate-300 mb-3">Forja armamento poderoso usando los drops recolectados de los monstruos en la torre.</p>
                     <div class="space-y-2 mb-4 max-h-60 overflow-y-auto">${forgeHtml}</div>
-                    <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn">VOLVER AL LOBBY</button>
+                    <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn border border-slate-600">VOLVER AL LOBBY</button>
                 </div>
             `;
         }
@@ -1370,14 +1578,14 @@
             allMonsters.forEach(m => {
                 const unlocked = game.bestiaryUnlocked[m.id];
                 bestiaryHtml += `
-                    <div class="pixel-card p-3 rounded mb-2 border border-slate-700 text-xs flex items-center space-x-3">
-                        <div class="w-12 h-12 flex items-center justify-center bg-slate-900 border border-slate-800 rounded">
-                            ${unlocked ? generateMonsterSVG(m.type, 36) : '<span class="text-2xl text-slate-600">❓</span>'}
+                    <div class="pixel-card p-3 rounded mb-2 border border-slate-700 text-xs flex items-center space-x-3 bg-slate-900/80">
+                        <div class="w-12 h-12 flex items-center justify-center bg-slate-950 border border-slate-800 rounded">
+                            ${unlocked ? generateMonsterSVG(m.type, 38) : '<span class="text-2xl text-slate-600">❓</span>'}
                         </div>
                         <div class="flex-grow">
-                            <span class="pixel-font text-base ${unlocked ? 'text-red-400' : 'text-slate-500'}">${unlocked ? m.name : '??? (Monstruo Desconocido)'}</span>
+                            <span class="pixel-font text-base ${unlocked ? 'text-red-400 font-bold' : 'text-slate-500'}">${unlocked ? m.name : '??? (Monstruo Desconocido)'}</span>
                             <p class="text-[10px] text-slate-400">${unlocked ? m.lore : 'Derrota a esta bestia en la torre para registrar sus datos.'}</p>
-                            ${unlocked ? `<p class="text-[10px] text-yellow-400">PV: ${m.hp} | ATK: ${m.atk} | Drop: ${m.drop}</p>` : ''}
+                            ${unlocked ? `<p class="text-[10px] text-yellow-300 font-semibold">PV: ${m.hp} | ATK: ${m.atk} | Drop: ${m.drop}</p>` : ''}
                         </div>
                     </div>
                 `;
@@ -1385,9 +1593,9 @@
 
             container.innerHTML = `
                 <div class="w-full max-w-md">
-                    <h3 class="pixel-font text-2xl text-red-400 mb-3 text-center">GRIMORIO DE BESTIAS</h3>
+                    <h3 class="pixel-font text-2xl text-red-400 mb-3 text-center font-bold">GRIMORIO DE BESTIAS</h3>
                     <div class="space-y-2 mb-4 max-h-60 overflow-y-auto">${bestiaryHtml}</div>
-                    <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn">VOLVER AL LOBBY</button>
+                    <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn border border-slate-600">VOLVER AL LOBBY</button>
                 </div>
             `;
         }
@@ -1398,13 +1606,13 @@
             let skillsHtml = '';
             TRAINING_SKILLS.forEach((skill, idx) => {
                 skillsHtml += `
-                    <div class="pixel-card p-3 rounded mb-2 flex items-center justify-between border border-slate-700 text-xs">
+                    <div class="pixel-card p-3 rounded mb-2 flex items-center justify-between border border-slate-700 text-xs bg-slate-900/80">
                         <div>
-                            <span class="pixel-font text-base text-emerald-400">${skill.name} (Costo: ${skill.cost} SP)</span>
+                            <span class="pixel-font text-base text-emerald-400 font-bold">${skill.name} (Costo: ${skill.cost} SP)</span>
                             <p class="text-[11px] text-slate-300">${skill.desc}</p>
                             <p class="text-[10px] text-slate-500">Mejoras aplicadas: ${skill.applied}</p>
                         </div>
-                        <button onclick="trainSkill(${idx})" class="bg-emerald-600 hover:bg-emerald-500 text-black px-3 py-1.5 rounded font-bold pixel-font pixel-btn">ENTRENAR</button>
+                        <button onclick="trainSkill(${idx})" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-3 py-1.5 rounded font-bold pixel-font pixel-btn border border-emerald-300">ENTRENAR</button>
                     </div>
                 `;
             });
@@ -1412,12 +1620,12 @@
             container.innerHTML = `
                 <div class="w-full max-w-md">
                     <div class="flex justify-between items-center mb-3">
-                        <h3 class="pixel-font text-2xl text-emerald-400">ZONA DE ENTRENAMIENTO</h3>
-                        <span class="text-xs text-yellow-400 font-bold">SP: ${p.skillPoints} 🌟</span>
+                        <h3 class="pixel-font text-2xl text-emerald-400 font-bold">ZONA DE ENTRENAMIENTO</h3>
+                        <span class="text-xs text-yellow-300 font-bold">SP: ${p.skillPoints} 🌟</span>
                     </div>
                     <p class="text-xs text-slate-300 mb-3">Gasta Puntos de Habilidad (SP) obtenidos al subir de nivel para potenciar tus atributos permanentes.</p>
                     <div class="space-y-2 mb-4 max-h-60 overflow-y-auto">${skillsHtml}</div>
-                    <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn">VOLVER AL LOBBY</button>
+                    <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn border border-slate-600">VOLVER AL LOBBY</button>
                 </div>
             `;
         }
@@ -1432,6 +1640,7 @@
             p.skillPoints -= skill.cost;
             skill.applied++;
             skill.effect(p);
+            saveCurrentGame();
             playSound('victory');
             showToast('¡ENTRENAMIENTO EXITOSO!', `Mejoraste tu habilidad: ${skill.name}.`);
             renderScreen();
@@ -1446,36 +1655,36 @@
             if (p.classId === 'adventurer') {
                 if (!canChooseClass || !hasClassBook) {
                     classCards = `
-                        <div class="pixel-card p-4 rounded border-2 border-amber-500/50 text-center space-y-2">
+                        <div class="pixel-card p-4 rounded border-2 border-amber-500/60 text-center space-y-2 bg-slate-900/90">
                             <span class="text-4xl">⛪</span>
-                            <h4 class="pixel-font text-xl text-amber-300">TEMPLO DE LA CLASE SAGRADA</h4>
+                            <h4 class="pixel-font text-xl text-amber-300 font-bold">TEMPLO DE LA CLASE SAGRADA</h4>
                             <p class="text-xs text-slate-300">Para elegir tu Clase Avanzada definitiva, debes cumplir con los siguientes requisitos:</p>
-                            <p class="text-xs text-yellow-300">&bull; Nivel 10 y Piso 10 o Superior (${p.level >= 10 && p.floor >= 10 ? '✅ Cumplido' : '❌ Nivel/Piso insuficiente'})</p>
-                            <p class="text-xs text-yellow-300">&bull; Poseer un 📖 Libro de Clase en tu mochila (${hasClassBook ? '✅ Poseído' : '❌ Falta Libro de Clase'})</p>
+                            <p class="text-xs text-yellow-300 font-semibold">&bull; Nivel 10 y Piso 10 o Superior (${p.level >= 10 && p.floor >= 10 ? '✅ Cumplido' : '❌ Nivel/Piso insuficiente'})</p>
+                            <p class="text-xs text-yellow-300 font-semibold">&bull; Poseer un 📖 Libro de Clase en tu mochila (${hasClassBook ? '✅ Poseído' : '❌ Falta Libro de Clase'})</p>
                         </div>
                     `;
                 } else {
                     Object.keys(AVAILABLE_CLASSES).forEach(key => {
                         const c = AVAILABLE_CLASSES[key];
                         classCards += `
-                            <div class="pixel-card p-3 rounded mb-2 border-2 border-amber-500/60 flex items-center justify-between">
+                            <div class="pixel-card p-3 rounded mb-2 border-2 border-amber-500/60 flex items-center justify-between bg-slate-900/90">
                                 <div class="flex items-center space-x-3">
                                     <span class="text-3xl">${c.icon}</span>
                                     <div class="text-left">
-                                        <h4 class="pixel-font text-lg ${c.color}">${c.name}</h4>
+                                        <h4 class="pixel-font text-lg ${c.color} font-bold">${c.name}</h4>
                                         <p class="text-[11px] text-slate-300">Habilidad: ${c.activeSkill} (${c.activeDesc})</p>
                                     </div>
                                 </div>
-                                <button onclick="chooseAdvancedClass('${key}')" class="bg-amber-600 hover:bg-amber-500 text-black px-3 py-1.5 rounded font-bold pixel-font pixel-btn">CONSAGRAR</button>
+                                <button onclick="chooseAdvancedClass('${key}')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-1.5 rounded font-bold pixel-font pixel-btn border border-amber-300">CONSAGRAR</button>
                             </div>
                         `;
                     });
                 }
             } else {
                 classCards = `
-                    <div class="pixel-card p-4 rounded border-2 border-cyan-500/50 text-center space-y-2">
+                    <div class="pixel-card p-4 rounded border-2 border-cyan-500/60 text-center space-y-2 bg-slate-900/90">
                         <span class="text-4xl">✨</span>
-                        <h4 class="pixel-font text-xl text-cyan-300">CLASE CONSAGRADA: ${p.className}</h4>
+                        <h4 class="pixel-font text-xl text-cyan-300 font-bold">CLASE CONSAGRADA: ${p.className}</h4>
                         <p class="text-xs text-slate-300">Ya has seleccionado tu senda definitiva en la Torre.</p>
                     </div>
                 `;
@@ -1483,9 +1692,9 @@
 
             container.innerHTML = `
                 <div class="w-full max-w-md">
-                    <h3 class="pixel-font text-2xl text-amber-400 mb-3 text-center">IGLESIA DE LAS CLASES</h3>
+                    <h3 class="pixel-font text-2xl text-amber-400 mb-3 text-center font-bold">IGLESIA DE LAS CLASES</h3>
                     <div class="space-y-3 mb-4">${classCards}</div>
-                    <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn">VOLVER AL LOBBY</button>
+                    <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn border border-slate-600">VOLVER AL LOBBY</button>
                 </div>
             `;
         }
@@ -1510,6 +1719,7 @@
             p.mag += c.bonusMag || 8;
             if (c.bonusSpd) p.spd += c.bonusSpd;
 
+            saveCurrentGame();
             playSound('victory');
             showToast('¡CONSAGRACIÓN EXITOSA!', `¡Ahora eres un ${c.name}! Atributos y aspecto actualizados.`);
             renderScreen();
@@ -1521,7 +1731,7 @@
             let shopHtml = '';
             SHOP_ITEMS.forEach((item, idx) => {
                 shopHtml += `
-                    <div class="pixel-card p-2 rounded mb-2 flex items-center justify-between border border-slate-700 text-xs">
+                    <div class="pixel-card p-2 rounded mb-2 flex items-center justify-between border border-slate-700 text-xs bg-slate-900/80">
                         <div class="flex items-center space-x-2">
                             <span class="text-xl">${item.icon}</span>
                             <div>
@@ -1529,7 +1739,7 @@
                                 <p class="text-[10px] text-slate-400">${item.desc}</p>
                             </div>
                         </div>
-                        <button onclick="buyShopItem(${idx})" class="bg-yellow-600 hover:bg-yellow-500 text-black px-3 py-1 rounded font-bold pixel-btn">COMPRAR</button>
+                        <button onclick="buyShopItem(${idx})" class="bg-yellow-500 hover:bg-yellow-400 text-slate-950 px-3 py-1 rounded font-bold pixel-btn border border-yellow-300">COMPRAR</button>
                     </div>
                 `;
             });
@@ -1540,14 +1750,14 @@
                 sellableItems.forEach((item) => {
                     const realIdx = p.inventory.indexOf(item);
                     sellHtml += `
-                        <div class="pixel-card p-2 rounded mb-2 flex items-center justify-between border border-slate-700 text-xs">
+                        <div class="pixel-card p-2 rounded mb-2 flex items-center justify-between border border-slate-700 text-xs bg-slate-900/80">
                             <div class="flex items-center space-x-2">
                                 <span class="text-xl">${item.icon}</span>
                                 <div>
                                     <span class="text-emerald-300 font-bold">${item.name} (Vender: ${item.price}g)</span>
                                 </div>
                             </div>
-                            <button onclick="sellMaterialItem(${realIdx})" class="bg-emerald-600 hover:bg-emerald-500 text-black px-3 py-1 rounded font-bold pixel-btn">VENDER</button>
+                            <button onclick="sellMaterialItem(${realIdx})" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-3 py-1 rounded font-bold pixel-btn border border-emerald-300">VENDER</button>
                         </div>
                     `;
                 });
@@ -1558,13 +1768,13 @@
             container.innerHTML = `
                 <div class="w-full max-w-md">
                     <div class="flex justify-between items-center mb-3">
-                        <h3 class="pixel-font text-2xl text-yellow-400">TIENDA GENERAL</h3>
-                        <span class="text-xs text-yellow-400 font-bold">${p.gold}g 💰</span>
+                        <h3 class="pixel-font text-2xl text-yellow-400 font-bold">TIENDA GENERAL</h3>
+                        <span class="text-xs text-yellow-300 font-bold">${p.gold}g 💰</span>
                     </div>
                     <div class="max-h-40 overflow-y-auto mb-3 space-y-1">${shopHtml}</div>
-                    <h4 class="pixel-font text-lg text-emerald-400 mb-2">VENDER MATERIALES</h4>
+                    <h4 class="pixel-font text-lg text-emerald-400 mb-2 font-bold">VENDER MATERIALES</h4>
                     <div class="max-h-32 overflow-y-auto mb-3 space-y-1">${sellHtml}</div>
-                    <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn">VOLVER AL LOBBY</button>
+                    <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn border border-slate-600">VOLVER AL LOBBY</button>
                 </div>
             `;
         }
@@ -1578,6 +1788,7 @@
             }
             p.gold -= item.price;
             p.inventory.push(JSON.parse(JSON.stringify(item)));
+            saveCurrentGame();
             playSound('victory');
             showToast('COMPRA EXITOSA', `Has comprado ${item.name}.`);
             renderScreen();
@@ -1588,6 +1799,7 @@
             const item = p.inventory[index];
             p.gold += item.price;
             p.inventory.splice(index, 1);
+            saveCurrentGame();
             playSound('victory');
             showToast('VENTA EXITOSA', `Vendiste ${item.name} por ${item.price}g.`);
             renderScreen();
@@ -1597,10 +1809,10 @@
             let questsHtml = '';
             game.quests.forEach(q => {
                 questsHtml += `
-                    <div class="pixel-card p-3 rounded mb-2 border border-slate-700 text-xs">
+                    <div class="pixel-card p-3 rounded mb-2 border border-slate-700 text-xs bg-slate-900/80">
                         <div class="flex justify-between items-center mb-1">
-                            <span class="pixel-font text-lg text-green-400">${q.title}</span>
-                            <span class="text-[10px] text-yellow-400 font-bold">${q.completed ? 'COMPLETADA ✅' : 'EN CURSO ⏳'}</span>
+                            <span class="pixel-font text-lg text-emerald-400 font-bold">${q.title}</span>
+                            <span class="text-[10px] text-yellow-300 font-bold">${q.completed ? 'COMPLETADA ✅' : 'EN CURSO ⏳'}</span>
                         </div>
                         <p class="text-slate-300 mb-1">${q.desc}</p>
                         <p class="text-[10px] text-slate-400">Recompensa: ${q.rewardGold}g</p>
@@ -1610,9 +1822,9 @@
 
             container.innerHTML = `
                 <div class="w-full max-w-md">
-                    <h3 class="pixel-font text-2xl text-green-400 mb-3 text-center">MISIONES DEL SISTEMA</h3>
+                    <h3 class="pixel-font text-2xl text-emerald-400 mb-3 text-center font-bold">MISIONES DEL SISTEMA</h3>
                     <div class="space-y-2 mb-4 max-h-60 overflow-y-auto">${questsHtml}</div>
-                    <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn">VOLVER AL LOBBY</button>
+                    <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn border border-slate-600">VOLVER AL LOBBY</button>
                 </div>
             `;
         }
@@ -1620,195 +1832,23 @@
         function renderNpcScreen(container) {
             container.innerHTML = `
                 <div class="w-full max-w-md text-center">
-                    <div class="pixel-card p-5 rounded border-2 border-blue-500/60 mb-4 space-y-3">
+                    <div class="pixel-card p-5 rounded border-2 border-cyan-500/80 mb-4 space-y-3 bg-slate-900/90 shadow-xl">
                         <span class="text-5xl mb-2 block animate-bounce">🤖</span>
-                        <h3 class="pixel-font text-2xl text-blue-300">ORÁCULO TÁCTICO V9</h3>
-                        <p class="text-xs text-slate-300 leading-relaxed text-left">
-                            "Bienvenido a V9. Ahora puedes forjar equipo único en la **Herrería**, consultar monstruos derrotados en el **Grimorio**, y tus accesorios equipados cambiarán la apariencia de tu héroe en tiempo real."
+                        <h3 class="pixel-font text-2xl text-cyan-300 font-bold">ORÁCULO TÁCTICO V11</h3>
+                        <p class="text-xs text-slate-200 leading-relaxed text-left">
+                            "¡Bienvenido a la versión V11 Graphic Edition! Disfruta de la renderización del paperdoll de héroe en alta calidad, nuevos fondos temáticos para cada grupo de pisos de la Torre, bestias detalladas y navegación fluida por teclado (WASD / Flechas)."
                         </p>
                     </div>
-                    <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn">REGRESAR</button>
+                    <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn border border-slate-600">REGRESAR</button>
                 </div>
             `;
         }
 
-
-
-        /* =========================================================
-           TORRE:SYSTEM V11 - EXPANSIÓN INTEGRAL
-           Capa de mejoras sobre el motor V9 para conservar funciones
-           anteriores y añadir pixel-art, progresión, equipo, pociones,
-           clases, zonas, eventos, persistencia y final de Torre.
-        ========================================================= */
-        const V11_KEY = 'TORRE_SYSTEM_V11_SAVE';
-        const V11_SETTINGS_KEY = 'TORRE_SYSTEM_V11_SETTINGS';
-        const V11_ZONES = [
-          {from:1,to:10,name:'Bosque de los Iniciados',theme:'🌲',monsters:['slime','goblin','bat'],npc:'Guía del Bosque',boss:'Rey Goblin Verde'},
-          {from:11,to:20,name:'Ruinas Olvidadas',theme:'🏚️',monsters:['goblin','skeleton','bat'],npc:'Arqueóloga Lyra',boss:'Caballero de las Ruinas'},
-          {from:21,to:30,name:'Minas de Cristal',theme:'⛏️',monsters:['golem','orc','slime'],npc:'Minero Bronn',boss:'Gólem de Cristal'},
-          {from:31,to:40,name:'Pantano Tóxico',theme:'☠️',monsters:['slime','wolf','specter'],npc:'Alquimista Vex',boss:'Hidra Venenosa'},
-          {from:41,to:50,name:'Ciudad de los Muertos',theme:'💀',monsters:['skeleton','specter','orc'],npc:'Guardiana Nara',boss:'Rey Esqueleto'},
-          {from:51,to:60,name:'Fortaleza Orca',theme:'🏰',monsters:['orc','goblin','wolf'],npc:'Capitán Rook',boss:'General Orco'},
-          {from:61,to:70,name:'Cumbres Celestes',theme:'☁️',monsters:['wolf','golem','dragon'],npc:'Monje Aster',boss:'Dragón de las Cumbres'},
-          {from:71,to:80,name:'Abismo Carmesí',theme:'🔥',monsters:['specter','demon','golem'],npc:'Exiliado Kael',boss:'Señor del Abismo'},
-          {from:81,to:90,name:'Dominio Astral',theme:'✨',monsters:['dragon','demon','golem'],npc:'Astrónoma Eira',boss:'Titán Astral'},
-          {from:91,to:100,name:'Núcleo de la Torre',theme:'🌀',monsters:['demon','dragon','entity'],npc:'Administrador Errante',boss:'ADMINISTRADOR DE LA TORRE'}
-        ];
-        const V11_CLASS_BOOKS = [
-          {id:'book_paladin',name:'Libro del Paladín',tier:'oculta',cls:'paladin',icon:'📘'},
-          {id:'book_ranger',name:'Libro del Guardabosques',tier:'oculta',cls:'ranger',icon:'📗'},
-          {id:'book_berserker',name:'Libro del Berserker',tier:'rara',cls:'berserker',icon:'📕'},
-          {id:'book_abyss',name:'Libro del Brujo Abisal',tier:'rara',cls:'abyss',icon:'📕'},
-          {id:'book_chrono',name:'Libro del Cronomante',tier:'legendaria',cls:'chrono',icon:'📙'},
-          {id:'book_dragon',name:'Libro del Caballero Dragón',tier:'legendaria',cls:'dragonknight',icon:'📙'}
-        ];
-        const V11_CLASSES = {
-          warrior:{name:'Guerrero',icon:'⚔️',tier:'básica',skill:'Manejo básico con espadas',next:'Manejo medio de espadas y escudo',bonus:{str:12,def:8,hp:70}},
-          mage:{name:'Mago',icon:'🔮',tier:'básica',skill:'Concentración arcana',next:'Dominio elemental',bonus:{mag:16,mp:45,hp:20}},
-          cleric:{name:'Clérigo',icon:'✝️',tier:'básica',skill:'Oración menor',next:'Bendición sagrada',bonus:{mag:10,def:10,hp:45,mp:30}},
-          assassin:{name:'Asesino',icon:'🗡️',tier:'básica',skill:'Paso silencioso',next:'Manejo de espadachín',bonus:{str:10,spd:15,hp:30}},
-          paladin:{name:'Paladín',icon:'🛡️',tier:'oculta',skill:'Juramento sagrado',next:'Caballero de la Luz',bonus:{str:14,def:16,hp:100}},
-          ranger:{name:'Guardabosques',icon:'🏹',tier:'oculta',skill:'Tiro preciso',next:'Maestría de cazador',bonus:{str:13,spd:12,hp:45}},
-          berserker:{name:'Berserker',icon:'🪓',tier:'rara',skill:'Furia creciente',next:'Furia del coloso',bonus:{str:25,hp:90}},
-          abyss:{name:'Brujo Abisal',icon:'🕳️',tier:'rara',skill:'Marca del abismo',next:'Dominio abisal',bonus:{mag:28,mp:70,hp:30}},
-          chrono:{name:'Cronomante',icon:'⏳',tier:'legendaria',skill:'Distorsión temporal',next:'Maestría temporal',bonus:{mag:35,mp:100,spd:20}},
-          dragonknight:{name:'Caballero Dragón',icon:'🐉',tier:'legendaria',skill:'Sangre dracónica',next:'Ascensión dracónica',bonus:{str:30,def:25,hp:150}}
-        };
-        const V11_MONSTERS = {
-          slime:{name:'Slime',type:'slime',hp:75,atk:13,def:4,exp:35,gold:20,drop:'Gelatina Azul',dropValue:18},
-          goblin:{name:'Goblin',type:'goblin',hp:100,atk:19,def:7,exp:55,gold:32,drop:'Oreja de Goblin',dropValue:28},
-          bat:{name:'Murciélago Nocturno',type:'bat',hp:90,atk:20,def:5,exp:50,gold:28,drop:'Ala Nocturna',dropValue:25},
-          wolf:{name:'Lobo de la Torre',type:'wolf',hp:130,atk:25,def:9,exp:70,gold:40,drop:'Colmillo de Lobo',dropValue:35},
-          skeleton:{name:'Esqueleto Guerrero',type:'skeleton',hp:160,atk:29,def:14,exp:85,gold:50,drop:'Hueso Antiguo',dropValue:40},
-          orc:{name:'Orco Guardián',type:'orc',hp:220,atk:36,def:18,exp:120,gold:70,drop:'Colmillo Orco',dropValue:55},
-          specter:{name:'Espectro',type:'specter',hp:190,atk:42,def:10,exp:140,gold:85,drop:'Esencia Espectral',dropValue:70},
-          golem:{name:'Gólem de Piedra',type:'golem',hp:300,atk:45,def:28,exp:180,gold:110,drop:'Fragmento de Núcleo',dropValue:95},
-          dragon:{name:'Draco de la Torre',type:'dragon',hp:420,atk:62,def:30,exp:260,gold:160,drop:'Escama Dracónica',dropValue:140},
-          demon:{name:'Demonio del Abismo',type:'demon',hp:500,atk:72,def:35,exp:320,gold:220,drop:'Esencia Abisal',dropValue:190},
-          entity:{name:'Entidad del Núcleo',type:'entity',hp:650,atk:88,def:42,exp:450,gold:320,drop:'Fragmento del Núcleo',dropValue:280}
-        };
-        const V11_BOSSES = {};
-        V11_ZONES.forEach((z,i)=>{ V11_BOSSES[i+1]={id:'v11boss'+(i+1),name:z.boss,type:['goblin','skeleton','golem','demon','skeleton','orc','dragon','demon','entity','entity'][i],hp:550+i*180,atk:45+i*9,def:20+i*5,exp:450+i*180,gold:350+i*150,drop:'Fragmento de Jefe',dropValue:200+i*80}; });
-        const V11_POTION = {
-          hp:{id:'v11_hp',name:'Poción de Vida',type:'potion',effect:'hp',val:70,price:45,icon:'🧪',color:'#ef4444',desc:'Botella roja. Restaura 70 PV.'},
-          mp:{id:'v11_mp',name:'Poción de Maná',type:'potion',effect:'mp',val:50,price:42,icon:'🧪',color:'#3b82f6',desc:'Botella azul. Restaura 50 PM.'},
-          poison:{id:'v11_poison',name:'Poción de Veneno',type:'poison',val:3,price:65,icon:'🧪',color:'#22c55e',desc:'Se aplica al arma. Envenena durante 3 turnos.'}
-        };
-        function v11PotionSVG(color='#ef4444',size=34){ return `<svg width="${size}" height="${size}" viewBox="0 0 40 40" class="potion-sprite" shape-rendering="crispEdges"><rect x="15" y="3" width="10" height="6" fill="#cbd5e1"/><rect x="13" y="8" width="14" height="4" fill="#94a3b8"/><path d="M11 13h18v4l4 5v10l-5 5H12l-5-5V22l4-5z" fill="#e2e8f0" stroke="#0f172a" stroke-width="2"/><path d="M10 22h20v9l-4 3H14l-4-3z" fill="${color}"/><rect x="13" y="24" width="4" height="5" fill="#fff" opacity=".35"/></svg>`; }
-        function v11HeroSVG(equipment={},classId='warrior',size=90){
-          const c=V11_CLASSES[classId]||V11_CLASSES.warrior; const eq=equipment||{};
-          const hair=classId==='mage'||classId==='chrono'?'#7c3aed':classId==='assassin'?'#111827':'#7c3f16';
-          const armor=eq.armor?.color||'#2563eb'; const helm=eq.helmet?'#94a3b8':hair; const boot=eq.boots?'#334155':'#111827';
-          return `<svg width="${size}" height="${size}" viewBox="0 0 80 96" class="pixel-art sprite-frame" shape-rendering="crispEdges">
-          <rect x="20" y="88" width="40" height="4" fill="#000" opacity=".5"/><rect x="27" y="68" width="10" height="19" fill="${boot}"/><rect x="43" y="68" width="10" height="19" fill="${boot}"/>
-          <rect x="25" y="43" width="30" height="28" fill="${armor}"/><rect x="30" y="48" width="20" height="15" fill="#475569"/><rect x="16" y="45" width="9" height="21" fill="#f1c27d"/><rect x="55" y="45" width="9" height="21" fill="#f1c27d"/>
-          <rect x="25" y="19" width="30" height="27" fill="#f1c27d"/><rect x="25" y="14" width="30" height="10" fill="${helm}"/><rect x="29" y="25" width="6" height="5" fill="#111827"/><rect x="45" y="25" width="6" height="5" fill="#111827"/><rect x="37" y="34" width="7" height="4" fill="#92400e"/>
-          ${eq.weapon?`<rect x="64" y="34" width="5" height="35" fill="#e2e8f0"/><rect x="60" y="65" width="13" height="5" fill="#78350f"/>`:''}${eq.shield?`<rect x="7" y="47" width="10" height="17" fill="#64748b"/>`:''}</svg>`;
-        }
-        function v11MonsterSVG(type,size=90){
-          const skin={slime:'#10b981',goblin:'#65a30d',bat:'#7c3aed',wolf:'#94a3b8',skeleton:'#e5e7eb',orc:'#166534',specter:'#67e8f9',golem:'#78716c',dragon:'#dc2626',demon:'#991b1b',entity:'#06b6d4'}[type]||'#ef4444';
-          if(type==='slime') return `<svg width="${size}" height="${size}" viewBox="0 0 80 80" shape-rendering="crispEdges"><path d="M15 57V40Q15 20 40 20t25 20v17q0 13-25 13T15 57z" fill="${skin}"/><rect x="28" y="40" width="6" height="6" fill="#fff"/><rect x="46" y="40" width="6" height="6" fill="#fff"/><rect x="30" y="42" width="3" height="3"/><rect x="48" y="42" width="3" height="3"/></svg>`;
-          if(type==='goblin') return `<svg width="${size}" height="${size}" viewBox="0 0 80 80" shape-rendering="crispEdges"><polygon points="12,25 28,29 23,42" fill="#84cc16"/><polygon points="68,25 52,29 57,42" fill="#84cc16"/><rect x="25" y="22" width="30" height="28" fill="#65a30d"/><rect x="29" y="50" width="9" height="17" fill="#166534"/><rect x="42" y="50" width="9" height="17" fill="#166534"/><rect x="30" y="31" width="7" height="6" fill="#fde047"/><rect x="44" y="31" width="7" height="6" fill="#fde047"/><polygon points="34,44 40,39 46,44" fill="#f8fafc"/><rect x="28" y="45" width="25" height="7" fill="#78350f"/></svg>`;
-          if(type==='bat') return `<svg width="${size}" height="${size}" viewBox="0 0 80 80" shape-rendering="crispEdges"><polygon points="38,35 10,23 18,45 8,58 35,52" fill="${skin}"/><polygon points="42,35 70,23 62,45 72,58 45,52" fill="${skin}"/><rect x="32" y="31" width="16" height="24" fill="${skin}"/><rect x="34" y="39" width="4" height="4" fill="#fef08a"/><rect x="42" y="39" width="4" height="4" fill="#fef08a"/></svg>`;
-          const horns=['dragon','demon','entity'].includes(type)?`<polygon points="25,24 31,10 36,25" fill="#f59e0b"/><polygon points="55,24 49,10 44,25" fill="#f59e0b"/>`:'';
-          return `<svg width="${size}" height="${size}" viewBox="0 0 80 80" shape-rendering="crispEdges">${horns}<rect x="23" y="22" width="34" height="34" fill="${skin}"/><rect x="29" y="56" width="8" height="14" fill="${skin}"/><rect x="43" y="56" width="8" height="14" fill="${skin}"/><rect x="29" y="32" width="7" height="6" fill="#fff"/><rect x="44" y="32" width="7" height="6" fill="#fff"/><rect x="31" y="34" width="3" height="3" fill="#111827"/><rect x="46" y="34" width="3" height="3" fill="#111827"/></svg>`;
-        }
-        // Replace the simple visual generators with the V11 pixel-art versions.
-        generateHeroAvatarSVG = v11HeroSVG;
-        generateMonsterSVG = v11MonsterSVG;
-
-        function v11Zone(f){ return V11_ZONES[Math.min(9,Math.floor((f-1)/10))]; }
-        function v11NormalizePlayer(){
-          const p=game.player; if(!p) return;
-          p.equipment=p.equipment||{weapon:null,helmet:null,armor:null,boots:null,shield:null};
-          p.inventory=p.inventory||[]; p.skillTree=p.skillTree||{}; p.poisonCharges=p.poisonCharges||0;
-          p.classId=p.classId||'warrior'; p.className=V11_CLASSES[p.classId]?.name||p.className||'Guerrero';
-          p.maxHp=p.maxHp||190;p.hp=Math.min(p.hp??p.maxHp,p.maxHp);p.maxMp=p.maxMp||50;p.mp=Math.min(p.mp??p.maxMp,p.maxMp);
-          p.floor=game.floor||1;
-        }
-        function v11Save(){
-          if(!game.player)return; v11NormalizePlayer(); game.player.floor=game.floor;
-          game.slots=game.slots||[null,null,null,null,null]; while(game.slots.length<5)game.slots.push(null);
-          game.slots[game.currentSlot]=JSON.parse(JSON.stringify(game.player));
-          try{localStorage.setItem(V11_KEY,JSON.stringify({slots:game.slots,currentSlot:game.currentSlot,floor:game.floor,settings:game.settings||{}}));}catch(e){console.warn(e)}
-        }
-        function v11Load(){
-          try{const raw=localStorage.getItem(V11_KEY);if(!raw)return;const d=JSON.parse(raw);if(d&&Array.isArray(d.slots)){game.slots=d.slots;while(game.slots.length<5)game.slots.push(null);game.currentSlot=d.currentSlot||0;game.settings=d.settings||{};}}catch(e){console.warn('V11 load',e)}
-          game.slots=game.slots||[null,null,null,null,null];while(game.slots.length<5)game.slots.push(null);
-        }
-        function v11Settings(){try{return JSON.parse(localStorage.getItem(V11_SETTINGS_KEY)||'{"volume":70,"muted":false,"crt":true,"lang":"es"}')}catch(e){return {volume:70,muted:false,crt:true,lang:'es'}}}
-        game.settings=v11Settings(); v11Load();
-        function v11ItemPotion(kind){return JSON.parse(JSON.stringify(V11_POTION[kind]));}
-        function v11RenderSaves(c){let html='';for(let i=0;i<5;i++){const s=game.slots[i];html+=s?`<div class="pixel-card p-3 rounded mb-2 flex items-center justify-between"><div>${generateHeroAvatarSVG(s.equipment,s.classId,52)}<b class="text-cyan-300">RANURA ${i+1}</b><p class="text-[10px] text-slate-400">${s.name} · Nivel ${s.level} · Piso ${s.floor||1}</p></div><div class="flex gap-1"><button onclick="loadGameSlot(${i})" class="bg-cyan-600 text-black px-3 py-2 rounded font-bold text-xs">CARGAR</button><button onclick="deleteGameSlot(${i})" class="bg-red-700 text-white px-2 py-2 rounded text-xs">X</button></div></div>`:`<div class="pixel-card p-3 rounded mb-2 flex justify-between items-center border-dashed"><span class="text-slate-500">RANURA ${i+1} · VACÍA</span><button onclick="startNewGameInSlot(${i})" class="bg-cyan-600 text-black px-3 py-2 rounded font-bold text-xs">NUEVA</button></div>`;}c.innerHTML=`<div class="w-full max-w-md"><h3 class="pixel-font text-2xl text-cyan-400 mb-3 text-center">PARTIDAS · 5 RANURAS</h3>${html}<div class="grid grid-cols-2 gap-2 mt-3"><button onclick="v11Export()" class="bg-slate-700 py-2 rounded text-xs">EXPORTAR</button><label class="bg-slate-700 py-2 rounded text-xs text-center cursor-pointer">IMPORTAR<input type="file" accept="application/json" onchange="v11Import(this)" hidden></label></div><button onclick="game.screen='title';renderScreen()" class="w-full mt-2 bg-slate-800 py-2 rounded">VOLVER</button></div>`}
-        function v11RenderSettings(c){const s=game.settings; c.innerHTML=`<div class="w-full max-w-md"><h3 class="pixel-font text-2xl text-cyan-400 text-center mb-4">⚙️ CONFIGURACIÓN</h3><div class="pixel-card p-4 space-y-4"><label class="block text-xs">IDIOMA<select onchange="v11Set('lang',this.value)" class="w-full bg-slate-900 p-2 mt-1"><option value="es" ${s.lang==='es'?'selected':''}>Español</option><option value="en" ${s.lang==='en'?'selected':''}>English</option></select></label><label class="block text-xs">VOLUMEN <input type="range" min="0" max="100" value="${s.volume}" onchange="v11Set('volume',+this.value)" class="w-full"></label><button onclick="v11Set('muted',!game.settings.muted)" class="w-full bg-slate-700 py-2 rounded">${s.muted?'🔇 SONIDO APAGADO':'🔊 SONIDO ACTIVO'}</button><button onclick="v11Set('crt',!game.settings.crt)" class="w-full bg-slate-700 py-2 rounded">${s.crt?'CRT: ACTIVADO':'CRT: DESACTIVADO'}</button></div><button onclick="game.screen='lobby';renderScreen()" class="w-full mt-3 bg-slate-800 py-2 rounded">VOLVER</button></div>`}
-        function v11Set(k,v){game.settings[k]=v;localStorage.setItem(V11_SETTINGS_KEY,JSON.stringify(game.settings));renderScreen()}
-        function v11RenderWish(c){c.innerHTML=`<div class="w-full max-w-md text-center"><div class="pixel-card p-5 border-2 border-yellow-500"><div class="text-6xl">🌀</div><h3 class="pixel-font text-2xl text-yellow-300">PISO 100 · DESEO</h3><p class="text-xs text-slate-300 my-3">La Torre te ofrece un único deseo. Elige con cuidado.</p><div class="space-y-2"><button onclick="v11Wish('power')" class="w-full bg-red-700 py-3 rounded font-bold">⚔️ PODER ABSOLUTO</button><button onclick="v11Wish('wealth')" class="w-full bg-yellow-700 py-3 rounded font-bold">💰 RIQUEZA</button><button onclick="v11Wish('tower')" class="w-full bg-purple-700 py-3 rounded font-bold">🗼 CONTROLAR LA TORRE</button><button onclick="v11Wish('freedom')" class="w-full bg-cyan-700 py-3 rounded font-bold">🕊️ LIBERTAD</button></div></div></div>`}
-        function v11Wish(w){const p=game.player;if(w==='power'){p.str+=100;p.mag+=100;p.maxHp+=300;p.hp=p.maxHp}else if(w==='wealth'){p.gold+=100000}else if(w==='tower'){p.inventory.push({id:'core_tower',name:'Núcleo de la Torre',type:'relic',icon:'🌀',desc:'Reliquia única del piso 100.'})}else{p.inventory.push({id:'freedom',name:'Sello de Libertad',type:'relic',icon:'🕊️',desc:'Has roto el vínculo de la Torre.'})}p.towerWish=w;v11Save();showToast('DESEO CONCEDIDO','La Torre ha aceptado tu deseo. Tu aventura queda registrada como completada.');game.screen='lobby';renderScreen()}
-        function v11Export(){v11Save();const blob=new Blob([localStorage.getItem(V11_KEY)||'{}'],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='TORRE_SYSTEM_respaldo.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
-        function v11Import(input){const f=input.files?.[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{JSON.parse(r.result);localStorage.setItem(V11_KEY,r.result);v11Load();showToast('IMPORTACIÓN','Respaldo restaurado correctamente.');renderScreen()}catch(e){showToast('ERROR','El respaldo no es válido.')}};r.readAsText(f)}
-
-        // Expanded equipment and shop scaling.
-        const V11_SHOP_BASE=[
-          {name:'Espada de Acero',type:'weapon',slot:'weapon',atk:18,price:180,icon:'🗡️',desc:'+18 ATK'},
-          {name:'Casco del Explorador',type:'helmet',slot:'helmet',def:10,price:140,icon:'🪖',desc:'+10 DEF'},
-          {name:'Pechera Reforzada',type:'armor',slot:'armor',def:16,price:220,icon:'🛡️',desc:'+16 DEF'},
-          {name:'Pantalón de Guardia',type:'pants',slot:'pants',def:8,price:160,icon:'👖',desc:'+8 DEF'},
-          {name:'Botas de Viaje',type:'boots',slot:'boots',def:8,price:150,icon:'🥾',desc:'+8 DEF'},
-          v11ItemPotion('hp'),v11ItemPotion('mp'),v11ItemPotion('poison')
-        ];
-        function v11ScaledShop(){const f=game.floor||1,scale=1+Math.floor((f-1)/10)*0.35;return V11_SHOP_BASE.map(x=>{const a=JSON.parse(JSON.stringify(x));if(a.atk)a.atk=Math.round(a.atk*scale);if(a.def)a.def=Math.round(a.def*scale);a.price=Math.round(a.price*scale);return a})}
-        function v11RenderShop(c){const p=game.player,items=v11ScaledShop();c.innerHTML=`<div class="w-full max-w-md"><div class="flex justify-between mb-3"><h3 class="pixel-font text-2xl text-yellow-400">TIENDA · ZONA ${v11Zone(game.floor).name}</h3><b class="text-yellow-300">${p.gold}g</b></div>${items.map((it,i)=>`<div class="pixel-card p-2 mb-2 flex justify-between items-center"><div>${it.type==='potion'?v11PotionSVG(it.effect==='hp'?'#ef4444':it.effect==='mp'?'#3b82f6':'#22c55e',38):`<span class="text-2xl">${it.icon}</span>`}<span class="ml-2 text-xs"><b class="text-cyan-300">${it.name}</b><br>${it.desc}</span></div><button onclick="v11Buy(${i})" class="bg-yellow-600 text-black px-2 py-1 rounded text-xs font-bold">${it.price}g</button></div>`).join('')}<button onclick="game.screen='lobby';renderScreen()" class="w-full bg-slate-800 py-2 rounded mt-2">VOLVER</button></div>`}
-        function v11Buy(i){const it=v11ScaledShop()[i],p=game.player;if(p.gold<it.price)return showToast('ORO INSUFICIENTE','Necesitas más oro.');p.gold-=it.price;p.inventory.push(JSON.parse(JSON.stringify(it)));v11Save();renderScreen()}
-        function v11ApplyPoison(){const p=game.player,idx=p.inventory.findIndex(i=>i.type==='poison');if(idx<0)return showToast('SIN VENENO','No tienes una poción de veneno.');if(!p.equipment.weapon)return showToast('SIN ARMA','Equipa un arma antes de aplicar el veneno.');p.inventory.splice(idx,1);p.poisonCharges=3;p.equipment.weapon.poisoned=true;showToast('ARMA ENVENENADA','Tu arma aplicará veneno durante 3 ataques.');v11Save();renderScreen()}
-        function v11UsePotionIndex(index){const p=game.player,it=p.inventory[index];if(!it||it.type!=='potion')return;if(it.effect==='hp')p.hp=Math.min(p.maxHp,p.hp+it.val);if(it.effect==='mp')p.mp=Math.min(p.maxMp,p.mp+it.val);p.inventory.splice(index,1);playSound('potion');v11Save();renderScreen()}
-        function v11RenderInventory(c){const p=game.player,eq=p.equipment||{};const slots=[['weapon','⚔️','Arma'],['helmet','🪖','Casco'],['armor','🛡️','Pechera'],['pants','👖','Pantalones'],['boots','🥾','Botas']];const inv=p.inventory||[];c.innerHTML=`<div class="w-full max-w-md"><h3 class="pixel-font text-2xl text-purple-400 text-center mb-3">🎒 INVENTARIO</h3><div class="pixel-card p-3 mb-3 flex gap-3"><div>${generateHeroAvatarSVG(eq,p.classId,105)}</div><div class="text-xs space-y-1"><b class="text-cyan-300">${p.name}</b><div>Nivel ${p.level} · Piso ${game.floor}</div><div>PV ${p.hp}/${p.maxHp} · PM ${p.mp}/${p.maxMp}</div><div>ATK ${p.str+(eq.weapon?.atk||0)} · DEF ${p.def+(eq.armor?.def||0)+(eq.helmet?.def||0)+(eq.pants?.def||0)+(eq.boots?.def||0)}</div><div>Veneno en arma: ${p.poisonCharges||0}</div></div></div><div class="grid grid-cols-2 gap-2 mb-3">${slots.map(s=>`<div class="pixel-card p-2 text-xs"><b>${s[1]} ${s[2]}</b><div class="text-cyan-300 mt-1">${eq[s[0]]?.name||'Vacío'}</div></div>`).join('')}</div><button onclick="v11ApplyPoison()" class="w-full bg-green-700 py-2 rounded mb-2">☠️ APLICAR VENENO AL ARMA</button><div class="max-h-64 overflow-y-auto">${inv.map((it,i)=>`<div class="pixel-card p-2 mb-2 flex items-center justify-between text-xs"><div class="flex items-center">${it.type==='potion'?v11PotionSVG(it.effect==='hp'?'#ef4444':it.effect==='mp'?'#3b82f6':'#22c55e',34):`<span class="text-xl">${it.icon||'📦'}</span>`}<span class="ml-2"><b>${it.name}</b><br><span class="text-slate-400">${it.desc||''}</span></span></div>${it.type==='potion'?`<button onclick="v11UsePotionIndex(${i})" class="bg-purple-600 px-2 py-1 rounded text-[10px]">USAR</button>`:''}${['weapon','helmet','armor','pants','boots'].includes(it.type)?`<button onclick="v11Equip(${i})" class="bg-emerald-600 px-2 py-1 rounded text-[10px]">EQUIPAR</button>`:''}</div>`).join('')}</div><button onclick="game.screen='lobby';renderScreen()" class="w-full bg-slate-800 py-2 rounded mt-2">VOLVER</button></div>`}
-        function v11Equip(i){const p=game.player,it=p.inventory[i];if(!it||!it.slot)return;const old=p.equipment[it.slot];p.equipment[it.slot]=JSON.parse(JSON.stringify(it));p.inventory.splice(i,1);if(old)p.inventory.push(old);v11Save();renderScreen()}
-
-        function v11RenderClasses(c){const p=game.player;const basic=['warrior','mage','cleric','assassin'];const adv=V11_CLASS_BOOKS.map(b=>b.cls);c.innerHTML=`<div class="w-full max-w-md"><h3 class="pixel-font text-2xl text-amber-400 text-center mb-3">⛪ CLASES DE LA TORRE</h3><div class="pixel-card p-3 mb-3 text-xs">Clase actual: <b class="text-cyan-300">${p.className}</b><br>Habilidad: <b>${p.skillTree?.current||V11_CLASSES[p.classId]?.skill||'Manejo básico'}</b></div><h4 class="pixel-font text-lg text-green-400">CLASES BÁSICAS</h4>${basic.map(k=>`<button onclick="v11ChooseClass('${k}')" class="w-full pixel-card p-2 my-1 text-left">${V11_CLASSES[k].icon} ${V11_CLASSES[k].name} · ${V11_CLASSES[k].skill}</button>`).join('')}<h4 class="pixel-font text-lg text-purple-400 mt-3">CLASES OCULTAS / RARAS / LEGENDARIAS</h4>${adv.map(k=>{const b=V11_CLASS_BOOKS.find(x=>x.cls===k);return `<div class="pixel-card p-2 my-1 flex justify-between text-xs"><span>${b.icon} ${V11_CLASSES[k].name} <span class="text-slate-500">[${b.tier}]</span></span><button onclick="v11UseClassBook('${k}')" class="bg-purple-700 px-2 py-1 rounded">USAR LIBRO</button></div>`}).join('')}<button onclick="game.screen='lobby';renderScreen()" class="w-full bg-slate-800 py-2 rounded mt-3">VOLVER</button></div>`}
-        function v11ChooseClass(k){const p=game.player;if(!V11_CLASSES[k])return;p.classId=k;p.className=V11_CLASSES[k].name;v11ApplyClassBonus(k);v11Save();showToast('CLASE ELEGIDA',`Ahora eres ${p.className}.`);renderScreen()}
-        function v11UseClassBook(k){const p=game.player,idx=p.inventory.findIndex(i=>i.id===('book_'+(k==='paladin'?'paladin':k==='ranger'?'ranger':k==='berserker'?'berserker':k==='abyss'?'abyss':k==='chrono'?'chrono':'dragon'))||i.type==='classbook');if(idx<0)return showToast('LIBRO FALTANTE','Encuentra este libro en cofres, eventos o la tienda.');p.inventory.splice(idx,1);v11ChooseClass(k)}
-        function v11ApplyClassBonus(k){const p=game.player,b=V11_CLASSES[k]?.bonus||{};p.str+=(b.str||0);p.def+=(b.def||0);p.mag+=(b.mag||0);p.spd+=(b.spd||0);p.maxHp+=(b.hp||0);p.hp=p.maxHp;p.maxMp+=(b.mp||0);p.mp=p.maxMp;p.skillTree=p.skillTree||{};p.skillTree.current=V11_CLASSES[k].skill;p.skillTree.level=1}
-        function v11UpgradeSkill(){const p=game.player;p.skillTree=p.skillTree||{level:1};if((p.skillPoints||0)<2)return showToast('SP INSUFICIENTES','Necesitas 2 SP para evolucionar la habilidad.');p.skillPoints-=2;p.skillTree.level++;const names=['Manejo básico con espadas','Manejo medio de espadas y escudo','Manejo de espadachín','Manejo experto','Maestría'];p.skillTree.current=names[Math.min(4,p.skillTree.level-1)];v11Save();showToast('HABILIDAD EVOLUCIONADA',p.skillTree.current);renderScreen()}
-        function v11RenderTraining(c){const p=game.player;c.innerHTML=`<div class="w-full max-w-md"><h3 class="pixel-font text-2xl text-emerald-400 text-center">🏋️ ENTRENAMIENTO</h3><div class="pixel-card p-3 my-3 text-xs">SP disponibles: <b class="text-yellow-300">${p.skillPoints||0}</b><br>Habilidad actual: <b class="text-cyan-300">${p.skillTree?.current||'Manejo básico con espadas'}</b></div><button onclick="v11UpgradeSkill()" class="w-full bg-emerald-700 py-3 rounded font-bold mb-2">EVOLUCIONAR HABILIDAD · 2 SP</button><button onclick="game.screen='lobby';renderScreen()" class="w-full bg-slate-800 py-2 rounded">VOLVER</button></div>`}
-
-        // Tower floor generation with zone-specific entities, chests and traps.
-        function v11GenerateFloor(f){
-          const size=7;game.grid=[];game.fog=[];game.environment=[];game.floorEntities={};const z=v11Zone(f);
-          for(let y=0;y<size;y++){game.grid[y]=[];game.fog[y]=[];game.environment[y]=[];for(let x=0;x<size;x++){game.grid[y][x]='empty';game.fog[y][x]=false;game.environment[y][x]=z.theme}}
-          game.playerPos={x:3,y:6};game.grid[1][3]='stairs_up';if(f>1)game.grid[6][1]='stairs_down';
-          if(f%10===0){game.grid[2][3]='boss';game.floorEntities['2,3']=V11_BOSSES[f/10]}
-          else{
-            let n=3+Math.min(3,Math.floor(f/15));for(let i=0;i<n;i++){let x,y,tries=0;do{x=Math.floor(Math.random()*7);y=1+Math.floor(Math.random()*5);tries++}while((game.grid[y][x]!=='empty'||(x===3&&y===6))&&tries<100);if(tries<100){game.grid[y][x]='monster';const key=z.monsters[Math.floor(Math.random()*z.monsters.length)];game.floorEntities[`${x},${y}`]=V11_MONSTERS[key]}}
-            let ch=2+Math.floor(f/25);for(let i=0;i<ch;i++){let x=Math.floor(Math.random()*7),y=1+Math.floor(Math.random()*5);if(game.grid[y][x]==='empty')game.grid[y][x]=Math.random()<.22?'trap_chest':'chest'}
-            if(Math.random()<.8){let x=Math.floor(Math.random()*7),y=1+Math.floor(Math.random()*5);if(game.grid[y][x]==='empty')game.grid[y][x]='npc'}
-          }
-          game.floorsState[f]={grid:game.grid,fog:game.fog,environment:game.environment};revealAdjacentFog();
-        }
-        generateNewFloor=v11GenerateFloor;
-        function v11Move(dx,dy){let nx=game.playerPos.x+dx,ny=game.playerPos.y+dy;if(nx<0||ny<0||nx>=7||ny>=7)return;game.playerPos={x:nx,y:ny};revealAdjacentFog();const tile=game.grid[ny][nx],key=`${nx},${ny}`;if(tile==='monster'||tile==='boss'){const base=game.floorEntities?.[key]||(tile==='boss'?V11_BOSSES[game.floor/10]:V11_MONSTERS.slime);game.enemy=JSON.parse(JSON.stringify(base));const scale=1+(game.floor-1)*.06;game.enemy.hp=Math.round(game.enemy.hp*scale);game.enemy.maxHp=game.enemy.hp;game.enemy.atk=Math.round(game.enemy.atk*(1+(game.floor-1)*.035));game.grid[ny][nx]='empty';game.screen='combat';game.combatTurn=1;game.combatLogText=`¡${game.enemy.name} apareció en ${v11Zone(game.floor).name}!`;game.bestiaryUnlocked[game.enemy.id]=true;playSound('boss')}else if(tile==='chest'||tile==='trap_chest'){game.grid[ny][nx]='empty';if(tile==='trap_chest'){const r=Math.random();if(r<.34){game.player.hp=Math.max(1,game.player.hp-(15+game.floor*3));showToast('TRAMPA','¡Una trampa mágica te hizo daño!')}else if(r<.67){const key2=v11Zone(game.floor).monsters[Math.floor(Math.random()*v11Zone(game.floor).monsters.length)];game.enemy=JSON.parse(JSON.stringify(V11_MONSTERS[key2]));game.enemy.hp*=1.5;game.enemy.maxHp=game.enemy.hp;game.screen='combat';game.combatLogText='¡La trampa invocó un monstruo!'}else{game.player.hp=Math.max(1,game.player.hp-5);game.player.inventory.push(v11ItemPotion('poison'));showToast('COFRE TRAMPA','Recibiste una Poción de Veneno, pero sufriste daño.')}}else{const reward=40+game.floor*12;game.player.gold+=reward;const r=Math.random();if(r<.3)game.player.inventory.push(v11ItemPotion('hp'));else if(r<.55)game.player.inventory.push(v11ItemPotion('mp'));else if(r<.7)game.player.inventory.push(v11ItemPotion('poison'));else if(r<.82)game.player.inventory.push({...V11_CLASS_BOOKS[Math.floor(Math.random()*V11_CLASS_BOOKS.length)],type:'classbook',desc:'Libro raro que desbloquea una clase.'});showToast('COFRE','Encontraste '+reward+'g y un posible objeto especial.')}}else if(tile==='npc'){game.grid[ny][nx]='empty';showToast(v11Zone(game.floor).npc,'El NPC de esta zona te entrega un consejo y una recompensa.');if(Math.random()<.5)game.player.inventory.push(v11ItemPotion('hp'));else game.player.gold+=80+game.floor}else if(tile==='stairs_up'||tile==='stairs_down'){openStairsModal()}playSound('click');v11Save();renderScreen()}
-        movePlayer=v11Move;
-
-        function v11CombatAction(action){const p=game.player,e=game.enemy;if(!e)return;if(action==='attack'){let atk=p.str+(p.equipment.weapon?.atk||0),d=Math.max(4,atk-Math.floor(e.def/2)+Math.floor(Math.random()*6)),crit=Math.random()<Math.min(.5,p.luck*.02);if(crit)d=Math.floor(d*1.5);e.hp-=d;game.combatLogText=`Atacaste y causaste ${d} de daño${crit?' CRÍTICO':''}.`;if(p.poisonCharges>0&&p.equipment.weapon?.poisoned){e.poisonTurns=3;p.poisonCharges--;if(p.poisonCharges<=0)p.equipment.weapon.poisoned=false}}else if(action==='skill'){const cost=p.classId==='mage'||p.classId==='chrono'?18:12;if(p.mp<cost)return showToast('MANÁ INSUFICIENTE','No tienes suficiente PM.');p.mp-=cost;const d=Math.max(12,Math.floor((p.str+p.mag)*1.7)-Math.floor(e.def/2));e.hp-=d;game.combatLogText=`Habilidad ${V11_CLASSES[p.classId]?.skill||'Golpe especial'}: ${d} daño.`}else if(action==='flee'){game.screen='floor';renderScreen();return}if(e.poisonTurns>0){const pd=10+Math.floor(p.str*.1);e.hp-=pd;e.poisonTurns--;game.combatLogText+=` Veneno: -${pd}.`}if(e.hp<=0){const g=e.gold||30,x=e.exp||40;p.gold+=g;p.exp+=x;if(e.drop)p.inventory.push({id:'drop'+Date.now(),name:e.drop,type:'material',price:e.dropValue||20,icon:'💎',desc:'Material obtenido en la Torre.'});if(p.exp>=p.level*100){p.exp-=p.level*100;p.level++;p.skillPoints=(p.skillPoints||0)+2;p.maxHp+=20;p.maxMp+=10;p.hp=p.maxHp;p.mp=p.maxMp}if(game.floor%10===0){game.player.floor=game.floor;game.screen=game.floor>=100?'wish':'floor';showToast('JEFE DERROTADO',game.floor>=100?'Has alcanzado el corazón de la Torre.':'El camino al siguiente piso está abierto.')}else game.screen='floor';v11Save();renderScreen();return}let def=p.def+(p.equipment.armor?.def||0)+(p.equipment.helmet?.def||0)+(p.equipment.pants?.def||0)+(p.equipment.boots?.def||0),dmg=Math.max(3,e.atk-Math.floor(def/2)+Math.floor(Math.random()*5));p.hp-=dmg;game.combatLogText+=` El enemigo causó ${dmg}.`;if(p.hp<=0){p.hp=p.maxHp;game.screen='lobby';showToast('DERROTA','Has sido enviado al lobby. Tu progreso se conserva.')}v11Save();renderScreen()}
-        combatAction=v11CombatAction;
-        function v11RenderCombat(c){const p=game.player,e=game.enemy;c.innerHTML=`<div class="w-full max-w-md"><div class="pixel-card p-3 border-2 border-red-600 mb-2 flex justify-between"><div><b class="text-red-400">${e.name}</b><div class="text-xs">PV ${Math.max(0,e.hp)}/${e.maxHp}</div>${e.poisonTurns?`<div class="text-green-400 text-xs">☠️ Veneno ${e.poisonTurns}</div>`:''}</div>${generateMonsterSVG(e.type,72)}</div><div class="pixel-card p-3 border-2 border-cyan-600 mb-2 flex justify-between"><div><b class="text-cyan-300">${p.name}</b><div class="text-xs">${p.className} · PV ${p.hp}/${p.maxHp} · PM ${p.mp}/${p.maxMp}</div></div>${generateHeroAvatarSVG(p.equipment,p.classId,68)}</div><div class="pixel-card p-3 mb-3 text-xs text-cyan-200 min-h-16">${game.combatLogText}</div><div class="grid grid-cols-2 gap-2"><button onclick="combatAction('attack')" class="bg-red-600 py-3 rounded font-bold">ATACAR</button><button onclick="combatAction('skill')" class="bg-purple-700 py-3 rounded font-bold">HABILIDAD</button><button onclick="openCombatPotionModal()" class="bg-blue-700 py-3 rounded font-bold">MOCHILA</button><button onclick="combatAction('flee')" class="bg-slate-700 py-3 rounded font-bold">HUIR</button></div></div>`}
-        function v11RenderFloor(c){const z=v11Zone(game.floor);let h='';for(let y=0;y<7;y++){h+='<div class="flex justify-center gap-1 mb-1">';for(let x=0;x<7;x++){const player=game.playerPos.x===x&&game.playerPos.y===y,expl=game.fog[y]?.[x],tile=game.grid[y][x];let cc=expl?(tile==='monster'?generateMonsterSVG(game.floorEntities?.[`${x},${y}`]?.type||'slime',30):tile==='boss'?generateMonsterSVG(game.floorEntities?.[`${x},${y}`]?.type||'entity',34):tile==='chest'||tile==='trap_chest'?'📦':tile==='npc'?'🧙':tile==='stairs_up'?'⬆️':tile==='stairs_down'?'⬇️':z.theme):'?';if(player)cc=generateHeroAvatarSVG(game.player.equipment,game.player.classId,30);h+=`<div class="w-10 h-10 border-2 ${player?'border-cyan-400 bg-cyan-950':'border-slate-700 bg-slate-900'} flex items-center justify-center overflow-hidden">${cc}</div>`}h+='</div>'}c.innerHTML=`<div class="w-full max-w-md text-center"><div class="flex justify-between"><b class="pixel-font text-cyan-300">PISO ${game.floor}</b><span class="text-xs text-yellow-300">${z.theme} ${z.name}</span></div><div class="pixel-card p-2 my-2">${h}</div><div class="grid grid-cols-3 gap-2 max-w-[220px] mx-auto"><span></span><button onclick="movePlayer(0,-1)" class="bg-slate-800 py-3 rounded">⬆</button><span></span><button onclick="movePlayer(-1,0)" class="bg-slate-800 py-3 rounded">⬅</button><button onclick="movePlayer(0,1)" class="bg-slate-800 py-3 rounded">⬇</button><button onclick="movePlayer(1,0)" class="bg-slate-800 py-3 rounded">➡</button></div><div class="grid grid-cols-2 gap-2 mt-2"><button onclick="game.screen='inventory';renderScreen()" class="bg-purple-700 py-2 rounded">🎒 INVENTARIO</button><button onclick="game.screen='lobby';renderScreen()" class="bg-slate-800 py-2 rounded">LOBBY</button></div></div>`}
-        function v11RenderLobby(c){const p=game.player;const z=v11Zone(game.floor);c.innerHTML=`<div class="w-full max-w-md space-y-2"><div class="pixel-card p-3 flex justify-between items-center"><div class="flex items-center gap-2">${generateHeroAvatarSVG(p.equipment,p.classId,62)}<div><b class="text-cyan-300">${p.name}</b><div class="text-xs">Niv. ${p.level} · ${p.className}</div></div></div><span class="text-yellow-300 text-xs">${p.gold}g</span></div><div class="pixel-card p-2 text-xs text-center">🗼 Piso ${game.floor} · ${z.name}<br>Próximo jefe: piso ${Math.ceil(game.floor/10)*10}</div><button onclick="enterFloor()" class="w-full bg-cyan-700 py-3 rounded font-bold">🗼 ENTRAR A LA TORRE</button><div class="grid grid-cols-2 gap-2"><button onclick="game.screen='inventory';renderScreen()" class="bg-purple-700 py-3 rounded">🎒 INVENTARIO</button><button onclick="game.screen='shop';renderScreen()" class="bg-yellow-700 py-3 rounded">🪙 TIENDA</button><button onclick="game.screen='training';renderScreen()" class="bg-emerald-700 py-3 rounded">🏋️ ENTRENAMIENTO</button><button onclick="game.screen='church';renderScreen()" class="bg-amber-700 py-3 rounded">⛪ CLASES</button><button onclick="game.screen='forge';renderScreen()" class="bg-orange-700 py-3 rounded">⚒️ HERRERÍA</button><button onclick="game.screen='bestiary';renderScreen()" class="bg-red-700 py-3 rounded">📖 GRIMORIO</button><button onclick="game.screen='quests';renderScreen()" class="bg-blue-700 py-3 rounded">📜 MISIONES</button><button onclick="game.screen='settings';renderScreen()" class="bg-slate-700 py-3 rounded">⚙️ CONFIG</button></div><button onclick="game.screen='saves';renderScreen()" class="w-full bg-slate-800 py-2 rounded text-xs">GUARDAR / SALIR</button></div>`}
-
-        // V11 screen router keeps all original screens not explicitly replaced.
-        const v9RenderScreen=renderScreen;
-        renderScreen=function(){const mainView=document.getElementById('main-view');if(game.player&&game.screen!=='title'&&game.screen!=='create')v11Save();if(document.querySelector('.crt-overlay'))document.querySelector('.crt-overlay').style.display=game.settings.crt?'block':'none';if(game.screen==='saves')return v11RenderSaves(mainView);if(game.screen==='lobby')return v11RenderLobby(mainView);if(game.screen==='floor')return v11RenderFloor(mainView);if(game.screen==='combat')return v11RenderCombat(mainView);if(game.screen==='inventory')return v11RenderInventory(mainView);if(game.screen==='shop')return v11RenderShop(mainView);if(game.screen==='training')return v11RenderTraining(mainView);if(game.screen==='church')return v11RenderClasses(mainView);if(game.screen==='settings')return v11RenderSettings(mainView);if(game.screen==='wish')return v11RenderWish(mainView);v9RenderScreen();};
-        const v9EnterFloor=enterFloor;enterFloor=function(){game.screen='floor';if(!game.floorsState?.[game.floor])v11GenerateFloor(game.floor);else{game.grid=game.floorsState[game.floor].grid;game.fog=game.floorsState[game.floor].fog;game.environment=game.floorsState[game.floor].environment;revealAdjacentFog()}v11Save();renderScreen()};
-        const v9LoadSlot=loadGameSlot;loadGameSlot=function(i){if(!game.slots[i])return;game.currentSlot=i;game.player=JSON.parse(JSON.stringify(game.slots[i]));game.floor=game.player.floor||1;v11NormalizePlayer();game.screen='lobby';v11Save();renderScreen()};
-        const v9DeleteSlot=deleteGameSlot;deleteGameSlot=function(i){game.slots[i]=null;try{localStorage.setItem(V11_KEY,JSON.stringify({slots:game.slots,currentSlot:game.currentSlot,floor:game.floor}))}catch(e){}renderScreen()};
-        const v9StartSlot=startNewGameInSlot;startNewGameInSlot=function(i){game.currentSlot=i;tempTrait=null;game.screen='create';renderScreen()};
-        const v9Create=confirmCreateHero;confirmCreateHero=function(){v9Create();if(game.player){v11NormalizePlayer();game.player.classId='warrior';game.player.className='Guerrero';game.player.inventory=[v11ItemPotion('hp'),v11ItemPotion('mp'),v11ItemPotion('poison')];game.player.skillTree={current:'Manejo básico con espadas',level:1};game.floor=1;v11GenerateFloor(1);v11Save();renderScreen()}};
-        // Initial migration: preserve old V9 saves but extend to five slots.
-        window.addEventListener('beforeunload',v11Save);
-
-        // Initialize application on window load
-        window.onload = function() {
+        // STARTUP INIT
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSavedSlotsFromStorage();
             renderScreen();
-        };
+        });
     </script>
 </body>
 </html>
