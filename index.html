@@ -220,7 +220,7 @@
             const hasHelmet = equipment && equipment.helmet;
             const hasArmor = equipment && equipment.armor;
             const hasWeapon = equipment && equipment.weapon;
-            const hasShield = equipment && equipment.boots; // boots or shield slot
+            const hasShield = equipment && equipment.boots;
 
             let helmetSVG = hasHelmet ? `<rect x="30" y="8" width="20" height="12" fill="#94a3b8"/><rect x="34" y="14" width="12" height="4" fill="#1e293b"/>` : `<rect x="32" y="8" width="16" height="8" fill="#d97706"/>`;
             let armorSVG = hasArmor ? `<rect x="26" y="28" width="28" height="22" fill="#475569"/><rect x="32" y="32" width="16" height="14" fill="#cbd5e1"/>` : `<rect x="28" y="28" width="24" height="22" fill="#2563eb"/>`;
@@ -229,28 +229,19 @@
 
             return `
                 <svg width="${size}" height="${size}" viewBox="0 0 80 80" class="inline-block drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)]">
-                    <!-- Base Shadow -->
                     <ellipse cx="40" cy="72" rx="22" ry="6" fill="#000000" opacity="0.6"/>
-                    <!-- Legs -->
                     <rect x="30" y="50" width="8" height="18" fill="#1e293b"/>
                     <rect x="42" y="50" width="8" height="18" fill="#1e293b"/>
                     <rect x="28" y="64" width="10" height="6" fill="#475569"/>
                     <rect x="42" y="64" width="10" height="6" fill="#475569"/>
-                    <!-- Torso & Armor -->
                     ${armorSVG}
-                    <!-- Arms -->
                     <rect x="18" y="28" width="8" height="18" fill="#3b82f6"/>
                     <rect x="54" y="28" width="8" height="18" fill="#3b82f6"/>
-                    <!-- Head & Skin -->
                     <rect x="30" y="12" width="20" height="18" fill="#fde047"/>
-                    <!-- Eyes -->
                     <rect x="34" y="18" width="3" height="4" fill="#0f172a"/>
                     <rect x="43" y="18" width="3" height="4" fill="#0f172a"/>
-                    <!-- Helmet / Hair -->
                     ${helmetSVG}
-                    <!-- Offhand / Shield -->
                     ${shieldSVG}
-                    <!-- Weapon -->
                     ${weaponSVG}
                 </svg>
             `;
@@ -356,12 +347,12 @@
         ];
 
         let game = {
-            screen: 'title', // title, saves, create, lobby, floor, combat, inventory, shop, forge, bestiary, quests, npc, training, church
+            screen: 'title',
             currentSlot: 0,
             slots: [null, null, null],
             player: null,
             floor: 1,
-            floorsState: {}, // Stores grid, fog, environment per floor number
+            floorsState: {},
             grid: [],
             fog: [],
             environment: [],
@@ -536,7 +527,7 @@
                 const potions = game.player.inventory.filter(i => i.type === 'potion');
                 const filteredIndex = potions.indexOf(item);
                 closeTowerInventoryOverlay();
-                if (filteredIndex >= 0) v12UseCombatPotion(filteredIndex);
+                if (filteredIndex >= 0) usePotionInCombat(filteredIndex);
                 return;
             }
             usePotion(index);
@@ -676,6 +667,7 @@
 
         function deleteGameSlot(slotIdx) {
             game.slots[slotIdx] = null;
+            save();
             playSound('hit');
             renderScreen();
         }
@@ -758,6 +750,7 @@
             game.floor = 1;
             game.floorsState = {};
             game.screen = 'lobby';
+            save();
             playSound('victory');
             renderScreen();
         }
@@ -835,17 +828,13 @@
 
         function loadOrCreateFloor(floorNum) {
             if (game.floorsState[floorNum]) {
-                // Restore saved floor state
                 const saved = game.floorsState[floorNum];
                 game.grid = saved.grid;
                 game.fog = saved.fog;
                 game.environment = saved.environment;
                 game.playerPos = { x: 3, y: 6 };
-
-                // Random Respawn mechanics upon re-entering explored floors
                 respawnFloorEntities();
             } else {
-                // Generate brand new floor
                 generateNewFloor(floorNum);
             }
             revealAdjacentFog();
@@ -886,7 +875,6 @@
                 game.grid[1][3] = 'stairs_up';
                 if (floorNum > 1) game.grid[6][1] = 'stairs_down';
 
-                // Place Monsters
                 let monstersPlaced = 0;
                 while (monstersPlaced < 3) {
                     let rx = Math.floor(Math.random() * size);
@@ -897,7 +885,6 @@
                     }
                 }
 
-                // Place Chest or Trap Chest
                 let chestPlaced = false;
                 while (!chestPlaced) {
                     let rx = Math.floor(Math.random() * size);
@@ -908,7 +895,6 @@
                     }
                 }
 
-                // Place NPC (1 NPC per 10 floors bracket)
                 let floorBracket = Math.floor((floorNum - 1) / 10);
                 if (!game.floorsState[`npc_spawned_${floorBracket}`] && Math.random() < 0.5) {
                     game.floorsState[`npc_spawned_${floorBracket}`] = true;
@@ -920,7 +906,6 @@
                 }
             }
 
-            // Save floor state
             game.floorsState[floorNum] = {
                 grid: game.grid,
                 fog: game.fog,
@@ -929,7 +914,6 @@
         }
 
         function respawnFloorEntities() {
-            // Respawn monsters on empty spots with 40% chance
             for (let y = 1; y < 6; y++) {
                 for (let x = 0; x < 7; x++) {
                     if (game.grid[y][x] === 'empty' && !(x === game.playerPos.x && y === game.playerPos.y)) {
@@ -958,7 +942,6 @@
                     }
                 }
             }
-            // Update stored state
             if (game.floorsState[game.floor]) {
                 game.floorsState[game.floor].fog = game.fog;
                 game.floorsState[game.floor].grid = game.grid;
@@ -1019,8 +1002,6 @@
                     playSound('hit');
                     showToast('⚠️ COFRE TRAMPA', `¡El cofre estaba cargado con estallido místico! Sufriste ${trapDmg} de daño.`);
                 } else {
-                    // Mimic fight
-                    const baseMon = MONSTER_TYPES[0];
                     game.enemy = { id: 'mimic', name: 'Mímico Voraz', hp: 150 + game.floor * 15, maxHp: 150 + game.floor * 15, atk: 25 + game.floor * 3, def: 12, exp: 90, gold: 120, type: 'slime', drop: 'Gelatina Azul', dropValue: 30 };
                     game.screen = 'combat';
                     game.combatTurn = 1;
@@ -1115,7 +1096,6 @@
                     <div class="pixel-card p-3 rounded mb-3 inline-block border-2 border-slate-700">
                         ${gridHtml}
                     </div>
-                    <!-- Controles originales + acceso rápido a la mochila -->
                     <div class="flex items-center justify-center gap-3 mb-3">
                         <div class="grid grid-cols-3 gap-2 max-w-[220px]">
                             <div></div>
@@ -1226,7 +1206,6 @@
                 p.gold += rewardGold;
                 p.exp += rewardExp;
 
-                // Level up check
                 let expNeeded = p.level * 100;
                 if (p.exp >= expNeeded) {
                     p.level++;
@@ -1262,6 +1241,7 @@
 
                 showToast('¡VICTORIA!', `Derrotaste a ${e.name}! Ganaste ${rewardGold}g y ${rewardExp} EXP.`);
                 game.screen = 'floor';
+                save();
                 renderScreen();
                 return;
             }
@@ -1278,6 +1258,7 @@
                 showToast('GAME OVER', 'Has caído en combate dentro de la torre...');
                 game.screen = 'lobby';
                 p.hp = p.maxHp;
+                save();
                 renderScreen();
                 return;
             }
@@ -1365,6 +1346,7 @@
             }
             p.inventory.splice(index, 1);
             playSound('potion');
+            save();
             renderScreen();
         }
 
@@ -1380,6 +1362,54 @@
             p.inventory.splice(index, 1);
             playSound('victory');
             showToast('EQUIPADO', `Te has equipado ${item.name}. ¡Reflejado en tu avatar pixel!`);
+            save();
+            renderScreen();
+        }
+
+        function renderShopScreen(container) {
+            const p = game.player;
+            let itemsHtml = '';
+            SHOP_ITEMS.forEach((item, idx) => {
+                const canBuy = p.gold >= item.price;
+                itemsHtml += `
+                    <div class="pixel-card p-3 rounded mb-2 border border-slate-700 text-xs flex justify-between items-center">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-2xl">${item.icon}</span>
+                            <div>
+                                <span class="pixel-font text-base text-yellow-300">${item.name}</span>
+                                <p class="text-[10px] text-slate-300">${item.desc}</p>
+                                <p class="text-[10px] text-yellow-400">Precio: ${item.price}g</p>
+                            </div>
+                        </div>
+                        <button onclick="buyShopItem(${idx})" class="${canBuy ? 'bg-yellow-600 hover:bg-yellow-500 text-black' : 'bg-slate-800 text-slate-600 pointer-events-none'} px-3 py-1.5 rounded font-bold pixel-font pixel-btn">COMPRAR</button>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = `
+                <div class="w-full max-w-md">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="pixel-font text-2xl text-yellow-400">TIENDA GENERAL</h3>
+                        <span class="text-xs text-yellow-400 font-bold">${p.gold}g 💰</span>
+                    </div>
+                    <div class="space-y-2 mb-4 max-h-60 overflow-y-auto">${itemsHtml}</div>
+                    <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn">VOLVER AL LOBBY</button>
+                </div>
+            `;
+        }
+
+        function buyShopItem(index) {
+            const p = game.player;
+            const item = SHOP_ITEMS[index];
+            if (p.gold < item.price) {
+                showToast('ORO INSUFICIENTE', 'No tienes suficiente oro para comprar este objeto.');
+                return;
+            }
+            p.gold -= item.price;
+            p.inventory.push(JSON.parse(JSON.stringify(item)));
+            playSound('victory');
+            showToast('COMPRA REALIZADA', `Has comprado ${item.name}.`);
+            save();
             renderScreen();
         }
 
@@ -1445,6 +1475,7 @@
 
             playSound('craft');
             showToast('¡OBJETO FORJADO!', `¡Has forjado con éxito ${rec.name}! Puedes equiparlo desde la mochila.`);
+            save();
             renderScreen();
         }
 
@@ -1472,6 +1503,42 @@
                 <div class="w-full max-w-md">
                     <h3 class="pixel-font text-2xl text-red-400 mb-3 text-center">GRIMORIO DE BESTIAS</h3>
                     <div class="space-y-2 mb-4 max-h-60 overflow-y-auto">${bestiaryHtml}</div>
+                    <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn">VOLVER AL LOBBY</button>
+                </div>
+            `;
+        }
+
+        function renderQuestsScreen(container) {
+            let questsHtml = '';
+            game.quests.forEach(q => {
+                questsHtml += `
+                    <div class="pixel-card p-3 rounded mb-2 border border-slate-700 text-xs flex justify-between items-center">
+                        <div>
+                            <span class="pixel-font text-base ${q.completed ? 'text-green-400' : 'text-blue-300'}">${q.title} ${q.completed ? '✅' : ''}</span>
+                            <p class="text-[10px] text-slate-300">${q.desc}</p>
+                            <p class="text-[10px] text-yellow-400">Progreso: ${q.current}/${q.targetCount} | Recompensa: ${q.rewardGold}g</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = `
+                <div class="w-full max-w-md">
+                    <h3 class="pixel-font text-2xl text-blue-400 mb-3 text-center">TABLÓN DE MISIONES</h3>
+                    <div class="space-y-2 mb-4 max-h-60 overflow-y-auto">${questsHtml}</div>
+                    <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn">VOLVER AL LOBBY</button>
+                </div>
+            `;
+        }
+
+        function renderNpcScreen(container) {
+            container.innerHTML = `
+                <div class="w-full max-w-md text-center space-y-4">
+                    <div class="pixel-card p-5 rounded border-2 border-cyan-500/80">
+                        <span class="text-5xl block mb-2">🤖</span>
+                        <h3 class="pixel-font text-2xl text-cyan-300">ORÁCULO DE LA TORRE</h3>
+                        <p class="text-xs text-slate-300 mt-2">"Explora la torre piso por piso. Derrota a los jefes cada 10 niveles y equipa mejores objetos para sobrevivir."</p>
+                    </div>
                     <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn">VOLVER AL LOBBY</button>
                 </div>
             `;
@@ -1519,6 +1586,7 @@
             skill.effect(p);
             playSound('victory');
             showToast('¡ENTRENAMIENTO EXITOSO!', `Mejoraste tu habilidad: ${skill.name}.`);
+            save();
             renderScreen();
         }
 
@@ -1569,7 +1637,7 @@
             container.innerHTML = `
                 <div class="w-full max-w-md">
                     <h3 class="pixel-font text-2xl text-amber-400 mb-3 text-center">IGLESIA DE LAS CLASES</h3>
-                    <div class="space-y-3 mb-4">${classCards}</div>
+                    <div class="space-y-3 mb-4 max-h-60 overflow-y-auto">${classCards}</div>
                     <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn">VOLVER AL LOBBY</button>
                 </div>
             `;
@@ -1577,368 +1645,52 @@
 
         function chooseAdvancedClass(classKey) {
             const p = game.player;
-            const c = AVAILABLE_CLASSES[classKey];
-            
+            const cls = AVAILABLE_CLASSES[classKey];
+            if (!cls) return;
+
             const bookIdx = p.inventory.findIndex(i => i.type === 'book');
             if (bookIdx > -1) {
                 p.inventory.splice(bookIdx, 1);
             }
 
-            p.classId = classKey;
-            p.className = c.name;
-            p.maxHp += c.bonusHp || 50;
-            p.hp = p.maxHp;
-            p.maxMp += c.bonusMp || 30;
-            p.mp = p.maxMp;
-            p.str += c.bonusStr || 8;
-            p.def += c.bonusDef || 8;
-            p.mag += c.bonusMag || 8;
-            if (c.bonusSpd) p.spd += c.bonusSpd;
+            p.classId = cls.id;
+            p.className = cls.name;
+            if (cls.bonusHp) { p.maxHp += cls.bonusHp; p.hp = p.maxHp; }
+            if (cls.bonusMp) { p.maxMp += cls.bonusMp; p.mp = p.maxMp; }
+            if (cls.bonusStr) p.str += cls.bonusStr;
+            if (cls.bonusDef) p.def += cls.bonusDef;
+            if (cls.bonusMag) p.mag += cls.bonusMag;
+            if (cls.bonusSpd) p.spd += cls.bonusSpd;
 
             playSound('victory');
-            showToast('¡CONSAGRACIÓN EXITOSA!', `¡Ahora eres un ${c.name}! Atributos y aspecto actualizados.`);
+            showToast('¡CONSAGRACIÓN!', `¡Te has consagrado como ${cls.name}!`);
+            save();
             renderScreen();
         }
 
-        function renderShopScreen(container) {
-            const p = game.player;
-
-            let shopHtml = '';
-            SHOP_ITEMS.forEach((item, idx) => {
-                shopHtml += `
-                    <div class="pixel-card p-2 rounded mb-2 flex items-center justify-between border border-slate-700 text-xs">
-                        <div class="flex items-center space-x-2">
-                            <span class="text-xl">${item.icon}</span>
-                            <div>
-                                <span class="text-yellow-300 font-bold">${item.name} (${item.price}g)</span>
-                                <p class="text-[10px] text-slate-400">${item.desc}</p>
-                            </div>
-                        </div>
-                        <button onclick="buyShopItem(${idx})" class="bg-yellow-600 hover:bg-yellow-500 text-black px-3 py-1 rounded font-bold pixel-btn">COMPRAR</button>
-                    </div>
-                `;
-            });
-
-            let sellHtml = '';
-            const sellableItems = p.inventory.filter(i => i.type === 'material');
-            if (sellableItems.length > 0) {
-                sellableItems.forEach((item) => {
-                    const realIdx = p.inventory.indexOf(item);
-                    sellHtml += `
-                        <div class="pixel-card p-2 rounded mb-2 flex items-center justify-between border border-slate-700 text-xs">
-                            <div class="flex items-center space-x-2">
-                                <span class="text-xl">${item.icon}</span>
-                                <div>
-                                    <span class="text-emerald-300 font-bold">${item.name} (Vender: ${item.price}g)</span>
-                                </div>
-                            </div>
-                            <button onclick="sellMaterialItem(${realIdx})" class="bg-emerald-600 hover:bg-emerald-500 text-black px-3 py-1 rounded font-bold pixel-btn">VENDER</button>
-                        </div>
-                    `;
-                });
-            } else {
-                sellHtml = '<p class="text-[11px] text-slate-500 text-center">No tienes materiales para vender.</p>';
+        function save() {
+            if (game.player && game.currentSlot !== null) {
+                game.player.floor = game.floor;
+                game.slots[game.currentSlot] = JSON.parse(JSON.stringify(game.player));
+                try {
+                    localStorage.setItem('torre_system_saves', JSON.stringify(game.slots));
+                } catch(e) {}
             }
-
-            container.innerHTML = `
-                <div class="w-full max-w-md">
-                    <div class="flex justify-between items-center mb-3">
-                        <h3 class="pixel-font text-2xl text-yellow-400">TIENDA GENERAL</h3>
-                        <span class="text-xs text-yellow-400 font-bold">${p.gold}g 💰</span>
-                    </div>
-                    <div class="max-h-40 overflow-y-auto mb-3 space-y-1">${shopHtml}</div>
-                    <h4 class="pixel-font text-lg text-emerald-400 mb-2">VENDER MATERIALES</h4>
-                    <div class="max-h-32 overflow-y-auto mb-3 space-y-1">${sellHtml}</div>
-                    <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn">VOLVER AL LOBBY</button>
-                </div>
-            `;
         }
 
-        function buyShopItem(index) {
-            const p = game.player;
-            const item = SHOP_ITEMS[index];
-            if (p.gold < item.price) {
-                showToast('FONDOS INSUFICIENTES', 'No tienes suficiente oro para comprar este objeto.');
-                return;
-            }
-            p.gold -= item.price;
-            p.inventory.push(JSON.parse(JSON.stringify(item)));
-            playSound('victory');
-            showToast('COMPRA EXITOSA', `Has comprado ${item.name}.`);
-            renderScreen();
+        function loadSavesFromStorage() {
+            try {
+                const data = localStorage.getItem('torre_system_saves');
+                if (data) {
+                    game.slots = JSON.parse(data);
+                }
+            } catch(e) {}
         }
 
-        function sellMaterialItem(index) {
-            const p = game.player;
-            const item = p.inventory[index];
-            p.gold += item.price;
-            p.inventory.splice(index, 1);
-            playSound('victory');
-            showToast('VENTA EXITOSA', `Vendiste ${item.name} por ${item.price}g.`);
-            renderScreen();
-        }
-
-        function renderQuestsScreen(container) {
-            let questsHtml = '';
-            game.quests.forEach(q => {
-                questsHtml += `
-                    <div class="pixel-card p-3 rounded mb-2 border border-slate-700 text-xs">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="pixel-font text-lg text-green-400">${q.title}</span>
-                            <span class="text-[10px] text-yellow-400 font-bold">${q.completed ? 'COMPLETADA ✅' : 'EN CURSO ⏳'}</span>
-                        </div>
-                        <p class="text-slate-300 mb-1">${q.desc}</p>
-                        <p class="text-[10px] text-slate-400">Recompensa: ${q.rewardGold}g</p>
-                    </div>
-                `;
-            });
-
-            container.innerHTML = `
-                <div class="w-full max-w-md">
-                    <h3 class="pixel-font text-2xl text-green-400 mb-3 text-center">MISIONES DEL SISTEMA</h3>
-                    <div class="space-y-2 mb-4 max-h-60 overflow-y-auto">${questsHtml}</div>
-                    <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn">VOLVER AL LOBBY</button>
-                </div>
-            `;
-        }
-
-        function renderNpcScreen(container) {
-            container.innerHTML = `
-                <div class="w-full max-w-md text-center">
-                    <div class="pixel-card p-5 rounded border-2 border-blue-500/60 mb-4 space-y-3">
-                        <span class="text-5xl mb-2 block animate-bounce">🤖</span>
-                        <h3 class="pixel-font text-2xl text-blue-300">ORÁCULO TÁCTICO V9</h3>
-                        <p class="text-xs text-slate-300 leading-relaxed text-left">
-                            "Bienvenido a V9. Ahora puedes forjar equipo único en la **Herrería**, consultar monstruos derrotados en el **Grimorio**, y tus accesorios equipados cambiarán la apariencia de tu héroe en tiempo real."
-                        </p>
-                    </div>
-                    <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn">REGRESAR</button>
-                </div>
-            `;
-        }
-
-        // Initialize application on window load
         window.onload = function() {
+            loadSavesFromStorage();
             renderScreen();
         };
     </script>
-<script>
-/* TORRE:SYSTEM V12 - FUNCTION RESTORATION + SYSTEM EXPANSION
-   Visual layer intentionally untouched: this patch extends the existing V9 engine. */
-(function(){
-  'use strict';
-  const SAVE_KEY='TORRE_SYSTEM_SAVE_V12';
-  const OLD_KEYS=['TORRE_SYSTEM_V10','TORRE_SYSTEM_V11','TORRE_SYSTEM'];
-  const clone=o=>JSON.parse(JSON.stringify(o));
-  const safe=(v,d)=>v==null?d:v;
-  const xpFor=lv=>Math.floor(100*Math.pow(lv,1.35));
-
-  // ---------- New content ----------
-  const V12_MONSTERS=[
-    {id:'bat_night',name:'Murciélago Nocturno',hp:110,atk:24,def:8,exp:62,gold:35,type:'bat',drop:'Ala Nocturna',dropValue:30,lore:'Cazador de las galerías oscuras.'},
-    {id:'wolf_fang',name:'Lobo Colmillo Gris',hp:145,atk:29,def:10,exp:78,gold:44,type:'wolf',drop:'Colmillo Gris',dropValue:36,lore:'Depredador que protege los bosques de la Torre.'},
-    {id:'skeleton_guard',name:'Esqueleto Guardián',hp:190,atk:34,def:18,exp:105,gold:58,type:'skeleton',drop:'Fragmento Óseo',dropValue:45,lore:'Guardián reanimado de antiguas ruinas.'},
-    {id:'orc_brute',name:'Orco Bruto',hp:250,atk:42,def:20,exp:145,gold:75,type:'orc',drop:'Núcleo Orco',dropValue:60,lore:'Una criatura enorme que combate sin miedo.'},
-    {id:'specter',name:'Espectro Errante',hp:210,atk:48,def:14,exp:160,gold:86,type:'specter',drop:'Esencia Espectral',dropValue:75,lore:'Entidad que atraviesa las paredes de la Torre.'},
-    {id:'crystal_golem',name:'Gólem de Cristal',hp:360,atk:52,def:32,exp:220,gold:120,type:'golem',drop:'Cristal de Mana',dropValue:105,lore:'Protector de las minas cristalinas.'},
-    {id:'abyss_demon',name:'Demonio del Abismo',hp:430,atk:66,def:30,exp:310,gold:170,type:'demon',drop:'Fragmento Abisal',dropValue:145,lore:'Nace de la energía acumulada en los pisos profundos.'},
-    {id:'sky_drake',name:'Draco Celeste',hp:520,atk:74,def:34,exp:390,gold:210,type:'dragon',drop:'Escama Celeste',dropValue:180,lore:'Bestia alada de las cumbres.'},
-    {id:'astral_entity',name:'Entidad Astral',hp:690,atk:88,def:42,exp:520,gold:280,type:'entity',drop:'Núcleo Astral',dropValue:240,lore:'Una criatura formada por energía de otros mundos.'}
-  ];
-  const V12_BOSSES=[
-    {id:'boss_ancient_goblin',name:'Gran Rey Goblin',hp:700,atk:58,def:25,exp:650,gold:500,type:'boss',drop:'Corona del Gran Rey',dropValue:420,lore:'Señor de la primera tribu de la Torre.'},
-    {id:'boss_ruin_knight',name:'Caballero de las Ruinas',hp:950,atk:70,def:38,exp:900,gold:700,type:'boss',drop:'Espada del Juramento',dropValue:600,lore:'Caballero condenado a proteger una ciudad olvidada.'},
-    {id:'boss_crystal_core',name:'Gólem Corazón Cristalino',hp:1250,atk:82,def:48,exp:1200,gold:900,type:'boss',drop:'Corazón de Cristal',dropValue:780,lore:'El núcleo viviente de las minas.'},
-    {id:'boss_poison_hydra',name:'Hidra de Veneno',hp:1450,atk:96,def:44,exp:1500,gold:1100,type:'boss',drop:'Glándula de Hidra',dropValue:950,lore:'Sus múltiples cabezas regeneran veneno sin fin.'},
-    {id:'boss_lich',name:'Liche Soberano',hp:1800,atk:112,def:52,exp:1900,gold:1400,type:'boss',drop:'Corona de los Muertos',dropValue:1200,lore:'Rey de una legión que ya no recuerda estar muerta.'},
-    {id:'boss_orc_warlord',name:'Señor de la Guerra Orco',hp:2100,atk:128,def:60,exp:2300,gold:1700,type:'boss',drop:'Hacha del Señor de Guerra',dropValue:1450,lore:'Comanda ejércitos enteros desde una fortaleza inexpugnable.'},
-    {id:'boss_sky_dragon',name:'Dragón de las Cumbres',hp:2500,atk:148,def:68,exp:2800,gold:2100,type:'boss',drop:'Escama del Cielo',dropValue:1800,lore:'Una criatura ancestral que domina las alturas.'},
-    {id:'boss_abyss_lord',name:'Señor del Abismo',hp:3100,atk:172,def:76,exp:3500,gold:2600,type:'boss',drop:'Corazón Abisal',dropValue:2200,lore:'La voluntad consciente del abismo de la Torre.'},
-    {id:'boss_astral_titan',name:'Titán Astral',hp:3900,atk:198,def:88,exp:4300,gold:3300,type:'boss',drop:'Núcleo del Titán',dropValue:2800,lore:'Una entidad nacida entre mundos.'},
-    {id:'boss_administrator',name:'ADMINISTRADOR DE LA TORRE',hp:5200,atk:230,def:105,exp:6500,gold:5000,type:'boss',drop:'Fragmento del Sistema',dropValue:5000,lore:'El guardián final del piso 100.'}
-  ];
-  const V12_ZONES=[
-    ['Bosque de Entrada','🌲',['slime_blue','goblin_scout','bat_night'],'Guía del Bosque'],
-    ['Ruinas Olvidadas','🏚️',['goblin_raider','skeleton_guard','bat_night'],'Arqueóloga Lyra'],
-    ['Minas de Cristal','⛏️',['crystal_golem','orc_brute','slime_green'],'Minero Bronn'],
-    ['Pantano Tóxico','☠️',['slime_green','wolf_fang','specter'],'Alquimista Vex'],
-    ['Ciudad de los Muertos','💀',['skeleton_guard','specter','orc_brute'],'Guardiana Nara'],
-    ['Fortaleza Orca','🏰',['orc_brute','goblin_raider','wolf_fang'],'Capitán Rook'],
-    ['Cumbres Celestes','☁️',['wolf_fang','crystal_golem','sky_drake'],'Monje Aster'],
-    ['Abismo Carmesí','🔥',['specter','abyss_demon','crystal_golem'],'Exiliado Kael'],
-    ['Dominio Astral','✨',['sky_drake','abyss_demon','astral_entity'],'Astrónoma Eira'],
-    ['Núcleo de la Torre','🌀',['abyss_demon','sky_drake','astral_entity'],'Administrador Errante']
-  ];
-  const V12_CLASSES={
-    warrior:{id:'warrior',name:'Guerrero',icon:'⚔️',tier:'básica',activeSkill:'Golpe de Acero',activeCost:12,bonus:{str:5,def:3},skill:'Manejo básico con espadas'},
-    mage:{id:'mage',name:'Mago',icon:'🔮',tier:'básica',activeSkill:'Lanza Arcana',activeCost:14,bonus:{mag:7,maxMp:15},skill:'Concentración mágica'},
-    cleric:{id:'cleric',name:'Clérigo',icon:'✚',tier:'básica',activeSkill:'Luz Restauradora',activeCost:15,bonus:{mag:4,def:3,maxHp:25},skill:'Bendición básica'},
-    assassin:{id:'assassin',name:'Asesino',icon:'🗡️',tier:'básica',activeSkill:'Corte Sombrío',activeCost:11,bonus:{str:4,spd:7,luck:3},skill:'Manejo de dagas'},
-    paladin:{id:'paladin',name:'Paladín',icon:'🛡️',tier:'oculta',activeSkill:'Juicio Sagrado',activeCost:18,bonus:{str:7,def:8,maxHp:50},skill:'Juramento sagrado'},
-    ranger:{id:'ranger',name:'Guardabosques',icon:'🏹',tier:'oculta',activeSkill:'Flecha Certera',activeCost:15,bonus:{str:6,spd:8,luck:4},skill:'Tiro preciso'},
-    berserker:{id:'berserker',name:'Berserker',icon:'🪓',tier:'rara',activeSkill:'Furia Desatada',activeCost:20,bonus:{str:15,maxHp:60,def:-2},skill:'Furia'},
-    abyss:{id:'abyss',name:'Brujo Abisal',icon:'🜏',tier:'rara',activeSkill:'Ruptura Abisal',activeCost:22,bonus:{mag:16,maxMp:35,luck:2},skill:'Magia abisal'},
-    chrono:{id:'chrono',name:'Cronomante',icon:'⏳',tier:'legendaria',activeSkill:'Paradoja Temporal',activeCost:26,bonus:{mag:20,spd:12,maxMp:60},skill:'Manipulación temporal'},
-    dragonknight:{id:'dragonknight',name:'Caballero Dragón',icon:'🐉',tier:'legendaria',activeSkill:'Aliento Dracónico',activeCost:28,bonus:{str:18,def:12,maxHp:100},skill:'Alma de dragón'}
-  };
-  const V12_BOOKS=Object.keys(V12_CLASSES).filter(k=>V12_CLASSES[k].tier!=='básica').map(k=>({id:'book_'+k,name:'Libro del '+V12_CLASSES[k].name,type:'book',classId:k,tier:V12_CLASSES[k].tier,icon:'📖',price:450,desc:'Libro de clase '+V12_CLASSES[k].tier+'.'}));
-  const V12_EQUIPMENT=[
-    {id:'iron_sword',name:'Espada de Hierro',type:'weapon',slot:'weapon',atk:10,price:120,icon:'🗡️',desc:'+10 ATQ.'},
-    {id:'steel_sword',name:'Espada de Acero',type:'weapon',slot:'weapon',atk:24,price:480,icon:'⚔️',desc:'+24 ATQ.'},
-    {id:'crystal_blade',name:'Hoja de Cristal',type:'weapon',slot:'weapon',atk:45,price:1300,icon:'⚔️',desc:'+45 ATQ.'},
-    {id:'abyss_blade',name:'Hoja del Abismo',type:'weapon',slot:'weapon',atk:80,price:3800,icon:'🗡️',desc:'+80 ATQ.'},
-    {id:'leather_helmet',name:'Casco de Cuero',type:'helmet',slot:'helmet',def:5,price:80,icon:'🪖',desc:'+5 DEF.'},
-    {id:'steel_helmet',name:'Yelmo de Acero',type:'helmet',slot:'helmet',def:14,price:420,icon:'🪖',desc:'+14 DEF.'},
-    {id:'crystal_helmet',name:'Corona Cristalina',type:'helmet',slot:'helmet',def:30,price:1200,icon:'👑',desc:'+30 DEF.'},
-    {id:'chain_armor',name:'Cota de Malla',type:'armor',slot:'armor',def:12,price:180,icon:'🛡️',desc:'+12 DEF.'},
-    {id:'plate_armor',name:'Armadura de Acero',type:'armor',slot:'armor',def:28,price:650,icon:'🛡️',desc:'+28 DEF.'},
-    {id:'astral_armor',name:'Armadura Astral',type:'armor',slot:'armor',def:55,price:2200,icon:'🛡️',desc:'+55 DEF.'},
-    {id:'traveler_boots',name:'Botas del Viajero',type:'boots',slot:'boots',def:5,price:100,icon:'🥾',desc:'+5 DEF.'},
-    {id:'swift_boots',name:'Botas Veloces',type:'boots',slot:'boots',def:14,price:500,icon:'🥾',desc:'+14 DEF.'},
-    {id:'sky_boots',name:'Botas Celestes',type:'boots',slot:'boots',def:28,price:1400,icon:'🥾',desc:'+28 DEF.'}
-  ];
-  const potion=(id,name,effect,val,price,icon,desc)=>({id,name,type:'potion',effect,val,price,icon,desc});
-  const V12_POTIONS=[potion('pot_hp_v12','Poción de Vida','hp',70,45,'🧪','Restaura 70 PV.'),potion('pot_mp_v12','Poción de Maná','mp',45,40,'🧪','Restaura 45 PM.'),potion('pot_poison_v12','Poción de Veneno','poison_weapon',4,70,'🧪','Aplica veneno al arma durante 4 ataques.')];
-  const V12_ACH=[
-    ['first_blood','Primer enemigo','Derrota tu primer monstruo.',1],['floor10','Primera década','Alcanza el piso 10.',10],['boss5','Cazajefes','Derrota 5 jefes.',5],['floor50','Mitad del camino','Alcanza el piso 50.',50],['floor100','Cima','Alcanza el piso 100.',100],['master','Maestro de la Torre','Aprende 5 mejoras de entrenamiento.',5]
-  ];
-
-  function zoneFor(f){return V12_ZONES[Math.min(9,Math.floor((f-1)/10))];}
-  function findMonster(id){return MONSTER_TYPES.concat(V12_MONSTERS).find(m=>m.id===id)||MONSTER_TYPES[0];}
-  function bossFor(f){return V12_BOSSES[Math.max(0,Math.min(9,Math.floor(f/10)-1))];}
-  function normalizePlayer(p){
-    if(!p)return;
-    p.equipment=p.equipment||{weapon:null,helmet:null,armor:null,boots:null};
-    ['weapon','helmet','armor','boots'].forEach(k=>{if(!(k in p.equipment))p.equipment[k]=null;});
-    p.inventory=Array.isArray(p.inventory)?p.inventory:[];
-    p.skillPoints=safe(p.skillPoints,0); p.level=safe(p.level,1); p.exp=safe(p.exp,0); p.floor=safe(p.floor,1);
-    p.str=safe(p.str,14);p.spd=safe(p.spd,12);p.mag=safe(p.mag,10);p.def=safe(p.def,12);p.luck=safe(p.luck,10);
-    p.maxHp=safe(p.maxHp,190);p.hp=Math.min(safe(p.hp,p.maxHp),p.maxHp);p.maxMp=safe(p.maxMp,50);p.mp=Math.min(safe(p.mp,p.maxMp),p.maxMp);
-    p.gold=safe(p.gold,150);p.classId=safe(p.classId,'adventurer');p.className=safe(p.className,'Aventurero');
-    p.poisonCharges=safe(p.poisonCharges,0);p.skills=p.skills||{};p.stats=p.stats||{kills:0,bosses:0,chests:0,traps:0,floors:1,training:0,events:0};
-  }
-  function migrate(){
-    game.slots=Array.isArray(game.slots)?game.slots.slice(0,5):[]; while(game.slots.length<5)game.slots.push(null);
-    game.settings=game.settings||{volume:0.6,muted:false,crt:true,language:'es'};
-    game.account=game.account||{email:'',linked:false};
-    game.achievements=game.achievements||{}; game.eventFlags=game.eventFlags||{}; game.towerStats=game.towerStats||{kills:0,bosses:0,chests:0,traps:0,events:0};
-    normalizePlayer(game.player); game.slots.forEach(s=>s&&normalizePlayer(s));
-    if(game.player && !game.player.inventory.some(i=>i.id==='pot_poison_v12'))game.player.inventory.push(clone(V12_POTIONS[2]));
-  }
-  function save(){
-    try{ if(game.player){normalizePlayer(game.player);game.player.floor=game.floor;game.slots[game.currentSlot]=clone(game.player);} localStorage.setItem(SAVE_KEY,JSON.stringify({slots:game.slots,settings:game.settings,account:game.account,achievements:game.achievements,eventFlags:game.eventFlags,towerStats:game.towerStats,currentSlot:game.currentSlot})); }catch(e){console.warn('save',e)}
-  }
-  function load(){
-    try{
-      let raw=localStorage.getItem(SAVE_KEY);
-      if(!raw){for(const k of OLD_KEYS){raw=localStorage.getItem(k);if(raw)break;}}
-      if(raw){const d=JSON.parse(raw); if(Array.isArray(d.slots))game.slots=d.slots; if(d.settings)game.settings=Object.assign(game.settings||{},d.settings);if(d.account)game.account=Object.assign(game.account||{},d.account);if(d.achievements)game.achievements=d.achievements;if(d.eventFlags)game.eventFlags=d.eventFlags;if(d.towerStats)game.towerStats=d.towerStats;if(Number.isInteger(d.currentSlot))game.currentSlot=d.currentSlot;}
-    }catch(e){console.warn('load',e)}
-    migrate();
-  }
-  function persistSlot(){save();}
-  function grantItem(item){game.player.inventory.push(clone(item));}
-  function toast(t,m){if(typeof showToast==='function')showToast(t,m);}
-  function awardAchievement(id){if(!game.achievements[id]){game.achievements[id]=Date.now();const a=V12_ACH.find(x=>x[0]===id);if(a)toast('🏆 LOGRO DESBLOQUEADO',a[1]);save();}}
-  function checkAchievements(){const st=game.towerStats||{};if(st.kills>=1)awardAchievement('first_blood');if(game.floor>=10)awardAchievement('floor10');if(st.bosses>=5)awardAchievement('boss5');if(game.floor>=50)awardAchievement('floor50');if(game.floor>=100)awardAchievement('floor100');if(st.training>=5)awardAchievement('master');}
-  function levelUp(){let gained=0;while(game.player.exp>=xpFor(game.player.level)){game.player.exp-=xpFor(game.player.level);game.player.level++;game.player.skillPoints+=2;game.player.maxHp+=20;game.player.maxMp+=10;game.player.hp=game.player.maxHp;game.player.mp=game.player.maxMp;gained++;}if(gained)toast('¡NIVEL UP!',`Alcanzaste nivel ${game.player.level}. +2 SP por nivel.`);}
-
-  // ---------- Preserve original visuals, extend behavior ----------
-  const originalRenderLobby=renderLobbyScreen;
-  renderLobbyScreen=function(c){originalRenderLobby(c);const wrap=c.querySelector('.w-full.max-w-md');if(!wrap)return;const grid=wrap.querySelector('.grid');if(grid&&!grid.querySelector('[data-v12]')){const b=document.createElement('button');b.dataset.v12='1';b.className='pixel-card p-3 rounded text-center hover:border-cyan-400 bg-slate-900 pixel-btn';b.innerHTML='<span class="text-2xl block mb-1">⚙️</span><span class="pixel-font text-base text-cyan-300">SISTEMA</span>';b.onclick=()=>{game.screen='v12system';renderScreen()};grid.appendChild(b);}};
-
-  const originalRenderScreen=renderScreen;
-  renderScreen=function(){
-    if(game.screen==='v12system')return renderV12System(document.getElementById('main-view'));
-    if(game.screen==='v12achievements')return renderV12Achievements(document.getElementById('main-view'));
-    if(game.screen==='v12classes')return renderV12Classes(document.getElementById('main-view'));
-    if(game.screen==='v12wish')return renderV12Wish(document.getElementById('main-view'));
-    return originalRenderScreen();
-  };
-
-  function renderV12System(c){
-    c.innerHTML=`<div class="w-full max-w-md"><h3 class="pixel-font text-2xl text-cyan-400 mb-3 text-center">SISTEMA DE TORRE</h3><div class="space-y-2">
-    <button onclick="game.screen='v12classes';renderScreen()" class="w-full bg-purple-700 hover:bg-purple-600 py-2 rounded pixel-font pixel-btn">📚 CLASES Y EVOLUCIONES</button>
-    <button onclick="game.screen='v12achievements';renderScreen()" class="w-full bg-yellow-700 hover:bg-yellow-600 py-2 rounded pixel-font pixel-btn">🏆 LOGROS DE LA TORRE</button>
-    <button onclick="v12OpenSettings()" class="w-full bg-slate-700 hover:bg-slate-600 py-2 rounded pixel-font pixel-btn">⚙️ CONFIGURACIÓN</button>
-    <button onclick="v12Export()" class="w-full bg-emerald-700 hover:bg-emerald-600 py-2 rounded pixel-font pixel-btn">📤 EXPORTAR RESPALDO</button>
-    <label class="w-full block bg-blue-700 hover:bg-blue-600 py-2 rounded pixel-font pixel-btn cursor-pointer">📥 IMPORTAR RESPALDO<input type="file" accept="application/json" onchange="v12Import(this)" class="hidden"></label>
-    <button onclick="game.screen='lobby';renderScreen()" class="w-full bg-slate-800 py-2 rounded pixel-font pixel-btn">VOLVER AL LOBBY</button></div></div>`;
-  }
-  function renderV12Achievements(c){let h='';V12_ACH.forEach(a=>{const ok=!!game.achievements[a[0]];h+=`<div class="pixel-card p-3 rounded border border-slate-700 flex justify-between"><div><b class="text-yellow-300">${a[1]}</b><p class="text-[10px] text-slate-400">${a[2]}</p></div><span>${ok?'🏆':'🔒'}</span></div>`});c.innerHTML=`<div class="w-full max-w-md"><h3 class="pixel-font text-2xl text-yellow-400 mb-3 text-center">LOGROS</h3><div class="space-y-2 max-h-72 overflow-y-auto">${h}</div><button onclick="game.screen='v12system';renderScreen()" class="w-full mt-3 bg-slate-800 py-2 rounded pixel-font pixel-btn">VOLVER</button></div>`;}
-  function renderV12Classes(c){let h='';Object.values(V12_CLASSES).forEach(x=>{const learned=game.player.classId===x.id;const basic=x.tier==='básica';const hasBook=game.player.inventory.some(i=>i.type==='book'&&(i.classId===x.id||!i.classId));h+=`<div class="pixel-card p-3 rounded border border-slate-700 flex justify-between items-center"><div><b class="${x.tier==='legendaria'?'text-yellow-300':x.tier==='rara'?'text-purple-300':x.tier==='oculta'?'text-cyan-300':'text-emerald-300'}">${x.icon} ${x.name}</b><p class="text-[10px] text-slate-400">${x.tier} · ${x.activeSkill}</p><p class="text-[10px] text-slate-500">${x.skill}</p></div><button onclick="v12SelectClass('${x.id}')" class="${learned?'bg-slate-800':'bg-purple-700'} px-2 py-1 rounded text-[10px] pixel-btn">${learned?'ACTIVA':basic?'ELEGIR':'USAR LIBRO'}</button></div>`});c.innerHTML=`<div class="w-full max-w-md"><h3 class="pixel-font text-2xl text-purple-400 mb-3 text-center">ÁRBOL DE CLASES</h3><p class="text-[10px] text-slate-400 text-center mb-2">Guerrero, Mago, Clérigo y Asesino son clases básicas. Las demás requieren libros o eventos.</p><div class="space-y-2 max-h-72 overflow-y-auto">${h}</div><button onclick="game.screen='v12system';renderScreen()" class="w-full mt-3 bg-slate-800 py-2 rounded pixel-font pixel-btn">VOLVER</button></div>`;}
-  window.v12SelectClass=function(key){const c=V12_CLASSES[key],p=game.player;if(!c)return;if(c.tier!=='básica'){const idx=p.inventory.findIndex(i=>i.type==='book'&&(i.classId===key||!i.classId));if(idx<0){toast('LIBRO NECESARIO','Necesitas encontrar el libro de '+c.name+'.');return;}p.inventory.splice(idx,1);}p.classId=key;p.className=c.name;Object.entries(c.bonus).forEach(([k,v])=>p[k]=(p[k]||0)+v);p.hp=p.maxHp;p.mp=p.maxMp;save();toast('CLASE DESBLOQUEADA','Ahora eres '+c.name+'.');renderScreen();};
-  function renderV12Wish(c){c.innerHTML=`<div class="w-full max-w-md text-center"><div class="pixel-card p-5 rounded border-2 border-cyan-500/60"><h3 class="pixel-font text-2xl text-cyan-300 mb-3">PISO 100 — EL DESEO</h3><p class="text-xs text-slate-300 mb-4">La Torre te concede un único deseo. Esta decisión marca el final de la partida.</p><div class="space-y-2"><button onclick="v12TakeWish('power')" class="w-full bg-red-700 py-2 rounded pixel-font pixel-btn">⚔️ PODER ABSOLUTO</button><button onclick="v12TakeWish('wealth')" class="w-full bg-yellow-700 py-2 rounded pixel-font pixel-btn">💰 RIQUEZA INFINITA</button><button onclick="v12TakeWish('tower')" class="w-full bg-purple-700 py-2 rounded pixel-font pixel-btn">🗼 CONOCER EL SECRETO DE LA TORRE</button><button onclick="v12TakeWish('freedom')" class="w-full bg-emerald-700 py-2 rounded pixel-font pixel-btn">🕊️ LIBERTAD</button></div></div></div>`;}
-  window.v12TakeWish=function(kind){const p=game.player;p.wish=kind;if(kind==='power'){p.str+=100;p.mag+=100;p.def+=60;p.maxHp+=500;p.hp=p.maxHp;}else if(kind==='wealth'){p.gold+=100000;}else if(kind==='tower'){p.inventory.push({id:'tower_secret',name:'Secreto de la Torre',type:'special',icon:'🌀',price:10000,desc:'Relicario del conocimiento de la Torre.'});}else{p.inventory.push({id:'freedom',name:'Emblema de la Libertad',type:'special',icon:'🕊️',price:10000,desc:'Símbolo del héroe que alcanzó la cima.'});}game.towerCompleted=true;save();toast('DESEO CONCEDIDO','Has completado la Torre. Puedes continuar explorando o comenzar una nueva partida.');game.screen='lobby';renderScreen();};
-
-  window.v12OpenSettings=function(){
-    const vol=prompt('Volumen (0 a 100):',Math.round((game.settings.volume||0.6)*100)); if(vol!==null){const n=Math.max(0,Math.min(100,Number(vol)||0));game.settings.volume=n/100;} game.settings.muted=confirm('¿Silenciar sonidos?');game.settings.crt=confirm('¿Activar efecto CRT?');const lang=prompt('Idioma: escribe ES o EN',game.settings.language==='en'?'EN':'ES');if(lang)game.settings.language=/^en$/i.test(lang)?'en':'es';const crt=document.querySelector('.crt-overlay');if(crt)crt.style.display=game.settings.crt?'block':'none';save();toast('CONFIGURACIÓN','Configuración guardada.');renderScreen();};
-  window.v12Export=function(){save();const blob=new Blob([localStorage.getItem(SAVE_KEY)||'{}'],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='torre-system-respaldo.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);};
-  window.v12Import=function(inp){const f=inp.files&&inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.slots))throw Error('invalid');localStorage.setItem(SAVE_KEY,JSON.stringify(d));load();toast('RESPALDO','Partida restaurada.');renderScreen();}catch(e){toast('ERROR','El respaldo no es válido.');}};r.readAsText(f);};
-
-  // ---------- Five save slots, without changing the game's style ----------
-  const oldSaves=renderSavesScreen;
-  renderSavesScreen=function(c){let h='';for(let i=0;i<5;i++){const s=game.slots[i];h+=s?`<div class="pixel-card p-4 rounded mb-3 flex items-center justify-between border border-slate-700"><div class="flex items-center space-x-3">${generateHeroAvatarSVG(s.equipment,s.classId,50)}<div><span class="pixel-font text-xl text-yellow-400">RANURA ${i+1}: ${s.name}</span><p class="text-xs text-slate-400">Clase: ${s.className} | Niv: ${s.level} | Piso: ${s.floor} | Oro: ${s.gold}g</p></div></div><div class="flex space-x-2"><button onclick="loadGameSlot(${i})" class="bg-green-600 hover:bg-green-500 text-black px-3 py-1 rounded text-xs font-bold pixel-font pixel-btn">CARGAR</button><button onclick="deleteGameSlot(${i})" class="bg-red-600 hover:bg-red-500 text-black px-3 py-1 rounded text-xs font-bold pixel-font pixel-btn">BORRAR</button></div></div>`:`<div class="pixel-card p-4 rounded mb-3 flex items-center justify-between border border-dashed border-slate-700"><div><span class="pixel-font text-xl text-slate-500">RANURA ${i+1}: VACÍA</span><p class="text-xs text-slate-500">Sin partida guardada</p></div><button onclick="startNewGameInSlot(${i})" class="bg-cyan-600 hover:bg-cyan-500 text-black px-4 py-2 rounded text-xs font-bold pixel-font pixel-btn">NUEVA PARTIDA</button></div>`;}c.innerHTML=`<div class="w-full max-w-md"><h3 class="pixel-font text-2xl text-cyan-400 mb-4 text-center">SELECCIONAR RANURA DE PARTIDA</h3><div class="space-y-2 mb-6">${h}</div><button onclick="game.screen='title';renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-base pixel-btn">VOLVER AL MENÚ</button></div>`;};
-  const oldStart=startNewGameInSlot;startNewGameInSlot=function(i){game.currentSlot=i;game.screen='create';tempTrait=null;playSound('click');renderScreen();};
-  const oldLoad=loadGameSlot;loadGameSlot=function(i){if(!game.slots[i])return;game.currentSlot=i;game.player=clone(game.slots[i]);normalizePlayer(game.player);game.floor=game.player.floor||1;game.screen='lobby';save();playSound('victory');renderScreen();};
-  const oldDelete=deleteGameSlot;deleteGameSlot=function(i){game.slots[i]=null;save();playSound('hit');renderScreen();};
-
-  // ---------- Player creation: retain old visuals, enrich data ----------
-  const oldCreate=confirmCreateHero;confirmCreateHero=function(){oldCreate();if(game.player){normalizePlayer(game.player);game.player.stats=game.player.stats||{kills:0,bosses:0,chests:0,traps:0,floors:1,training:0,events:0};game.player.poisonCharges=0;game.player.inventory=game.player.inventory||[];V12_POTIONS.forEach(p=>{if(!game.player.inventory.some(i=>i.id===p.id))game.player.inventory.push(clone(p));});game.floor=1;save();}};
-
-  // ---------- Tower generation: keep 7x7/fog/layout ----------
-  function placeRandom(grid,tile,tries=100){for(let n=0;n<tries;n++){const x=Math.floor(Math.random()*7),y=Math.floor(Math.random()*5)+1;if(grid[y][x]==='empty'){grid[y][x]=tile;return true;}}return false;}
-  function v12GenerateFloor(f){const size=7;game.grid=Array.from({length:size},()=>Array(size).fill('empty'));game.fog=Array.from({length:size},()=>Array(size).fill(false));game.environment=Array.from({length:size},()=>Array(size).fill(' '));const z=zoneFor(f);for(let y=0;y<7;y++)for(let x=0;x<7;x++)game.environment[y][x]=Math.random()<.25?z[1]:'';game.playerPos={x:3,y:6};const boss=f%10===0;game.grid[1][3]='stairs_up';if(f>1)game.grid[6][1]='stairs_down';if(boss){game.grid[2][3]='boss';for(let i=0;i<3;i++)placeRandom(game.grid,'monster');}else{const count=Math.min(6,3+Math.floor(f/20));for(let i=0;i<count;i++)placeRandom(game.grid,'monster');placeRandom(game.grid,Math.random()<.18?'trap_chest':'chest');if(Math.random()<.38)placeRandom(game.grid,'npc');if(f%5===0)placeRandom(game.grid,'event');}game.floorsState[f]={grid:clone(game.grid),fog:clone(game.fog),environment:clone(game.environment),zone:z[0]};revealAdjacentFog();}
-  function v12LoadFloor(f){if(game.floorsState[f]){const s=game.floorsState[f];game.grid=clone(s.grid);game.fog=clone(s.fog);game.environment=clone(s.environment);game.playerPos={x:3,y:6};revealAdjacentFog();}else v12GenerateFloor(f);}
-  const oldEnter=enterFloor;enterFloor=function(){game.screen='floor';v12LoadFloor(game.floor);playSound('click');renderScreen();};
-
-  // ---------- Floor interaction: richer loot/events ----------
-  const oldMove=movePlayer;movePlayer=function(dx,dy){let nx=game.playerPos.x+dx,ny=game.playerPos.y+dy;if(nx<0||nx>=7||ny<0||ny>=7)return;game.playerPos={x:nx,y:ny};revealAdjacentFog();const tile=game.grid[ny][nx];if(tile==='monster'){game.grid[ny][nx]='empty';const z=zoneFor(game.floor);const id=z[2][Math.floor(Math.random()*z[2].length)];const base=findMonster(id);game.enemy=clone(base);const scale=1+(game.floor-1)*.055;game.enemy.hp=Math.floor(base.hp*scale);game.enemy.maxHp=game.enemy.hp;game.enemy.atk=Math.floor(base.atk*scale);game.enemy.def=Math.floor(base.def*(1+(game.floor-1)*.025));game.enemy.floor=game.floor;game.enemy.boss=false;game.screen='combat';game.combatTurn=1;game.combatLogText=`¡${game.enemy.name} apareció en el piso ${game.floor}!`;game.bestiaryUnlocked[game.enemy.id]=true;playSound('boss');}
-    else if(tile==='boss'){const b=clone(bossFor(game.floor));const scale=1+(game.floor/100);game.enemy=Object.assign(b,{hp:Math.floor(b.hp*scale),maxHp:Math.floor(b.hp*scale),atk:Math.floor(b.atk*scale),def:Math.floor(b.def*scale),floor:game.floor,boss:true});game.grid[ny][nx]='boss';game.screen='combat';game.combatTurn=1;game.combatLogText=`¡JEFE DEL PISO ${game.floor}: ${game.enemy.name}!`;game.bestiaryUnlocked[game.enemy.id]=true;playSound('boss');}
-    else if(tile==='chest'||tile==='trap_chest'){game.grid[ny][nx]='empty';if(tile==='chest')v12OpenChest();else v12Trap();}
-    else if(tile==='npc'){game.grid[ny][nx]='empty';triggerNpcInteract();}
-    else if(tile==='event'){game.grid[ny][nx]='empty';v12RandomEvent();}
-    else if(tile==='stairs_up'||tile==='stairs_down'){openStairsModal();}playSound('click');renderScreen();save();};
-  function v12OpenChest(){const p=game.player;const roll=Math.random();p.stats.chests++;game.towerStats.chests++;let msg='';if(roll<.28){const pot=clone(V12_POTIONS[Math.floor(Math.random()*V12_POTIONS.length)]);grantItem(pot);msg=`Encontraste ${pot.name}.`;}else if(roll<.48&&game.floor>=10){const book=clone(V12_BOOKS[Math.floor(Math.random()*V12_BOOKS.length)]);grantItem(book);msg=`Encontraste ${book.name}.`;}else if(roll<.72){const pool=V12_EQUIPMENT.filter(i=>i.price<=200+game.floor*80);const item=clone(pool[Math.floor(Math.random()*pool.length)]||V12_EQUIPMENT[0]);grantItem(item);msg=`Encontraste ${item.name}.`;}else{const gold=60+game.floor*25;p.gold+=gold;msg=`Encontraste ${gold} de oro.`;}toast('🎁 COFRE ABIERTO',msg);checkAchievements();}
-  function v12Trap(){const p=game.player;p.stats.traps++;game.towerStats.traps++;const r=Math.random();if(r<.3){const dmg=20+game.floor*6;p.hp=Math.max(1,p.hp-dmg);toast('⚠️ TRAMPA','Una explosión te causó '+dmg+' de daño.');}else if(r<.55){p.mp=Math.max(0,p.mp-15-game.floor);toast('⚠️ TRAMPA','Una runa drenó parte de tu maná.');}else if(r<.78){const base=findMonster(zoneFor(game.floor)[2][Math.floor(Math.random()*3)]);game.enemy=clone(base);game.enemy.hp=Math.floor(base.hp*(1+game.floor*.08));game.enemy.maxHp=game.enemy.hp;game.enemy.atk=Math.floor(base.atk*(1+game.floor*.06));game.screen='combat';game.combatTurn=1;game.combatLogText='¡La trampa invocó un monstruo!';}else{p.gold=Math.max(0,p.gold-(30+game.floor*10));toast('⚠️ TRAMPA','Una maldición robó parte de tu oro.');}}
-  function v12RandomEvent(){const p=game.player;p.stats.events++;game.towerStats.events++;const r=Math.floor(Math.random()*5);if(r===0){p.hp=Math.min(p.maxHp,p.hp+Math.floor(p.maxHp*.3));toast('✨ FUENTE MISTERIOSA','Recuperaste parte de tus PV.');}else if(r===1){p.skillPoints++;toast('📜 EVENTO DE CLASE','Una visión te enseñó una técnica. +1 SP.');}else if(r===2){const gold=100+game.floor*20;p.gold+=gold;toast('💰 CARAVANA PERDIDA','Encontraste '+gold+' de oro.');}else if(r===3){const b=clone(V12_BOOKS[Math.floor(Math.random()*V12_BOOKS.length)]);grantItem(b);toast('📖 EVENTO ÚNICO','Una biblioteca oculta te entregó '+b.name+'.');}else{p.luck+=1;toast('⭐ BENDICIÓN DE LA TORRE','Tu Suerte aumentó permanentemente en 1.');}}
-
-  // ---------- Combat: poison, class skills, boss rewards ----------
-  const oldCombat=combatAction;combatAction=function(action){const p=game.player,e=game.enemy;if(!e)return;
-    if(action==='poison'){if(p.poisonCharges<=0){game.combatLogText='No tienes veneno aplicado al arma.';renderScreen();return;}p.poisonCharges--;e.poison=Math.max(e.poison||0,3);game.combatLogText='Aplicaste veneno al arma. El enemigo sufrirá daño durante varios turnos.';enemyTurnV12();return;}
-    if(action==='heal'){if(p.mp<8){toast('MANÁ','No tienes suficiente maná.');return;}p.mp-=8;p.hp=Math.min(p.maxHp,p.hp+Math.floor(p.maxHp*.18));game.combatLogText='Usaste Luz de Supervivencia y recuperaste PV.';enemyTurnV12();return;}
-    if(action==='skill' && V12_CLASSES[p.classId]){const c=V12_CLASSES[p.classId];if(p.mp<c.activeCost){toast('MANÁ','No tienes suficiente maná.');return;}p.mp-=c.activeCost;let dmg=Math.max(12,Math.floor((p.str+p.mag)*1.45)-Math.floor(e.def/2));if(p.classId==='cleric')p.hp=Math.min(p.maxHp,p.hp+Math.floor(p.maxHp*.12));if(p.classId==='assassin'&&Math.random()<.35)dmg=Math.floor(dmg*1.8);if(p.classId==='berserker'&&p.hp<p.maxHp*.5)dmg=Math.floor(dmg*1.35);e.hp=Math.max(0,e.hp-dmg);game.combatLogText=`¡Usaste ${c.activeSkill}! Causaste ${dmg} de daño.`;if(e.hp<=0){finishV12Victory(e);return;}enemyTurnV12();return;}
-    const wasBoss=!!e.boss;const target=e;const beforeFloor=game.floor;oldCombat(action);
-    if(game.screen==='combat' && game.enemy && game.enemy.hp>0){if(game.enemy.poison>0){const d=10+Math.floor(game.floor/4);game.enemy.hp=Math.max(0,game.enemy.hp-d);game.enemy.poison--;game.combatLogText+=' El veneno causó '+d+' de daño.';if(game.enemy.hp<=0){finishV12Victory(game.enemy);return;}}save();}
-    if(wasBoss && target.hp<=0){finishV12Victory(target,true);}
-  };
-  function finishV12Victory(e,alreadyRewarded=false){const p=game.player;if(!e||e.hp>0)return;if(!alreadyRewarded){p.gold+=(e.gold||20);p.exp+=(e.exp||30);}p.stats=p.stats||{kills:0,bosses:0,chests:0,traps:0,floors:1,training:0,events:0};p.stats.kills++;game.towerStats.kills++;if(e.boss){p.stats.bosses++;game.towerStats.bosses++;const drop={id:'bossdrop_'+Date.now(),name:e.drop||'Trofeo de jefe',type:'material',price:e.dropValue||100,icon:'💎',desc:'Trofeo obtenido de un jefe.'};grantItem(drop);game.grid[game.playerPos.y][game.playerPos.x]='empty';if(game.floor===100){game.screen='v12wish';save();checkAchievements();renderScreen();return;}toast('👑 JEFE DERROTADO',`Has derrotado a ${e.name} y obtenido ${e.drop||'un trofeo'}.`);}else if(!alreadyRewarded){toast('VICTORIA',`Derrotaste a ${e.name}.`);}levelUp();checkAchievements();game.screen='floor';save();renderScreen();}
-  function enemyTurnV12(){const e=game.enemy,p=game.player;const def=p.def+(p.equipment.armor?.def||0)+(p.equipment.helmet?.def||0)+(p.equipment.boots?.def||0);const d=Math.max(2,e.atk-Math.floor(def/2)+Math.floor(Math.random()*5));p.hp=Math.max(0,p.hp-d);game.combatLogText+=' '+e.name+' te causó '+d+' de daño.';if(p.hp<=0){p.hp=1;toast('SUPERVIVENCIA','La Torre evitó tu derrota.');}renderScreen();}
-  // ---------- Potions: old inventory remains, new poison works ----------
-  const oldUsePotion=usePotion;usePotion=function(index){const item=game.player.inventory[index];if(item&&item.effect==='poison_weapon'){game.player.inventory.splice(index,1);game.player.poisonCharges+=item.val||4;toast('☠️ VENENO APLICADO','Tu arma está envenenada por '+game.player.poisonCharges+' ataques.');renderScreen();save();return;}oldUsePotion(index);save();};
-  const oldOpenPotion=openCombatPotionModal;openCombatPotionModal=function(){const list=document.getElementById('combat-potion-list');if(!list)return oldOpenPotion();list.innerHTML='';const items=game.player.inventory.filter(i=>i.type==='potion');if(!items.length)list.innerHTML='<p class="text-xs text-slate-400">No tienes pociones.</p>';items.forEach((it,idx)=>{list.innerHTML+=`<div class="flex items-center justify-between bg-slate-900 p-2 rounded border border-slate-700"><span class="text-xs">${it.icon} ${it.name}</span><button onclick="v12UseCombatPotion(${idx})" class="bg-purple-600 hover:bg-purple-500 text-white px-3 py-1 rounded text-xs font-bold pixel-btn">USAR</button></div>`});document.getElementById('combat-potion-modal').classList.remove('hidden');playSound('click');};
-  window.v12UseCombatPotion=function(filteredIndex){const items=game.player.inventory.filter(i=>i.type==='potion');const it=items[filteredIndex];if(!it)return;const real=game.player.inventory.indexOf(it);if(it.effect==='poison_weapon'){game.player.inventory.splice(real,1);game.player.poisonCharges+=it.val||4;toast('☠️ VENENO','Veneno aplicado al arma.');closeCombatPotionModal();enemyTurnV12();return;}game.player.inventory.splice(real,1);if(it.effect==='hp')game.player.hp=Math.min(game.player.maxHp,game.player.hp+it.val);if(it.effect==='mp')game.player.mp=Math.min(game.player.maxMp,game.player.mp+it.val);toast('🧪 POCIÓN USADA',it.name);closeCombatPotionModal();enemyTurnV12();save();};
-
-  // ---------- Shop scaling, without changing its existing visual ----------
-  const oldShop=renderShopScreen;renderShopScreen=function(c){oldShop(c);const p=game.player;const box=c.querySelector('.max-h-40');if(box){V12_EQUIPMENT.filter(i=>i.price<5000&&i.price<=180+game.floor*75).forEach((it,idx)=>{const key='v12shop_'+it.id;const div=document.createElement('div');div.className='pixel-card p-2 rounded mb-2 flex items-center justify-between border border-slate-700 text-xs';div.innerHTML=`<div class="flex items-center space-x-2"><span class="text-xl">${it.icon}</span><div><span class="text-yellow-300 font-bold">${it.name} (${it.price}g)</span><p class="text-[10px] text-slate-400">${it.desc}</p></div></div><button class="bg-yellow-600 hover:bg-yellow-500 text-black px-3 py-1 rounded font-bold pixel-btn">COMPRAR</button>`;div.dataset.v12=key;div.querySelector('button').onclick=()=>{if(p.gold<it.price)return toast('FONDOS INSUFICIENTES','No tienes suficiente oro.');p.gold-=it.price;grantItem(it);toast('COMPRA EXITOSA','Has comprado '+it.name+'.');save();renderScreen();};if(!box.querySelector(`[data-v12="${key}"]`))box.appendChild(div);});V12_POTIONS.forEach(it=>{const key='v12shop_'+it.id;if(box.querySelector(`[data-v12="${key}"]`))return;const div=document.createElement('div');div.className='pixel-card p-2 rounded mb-2 flex items-center justify-between border border-slate-700 text-xs';div.dataset.v12=key;div.innerHTML=`<div class="flex items-center space-x-2"><span class="text-xl">${it.icon}</span><div><span class="text-yellow-300 font-bold">${it.name} (${it.price}g)</span><p class="text-[10px] text-slate-400">${it.desc}</p></div></div><button class="bg-yellow-600 hover:bg-yellow-500 text-black px-3 py-1 rounded font-bold pixel-btn">COMPRAR</button>`;div.querySelector('button').onclick=()=>{if(p.gold<it.price)return toast('FONDOS INSUFICIENTES','No tienes suficiente oro.');p.gold-=it.price;grantItem(it);save();renderScreen();};box.appendChild(div);});}};
-
-  // ---------- Training: skill evolution ----------
-  const oldTrain=trainSkill;trainSkill=function(index){oldTrain(index);game.player.stats.training++;game.towerStats.training=(game.towerStats.training||0)+1;const n=game.player.stats.training;if(n===3)toast('⚔️ EVOLUCIÓN','Tu manejo básico comienza a evolucionar hacia manejo medio.');if(n===5)toast('👑 MAESTRÍA','Has desbloqueado el rango Maestro de Entrenamiento.');checkAchievements();save();};
-
-  // ---------- Class books / class selection through church ----------
-  const oldChoose=chooseAdvancedClass;chooseAdvancedClass=function(key){if(V12_CLASSES[key]){const p=game.player;const idx=p.inventory.findIndex(i=>i.type==='book'&&(i.classId===key||!i.classId));if(idx<0)return oldChoose(key);p.inventory.splice(idx,1);const c=V12_CLASSES[key];p.classId=key;p.className=c.name;Object.entries(c.bonus).forEach(([k,v])=>{if(k==='maxHp'||k==='maxMp')p[k]=(p[k]||0)+v;else p[k]=(p[k]||0)+v;});p.hp=p.maxHp;p.mp=p.maxMp;toast('CLASE OBTENIDA','Ahora eres '+c.name+'.');save();renderScreen();return;}oldChoose(key);};
-
-  // ---------- Stairs and floor 100 completion ----------
-  const oldStairs=confirmStairsAction;confirmStairsAction=function(action){if(action==='up'&&game.floor===99){game.floor=100;game.player.floor=100;checkFloorQuests();toast('🏆 PISO 100','Has alcanzado la cima. Derrota al Administrador para elegir tu deseo.');v12LoadFloor(100);game.screen='floor';save();renderScreen();return;}oldStairs(action);game.player.floor=game.floor;checkAchievements();save();};
-
-  // ---------- Auto-save + keyboard ----------
-  document.addEventListener('keydown',e=>{if(!game.player)return;if(e.key.toLowerCase()==='i'&&game.screen==='floor'){game.screen='inventory';renderScreen();}if(e.key.toLowerCase()==='escape'&&game.screen!=='title'){game.screen='lobby';renderScreen();}});
-  window.addEventListener('beforeunload',save);
-  const oldOnload=window.onload;window.onload=function(){load();if(typeof oldOnload==='function')oldOnload();migrate();checkAchievements();};
-  // In case the browser has already fired load when this script is injected.
-  migrate();
-})();
-
-</script>
 </body>
 </html>
