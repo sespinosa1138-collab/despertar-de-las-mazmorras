@@ -1,28 +1,28 @@
-const CACHE_NAME = 'torre-system-v4-cache-v1';
-const urlsToCache = [
+const CACHE_NAME = 'juego-v2';
+const ASSETS_TO_CACHE = [
+  './',
   './index.html',
-  './manifest.json'
+  // Agrega aquí las rutas de tus scripts, imágenes o estilos si los usas
 ];
 
-// Instalación del Service Worker y almacenamiento en caché
-self.addEventListener('install', event => {
+// Instalación del Service Worker
+self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        return cache.addAll(urlsToCache);
-      })
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(ASSETS_TO_CACHE);
+    })
   );
   self.skipWaiting();
 });
 
-// Activación y limpieza de cachés antiguas
-self.addEventListener('activate', event => {
+// Activación y eliminación de versiones antiguas de caché (ej. juego-v1)
+self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then(cacheNames => {
+    caches.keys().then((keys) => {
       return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
           }
         })
       );
@@ -31,12 +31,11 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// Interceptación de peticiones para funcionamiento offline
-self.addEventListener('fetch', event => {
+// Intercepción de peticiones (Red / Caché)
+self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        return response || fetch(event.request);
-      })
+    caches.match(event.request).then((cachedResponse) => {
+      return cachedResponse || fetch(event.request);
+    })
   );
 });
