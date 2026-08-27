@@ -63,13 +63,14 @@
 </head>
 <body class="bg-retroDark text-slate-100 font-mono min-h-screen flex flex-col items-center justify-between overflow-x-hidden select-none relative">
     
-    <div class="crt-overlay absolute inset-0 z-50 pointer-events-none"></div>
+    <div id="crt-overlay" class="crt-overlay absolute inset-0 z-50 pointer-events-none"></div>
 
     <div id="app" class="w-full max-w-md md:max-w-xl lg:max-w-2xl min-h-screen flex flex-col justify-between p-4 relative z-10">
         
         <!-- HEADER -->
-        <header id="header-container" class="text-center py-2 border-b border-retroBorder mb-3">
-            <h1 class="pixel-font text-3xl md:text-4xl text-cyan-400 font-bold tracking-widest drop-shadow-[0_0_10px_rgba(6,182,212,0.6)]">TORRE:SYSTEM // V9.0</h1>
+        <header id="header-container" class="text-center py-2 border-b border-retroBorder mb-3 relative">
+            <button onclick="openSettingsModal()" aria-label="Configuración" title="Configuración" class="absolute right-0 top-1 bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/50 px-2 py-1 rounded pixel-btn">⚙️</button>
+            <h1 class="pixel-font text-3xl md:text-4xl text-cyan-400 font-bold tracking-widest drop-shadow-[0_0_10px_rgba(6,182,212,0.6)]">TORRE:SYSTEM // V13.0</h1>
             <p id="sub-header" class="text-xs text-slate-400 tracking-wider">EXPEDICIÓN PÍXEL TÁCTICA Y FORJA DE HÉROES</p>
         </header>
 
@@ -80,7 +81,7 @@
 
         <!-- FOOTER -->
         <footer class="text-center py-2 text-[10px] text-slate-500 border-t border-retroBorder/50 mt-2">
-            TORRE:SYSTEM ULTIMATE PIXEL EDITION &bull; ENGINE V9.0
+            TORRE:SYSTEM ULTIMATE PIXEL EDITION &bull; ENGINE V13.0
         </footer>
     </div>
 
@@ -142,11 +143,54 @@
         </div>
     </div>
 
+    <!-- GLOBAL SETTINGS MODAL -->
+    <div id="settings-modal" class="fixed inset-0 z-[70] bg-black/90 flex items-center justify-center p-4 hidden">
+        <div class="bg-retroCard border-2 border-cyan-500/70 p-5 rounded max-w-md w-full pixel-card shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="pixel-font text-2xl text-cyan-300" data-i18n="settingsTitle">⚙️ CONFIGURACIÓN</h3>
+                <button onclick="closeSettingsModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1 rounded pixel-btn">✕</button>
+            </div>
+            <div class="space-y-4">
+                <section class="pixel-card p-3 rounded border border-slate-700">
+                    <h4 class="pixel-font text-lg text-purple-300 mb-2" data-i18n="audio">🎵 AUDIO</h4>
+                    <label class="block text-xs text-slate-300 mb-1" data-i18n="masterVolume">Volumen Maestro <span id="master-volume-value">100%</span></label>
+                    <input id="settings-master" type="range" min="0" max="100" value="100" class="w-full" oninput="updateSettingSlider('master',this.value)">
+                    <label class="block text-xs text-slate-300 mb-1 mt-3" data-i18n="bgmVolume">Música de Fondo <span id="bgm-volume-value">35%</span></label>
+                    <input id="settings-bgm" type="range" min="0" max="100" value="35" class="w-full" oninput="updateSettingSlider('music',this.value)">
+                    <label class="block text-xs text-slate-300 mb-1 mt-3" data-i18n="sfxVolume">Efectos de Sonido <span id="sfx-volume-value">100%</span></label>
+                    <input id="settings-sfx" type="range" min="0" max="100" value="100" class="w-full" oninput="updateSettingSlider('sfx',this.value)">
+                </section>
+                <section class="pixel-card p-3 rounded border border-slate-700">
+                    <h4 class="pixel-font text-lg text-amber-300 mb-2" data-i18n="language">🌐 IDIOMA</h4>
+                    <select id="settings-language" onchange="setLanguage(this.value)" class="w-full bg-slate-900 border-2 border-slate-700 p-2 rounded text-cyan-300 pixel-font">
+                        <option value="es">Español</option>
+                        <option value="en">English</option>
+                    </select>
+                </section>
+                <section class="pixel-card p-3 rounded border border-slate-700">
+                    <h4 class="pixel-font text-lg text-emerald-300 mb-2" data-i18n="general">🖥️ GENERAL</h4>
+                    <label class="flex items-center justify-between text-xs text-slate-300 py-2"><span data-i18n="crt">Efecto CRT</span><input id="settings-crt" type="checkbox" onchange="toggleSetting('crtEffects',this.checked)" class="w-5 h-5"></label>
+                    <label class="flex items-center justify-between text-xs text-slate-300 py-2"><span data-i18n="compact">Interfaz compacta</span><input id="settings-compact" type="checkbox" onchange="toggleSetting('compactUI',this.checked)" class="w-5 h-5"></label>
+                    <label class="flex items-center justify-between text-xs text-slate-300 py-2"><span data-i18n="muted">Silenciar todo</span><input id="settings-muted" type="checkbox" onchange="toggleSetting('muted',this.checked)" class="w-5 h-5"></label>
+                    <p class="text-[10px] text-slate-500 mt-2" data-i18n="controls">Controles: botones en pantalla o WASD/Flechas durante la exploración.</p>
+                </section>
+            </div>
+            <button onclick="closeSettingsModal()" class="w-full mt-4 bg-cyan-600 hover:bg-cyan-500 text-black font-bold py-2.5 rounded pixel-font text-lg pixel-btn" data-i18n="close">CERRAR</button>
+        </div>
+    </div>
+
     <script>
         // WEB AUDIO API SOUND SYSTEM
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let bgmTimer = null;
+        const DEFAULT_SETTINGS = { master: 1, music: 0.35, sfx: 1, muted: false, language: 'es', crtEffects: true, compactUI: false };
+        function currentSettings() {
+            game.settings = Object.assign({}, DEFAULT_SETTINGS, game.settings || {});
+            return game.settings;
+        }
         function playSound(type) {
-            if (typeof game !== 'undefined' && game.settings && game.settings.muted) return;
+            const settings = currentSettings();
+            if (settings.muted || settings.sfx <= 0 || !audioCtx) return;
             if (!audioCtx) return;
             if (audioCtx.state === 'suspended') audioCtx.resume();
             const osc = audioCtx.createOscillator();
@@ -159,7 +203,7 @@
                 osc.type = 'square';
                 osc.frequency.setValueAtTime(440, now);
                 osc.frequency.exponentialRampToValueAtTime(880, now + 0.05);
-                gain.gain.setValueAtTime((0.05) * ((typeof game !== 'undefined' && game.settings) ? game.settings.volume : 1), now);
+                gain.gain.setValueAtTime((0.05) * (currentSettings().master * currentSettings().sfx), now);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
                 osc.start(now);
                 osc.stop(now + 0.05);
@@ -167,7 +211,7 @@
                 osc.type = 'sawtooth';
                 osc.frequency.setValueAtTime(140, now);
                 osc.frequency.linearRampToValueAtTime(40, now + 0.12);
-                gain.gain.setValueAtTime((0.08) * ((typeof game !== 'undefined' && game.settings) ? game.settings.volume : 1), now);
+                gain.gain.setValueAtTime((0.08) * (currentSettings().master * currentSettings().sfx), now);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
                 osc.start(now);
                 osc.stop(now + 0.12);
@@ -175,7 +219,7 @@
                 osc.type = 'sawtooth';
                 osc.frequency.setValueAtTime(600, now);
                 osc.frequency.exponentialRampToValueAtTime(200, now + 0.2);
-                gain.gain.setValueAtTime((0.15) * ((typeof game !== 'undefined' && game.settings) ? game.settings.volume : 1), now);
+                gain.gain.setValueAtTime((0.15) * (currentSettings().master * currentSettings().sfx), now);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
                 osc.start(now);
                 osc.stop(now + 0.2);
@@ -184,7 +228,7 @@
                 osc.frequency.setValueAtTime(300, now);
                 osc.frequency.setValueAtTime(450, now + 0.1);
                 osc.frequency.setValueAtTime(600, now + 0.2);
-                gain.gain.setValueAtTime((0.1) * ((typeof game !== 'undefined' && game.settings) ? game.settings.volume : 1), now);
+                gain.gain.setValueAtTime((0.1) * (currentSettings().master * currentSettings().sfx), now);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
                 osc.start(now);
                 osc.stop(now + 0.4);
@@ -192,7 +236,7 @@
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(350, now);
                 osc.frequency.exponentialRampToValueAtTime(850, now + 0.2);
-                gain.gain.setValueAtTime((0.08) * ((typeof game !== 'undefined' && game.settings) ? game.settings.volume : 1), now);
+                gain.gain.setValueAtTime((0.08) * (currentSettings().master * currentSettings().sfx), now);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
                 osc.start(now);
                 osc.stop(now + 0.2);
@@ -200,15 +244,23 @@
                 osc.type = 'sawtooth';
                 osc.frequency.setValueAtTime(70, now);
                 osc.frequency.linearRampToValueAtTime(25, now + 0.4);
-                gain.gain.setValueAtTime((0.2) * ((typeof game !== 'undefined' && game.settings) ? game.settings.volume : 1), now);
+                gain.gain.setValueAtTime((0.2) * (currentSettings().master * currentSettings().sfx), now);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
                 osc.start(now);
                 osc.stop(now + 0.4);
+            } else if (type === 'coin') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(880, now);
+                osc.frequency.exponentialRampToValueAtTime(1320, now + 0.08);
+                gain.gain.setValueAtTime(0.08 * currentSettings().master * currentSettings().sfx, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+                osc.start(now);
+                osc.stop(now + 0.12);
             } else if (type === 'craft') {
                 osc.type = 'triangle';
                 osc.frequency.setValueAtTime(520, now);
                 osc.frequency.exponentialRampToValueAtTime(1040, now + 0.25);
-                gain.gain.setValueAtTime((0.1) * ((typeof game !== 'undefined' && game.settings) ? game.settings.volume : 1), now);
+                gain.gain.setValueAtTime((0.1) * (currentSettings().master * currentSettings().sfx), now);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
                 osc.start(now);
                 osc.stop(now + 0.25);
@@ -275,6 +327,10 @@
                         <polygon points="34,32 40,28 46,32" fill="#fff"/>
                     </svg>
                 `;
+            } else if (['skeleton','fire','ice','electric','void'].includes(monsterType)) {
+                const color = monsterType === 'fire' ? '#f97316' : monsterType === 'ice' ? '#67e8f9' : monsterType === 'electric' ? '#fde047' : monsterType === 'void' ? '#a78bfa' : '#e5e7eb';
+                const icon = monsterType === 'skeleton' ? '☠' : monsterType === 'fire' ? '🔥' : monsterType === 'ice' ? '❄️' : monsterType === 'electric' ? '⚡' : '◈';
+                return `<div style="width:${size}px;height:${size}px;display:flex;align-items:center;justify-content:center;font-size:${Math.floor(size*0.72)}px;filter:drop-shadow(0 0 7px ${color})">${icon}</div>`;
             } else {
                 return `
                     <svg width="${size}" height="${size}" viewBox="0 0 80 80" class="inline-block animate-pulse">
@@ -290,6 +346,66 @@
                 `;
             }
         }
+
+        const UI_TEXT = {
+            es: { settingsTitle:'⚙️ CONFIGURACIÓN', audio:'🎵 AUDIO', masterVolume:'Volumen Maestro', bgmVolume:'Música de Fondo', sfxVolume:'Efectos de Sonido', language:'🌐 IDIOMA', general:'🖥️ GENERAL', crt:'Efecto CRT', compact:'Interfaz compacta', muted:'Silenciar todo', controls:'Controles: botones en pantalla o WASD/Flechas durante la exploración.', close:'CERRAR', header:'EXPEDICIÓN PÍXEL TÁCTICA Y FORJA DE HÉROES' },
+            en: { settingsTitle:'⚙️ SETTINGS', audio:'🎵 AUDIO', masterVolume:'Master Volume', bgmVolume:'Background Music', sfxVolume:'Sound Effects', language:'🌐 LANGUAGE', general:'🖥️ GENERAL', crt:'CRT Effect', compact:'Compact UI', muted:'Mute All', controls:'Controls: on-screen buttons or WASD/Arrow keys while exploring.', close:'CLOSE', header:'PIXEL TACTICAL EXPEDITION AND HERO FORGE' }
+        };
+        function startBgm() {
+            clearInterval(bgmTimer);
+            const settings = currentSettings();
+            if (settings.muted || settings.music <= 0 || !audioCtx) return;
+            let step = 0;
+            const notes = [196, 246.94, 293.66, 246.94, 220, 293.66, 329.63, 246.94];
+            const tick = () => {
+                if (currentSettings().muted || currentSettings().music <= 0) return;
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.value = notes[step++ % notes.length];
+                gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.025 * currentSettings().master * currentSettings().music, audioCtx.currentTime + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.24);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.25);
+            };
+            tick();
+            bgmTimer = setInterval(tick, 280);
+        }
+        function applySettingsUI() {
+            const settings = currentSettings();
+            document.getElementById('settings-master').value = Math.round(settings.master * 100);
+            document.getElementById('settings-bgm').value = Math.round(settings.music * 100);
+            document.getElementById('settings-sfx').value = Math.round(settings.sfx * 100);
+            document.getElementById('settings-language').value = settings.language;
+            document.getElementById('settings-crt').checked = !!settings.crtEffects;
+            document.getElementById('settings-compact').checked = !!settings.compactUI;
+            document.getElementById('settings-muted').checked = !!settings.muted;
+            document.getElementById('master-volume-value').innerText = Math.round(settings.master*100)+'%';
+            document.getElementById('bgm-volume-value').innerText = Math.round(settings.music*100)+'%';
+            document.getElementById('sfx-volume-value').innerText = Math.round(settings.sfx*100)+'%';
+            document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.getAttribute('data-i18n'); if (UI_TEXT[settings.language][key]) el.innerText = UI_TEXT[settings.language][key]; });
+            document.getElementById('sub-header').innerText = UI_TEXT[settings.language].header;
+            document.documentElement.lang = settings.language;
+            document.getElementById('crt-overlay').style.display = settings.crtEffects ? '' : 'none';
+            document.body.classList.toggle('text-sm', settings.compactUI);
+            startBgm();
+        }
+        function saveSettings() {
+            try { localStorage.setItem('torre_system_settings', JSON.stringify(currentSettings())); } catch(e) {}
+        }
+        function loadSettings() {
+            try { const raw = localStorage.getItem('torre_system_settings'); game.settings = Object.assign({}, DEFAULT_SETTINGS, raw ? JSON.parse(raw) : {}); } catch(e) { game.settings = Object.assign({}, DEFAULT_SETTINGS); }
+        }
+        function openSettingsModal() { document.getElementById('settings-modal').classList.remove('hidden'); applySettingsUI(); playSound('click'); }
+        function closeSettingsModal() { document.getElementById('settings-modal').classList.add('hidden'); saveSettings(); playSound('click'); }
+        function updateSettingSlider(kind, value) {
+            currentSettings()[kind] = Math.max(0, Math.min(100, Number(value))) / 100;
+            saveSettings(); applySettingsUI();
+        }
+        function toggleSetting(kind, value) { currentSettings()[kind] = !!value; saveSettings(); applySettingsUI(); }
+        function setLanguage(lang) { currentSettings().language = lang === 'en' ? 'en' : 'es'; saveSettings(); applySettingsUI(); renderScreen(); }
 
         const AVAILABLE_CLASSES = {
             warrior: { id: 'warrior', name: 'Guerrero', icon: '🛡️', color: 'text-red-400', border: 'border-red-500', bonusHp: 80, bonusStr: 12, bonusDef: 8, activeSkill: 'Estocada Brutal', activeCost: 15, activeDesc: 'Golpe pesado con 170% de Fuerza.' },
@@ -329,17 +445,47 @@
         ];
 
         const MONSTER_TYPES = [
-            { id: 'slime_blue', name: 'Slime Azul Ácido', hp: 75, atk: 13, def: 4, exp: 35, gold: 20, type: 'slime', drop: 'Gelatina Azul', dropValue: 18, lore: 'Limo elemental viscoso que habita en los primeros niveles.' },
-            { id: 'slime_green', name: 'Slime Verde Tóxico', hp: 90, atk: 16, def: 5, exp: 45, gold: 26, type: 'slime', drop: 'Núcleo de Slime', dropValue: 22, lore: 'Acumula toxinas de las ruinas antiguas.' },
-            { id: 'goblin_scout', name: 'Goblin Explorador', hp: 100, atk: 19, def: 7, exp: 55, gold: 32, type: 'goblin', drop: 'Oreja de Goblin', dropValue: 28, lore: 'Rápido y astuto, patrulla en busca de invasores.' },
-            { id: 'goblin_raider', name: 'Goblin Asaltante', hp: 120, atk: 22, def: 9, exp: 70, gold: 42, type: 'goblin', drop: 'Daga Rota', dropValue: 38, lore: 'Guerrero fiero equipado con armamento saqueado.' }
+            { id:'slime_blue', name:'Slime Azul Ácido', hp:75, atk:13, def:4, exp:35, gold:14, type:'slime', drop:'Gelatina Azul', dropValue:18, spawn:'early', lore:'Limo elemental viscoso que habita en los primeros niveles.' },
+            { id:'slime_green', name:'Slime Verde Tóxico', hp:88, atk:16, def:5, exp:42, gold:17, type:'slime', drop:'Núcleo de Slime', dropValue:22, spawn:'early', lore:'Acumula toxinas de las ruinas antiguas.' },
+            { id:'goblin_scout', name:'Goblin Explorador', hp:100, atk:19, def:7, exp:50, gold:20, type:'goblin', drop:'Oreja de Goblin', dropValue:28, spawn:'early', lore:'Rápido y astuto, patrulla en busca de invasores.' },
+            { id:'goblin_raider', name:'Goblin Asaltante', hp:118, atk:22, def:9, exp:64, gold:25, type:'goblin', drop:'Daga Rota', dropValue:38, spawn:'mid', lore:'Guerrero fiero equipado con armamento saqueado.' },
+            { id:'goblin_elite', name:'Goblin Élite', hp:155, atk:28, def:13, exp:88, gold:31, type:'goblin', drop:'Insignia Goblin', dropValue:46, spawn:'mid', lore:'Veterano goblin cubierto de placas reforzadas.' },
+            { id:'skeleton_guard', name:'Esqueleto Guardián', hp:145, atk:26, def:15, exp:82, gold:29, type:'skeleton', drop:'Fragmento Óseo', dropValue:40, spawn:'mid', lore:'Guardián no-muerto que protege los corredores intermedios.' },
+            { id:'ember_imp', name:'Diablillo Ígneo', hp:180, atk:33, def:12, exp:110, gold:35, type:'fire', drop:'Brasa Arcana', dropValue:52, spawn:'late', lore:'Criatura elemental que quema lentamente la voluntad de sus rivales.' },
+            { id:'frost_wraith', name:'Espectro de Escarcha', hp:205, atk:31, def:18, exp:125, gold:39, type:'ice', drop:'Esencia de Escarcha', dropValue:58, spawn:'late', lore:'Aparece en zonas profundas y reduce el ritmo de sus presas.' },
+            { id:'storm_hunter', name:'Cazador de Tormentas', hp:230, atk:38, def:16, exp:145, gold:44, type:'electric', drop:'Núcleo de Tormenta', dropValue:65, spawn:'deep', lore:'Depredador veloz imbuido de electricidad de la torre.' },
+            { id:'void_knight', name:'Caballero del Vacío', hp:280, atk:43, def:24, exp:175, gold:52, type:'void', drop:'Fragmento del Vacío', dropValue:80, spawn:'deep', lore:'Guerrero de las profundidades con una armadura que distorsiona la luz.' }
         ];
 
         const BOSS_TYPES = [
-            { id: 'boss_goblin', name: 'Goblin Rey Cibernético', hp: 420, atk: 38, def: 17, exp: 320, gold: 240, type: 'boss', drop: 'Corona de Acero Goblin', dropValue: 200, lore: 'Soberano de las tribus goblins con mejoras cibernéticas.' },
-            { id: 'boss_slime', name: 'Slime Prime Mutante', hp: 520, atk: 34, def: 20, exp: 380, gold: 280, type: 'boss', drop: 'Núcleo Líquido Cuántico', dropValue: 220, lore: 'Masa gigantesca de energía slime inestable.' },
-            { id: 'boss_mech', name: 'Guardián Mecánico de la Torre', hp: 680, atk: 46, def: 25, exp: 550, gold: 450, type: 'boss', drop: 'Engranaje de Titanio', dropValue: 350, lore: 'Autómata antiguo programado para erradicar intrusos.' }
+            { id:'boss_goblin', name:'Goblin Rey Cibernético', hp:420, atk:38, def:17, exp:320, gold:170, type:'boss', drop:'Corona de Acero Goblin', dropValue:200, lore:'Soberano de las tribus goblins con mejoras cibernéticas.' },
+            { id:'boss_slime', name:'Slime Prime Mutante', hp:520, atk:34, def:20, exp:380, gold:210, type:'boss', drop:'Núcleo Líquido Cuántico', dropValue:220, lore:'Masa gigantesca de energía slime inestable.' },
+            { id:'boss_mech', name:'Guardián Mecánico de la Torre', hp:680, atk:46, def:25, exp:550, gold:300, type:'boss', drop:'Engranaje de Titanio', dropValue:350, lore:'Autómata antiguo programado para erradicar intrusos.' }
         ];
+
+        function xpToNextLevel(level) { return Math.floor(120 * Math.pow(Math.max(1, level), 1.20)); }
+        function getSpawnTable(floorNum) {
+            if (floorNum <= 5) return MONSTER_TYPES.filter(m => m.spawn === 'early');
+            if (floorNum <= 10) return MONSTER_TYPES.filter(m => ['early','mid'].includes(m.spawn));
+            if (floorNum <= 15) return MONSTER_TYPES.filter(m => ['mid','late'].includes(m.spawn));
+            if (floorNum <= 20) return MONSTER_TYPES.filter(m => ['late','deep'].includes(m.spawn));
+            return MONSTER_TYPES.filter(m => ['late','deep'].includes(m.spawn));
+        }
+        function scaleEnemy(base, floorNum, isBoss=false) {
+            const scale = isBoss ? 1 + (floorNum - 1) * 0.075 : 1 + (floorNum - 1) * 0.08;
+            const atkScale = isBoss ? 0.055 : 0.065;
+            const defScale = isBoss ? 0.045 : 0.04;
+            const rewardScale = 1 + (floorNum - 1) * (isBoss ? 0.06 : 0.045);
+            const e = JSON.parse(JSON.stringify(base));
+            e.level = Math.max(1, floorNum);
+            e.hp = Math.round(e.hp * scale);
+            e.maxHp = e.hp;
+            e.atk = Math.round(e.atk * (1 + (floorNum - 1) * atkScale));
+            e.def = Math.round(e.def * (1 + (floorNum - 1) * defScale));
+            e.exp = Math.round(e.exp * rewardScale);
+            e.gold = Math.max(1, Math.round(e.gold * (1 + (floorNum - 1) * 0.04)));
+            return e;
+        }
 
         const FLOOR_NPCS_POOL = [
             { name: 'Sabio Erudito Corvus', icon: '🧙‍♂️', dialog: '¡Saludos, joven viajero! La torre cambia constantemente, pero tu valentía permanecerá intacta. Toma estas pociones.', reward: { item: { id: 'pot_hp', name: 'Poción de Vida', type: 'potion', effect: 'hp', val: 50, price: 35, icon: '🔴', desc: 'Restaura 50 PV.' } } },
@@ -361,6 +507,8 @@
             combatTurn: 1,
             combatLogText: 'Inicia el combate táctico...',
             bestiaryUnlocked: {},
+            bossesDefeated: {},
+            settings: Object.assign({}, DEFAULT_SETTINGS),
             quests: [
                 { id: 'q1', title: 'Caza de Slimes', desc: 'Derrota 3 Slimes en la torre.', targetType: 'slime', targetCount: 3, current: 0, rewardGold: 140, completed: false },
                 { id: 'q2', title: 'Explorador Audaz', desc: 'Llega al piso 5 de la torre.', targetType: 'floor', targetCount: 5, current: 1, rewardGold: 200, completed: false }
@@ -400,8 +548,9 @@
             closeStairsModal();
             if (action === 'up') {
                 const isBossFloor = (game.floor % 10 === 0);
-                if (isBossFloor && game.enemy && game.enemy.hp > 0) {
-                    showToast('BLOQUEADO', '¡Debes derrotar al jefe del piso antes de subir!');
+                const bossDefeated = !!(game.player && game.player.bossesDefeated && game.player.bossesDefeated[game.floor]);
+                if (isBossFloor && !bossDefeated) {
+                    showToast('BLOQUEADO', `¡El Piso ${game.floor} está sellado! Debes derrotar al jefe y activar su victoria antes de acceder al Piso ${game.floor + 1}.`);
                     return;
                 }
                 game.floor++;
@@ -582,7 +731,7 @@
                     <div class="pixel-card p-6 rounded-lg w-full border-2 border-cyan-500/50 shadow-[0_0_20px_rgba(6,182,212,0.2)]">
                         <div class="mb-3">${generateHeroAvatarSVG({ weapon: true, helmet: true }, 'warrior', 90)}</div>
                         <h2 class="pixel-font text-3xl text-cyan-300 font-bold mb-1">TORRE:SYSTEM</h2>
-                        <p class="text-xs text-slate-400 mb-6">EDICIÓN PIXEL ULTIMATE V12.1</p>
+                        <p class="text-xs text-slate-400 mb-6">EDICIÓN PIXEL ULTIMATE V13.0</p>
                         <button onclick="goToSaves()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-black font-bold py-3 px-6 rounded pixel-font text-2xl tracking-wider pixel-btn border-2 border-cyan-400">
                             JUGAR
                         </button>
@@ -659,6 +808,7 @@
         function loadGameSlot(slotIdx) {
             game.currentSlot = slotIdx;
             game.player = JSON.parse(JSON.stringify(game.slots[slotIdx]));
+            game.player.bossesDefeated = game.player.bossesDefeated || {};
             game.floor = game.player.floor || 1;
             game.screen = 'lobby';
             playSound('victory');
@@ -866,8 +1016,10 @@
             game.playerPos = { x: 3, y: 6 };
 
             const isBossFloor = (floorNum % 10 === 0);
+            const alreadyCleared = !!(game.player && game.player.bossesDefeated && game.player.bossesDefeated[floorNum]);
 
-            if (isBossFloor) {
+            if (isBossFloor && !alreadyCleared) {
+                game.bossPos = { x: 3, y: 2 };
                 game.grid[2][3] = 'boss';
                 game.grid[1][3] = 'stairs_up';
                 if (floorNum > 1) game.grid[6][1] = 'stairs_down';
@@ -962,11 +1114,9 @@
 
             if (tile === 'monster') {
                 game.grid[ny][nx] = 'empty';
-                const baseMon = MONSTER_TYPES[Math.floor(Math.random() * MONSTER_TYPES.length)];
-                game.enemy = JSON.parse(JSON.stringify(baseMon));
-                game.enemy.hp += (game.floor - 1) * 12;
-                game.enemy.maxHp = game.enemy.hp;
-                game.enemy.atk += (game.floor - 1) * 3;
+                const spawnTable = getSpawnTable(game.floor);
+                const baseMon = spawnTable[Math.floor(Math.random() * spawnTable.length)] || MONSTER_TYPES[0];
+                game.enemy = scaleEnemy(baseMon, game.floor, false);
                 game.screen = 'combat';
                 game.combatTurn = 1;
                 game.combatLogText = `¡Un ${game.enemy.name} salvaje apareció en el piso ${game.floor}!`;
@@ -974,10 +1124,8 @@
                 playSound('boss');
             } else if (tile === 'boss') {
                 const baseBoss = BOSS_TYPES[Math.floor((game.floor / 10 - 1) % BOSS_TYPES.length)];
-                game.enemy = JSON.parse(JSON.stringify(baseBoss));
-                game.enemy.hp += (game.floor - 1) * 30;
-                game.enemy.maxHp = game.enemy.hp;
-                game.enemy.atk += (game.floor - 1) * 6;
+                game.enemy = scaleEnemy(baseBoss, game.floor, true);
+                game.bossPos = { x: nx, y: ny };
                 game.screen = 'combat';
                 game.combatTurn = 1;
                 game.combatLogText = `¡JEFE DE PISO: ${game.enemy.name}! Derrótalo para avanzar.`;
@@ -985,7 +1133,7 @@
                 playSound('boss');
             } else if (tile === 'chest') {
                 game.grid[ny][nx] = 'empty';
-                let goldFound = 40 + game.floor * 15;
+                let goldFound = Math.floor(18 + game.floor * 6 + Math.random() * (8 + game.floor * 2));
                 game.player.gold += goldFound;
                 if (game.floor >= 10 && Math.random() < 0.3) {
                     game.player.inventory.push({ id: 'book_class', name: 'Libro de Clase Antiguo', type: 'book', price: 350, icon: '📖', desc: 'Permite elegir una clase avanzada en la Iglesia.' });
@@ -1002,7 +1150,7 @@
                     playSound('hit');
                     showToast('⚠️ COFRE TRAMPA', `¡El cofre estaba cargado con estallido místico! Sufriste ${trapDmg} de daño.`);
                 } else {
-                    game.enemy = { id: 'mimic', name: 'Mímico Voraz', hp: 150 + game.floor * 15, maxHp: 150 + game.floor * 15, atk: 25 + game.floor * 3, def: 12, exp: 90, gold: 120, type: 'slime', drop: 'Gelatina Azul', dropValue: 30 };
+                    game.enemy = scaleEnemy({ id:'mimic', name:'Mímico Voraz', hp:150, atk:25, def:12, exp:90, gold:55, type:'slime', drop:'Gelatina Azul', dropValue:30 }, game.floor, false);
                     game.screen = 'combat';
                     game.combatTurn = 1;
                     game.combatLogText = `¡EL COFRE ERA UN MÍMICO VIVO!`;
@@ -1040,6 +1188,7 @@
         function renderFloorScreen(container) {
             let gridHtml = '';
             const isBossFloor = (game.floor % 10 === 0);
+            const bossCleared = !!(game.player && game.player.bossesDefeated && game.player.bossesDefeated[game.floor]);
 
             for (let y = 0; y < 7; y++) {
                 gridHtml += `<div class="flex justify-center space-x-1 mb-1">`;
@@ -1089,7 +1238,7 @@
             container.innerHTML = `
                 <div class="w-full max-w-md text-center">
                     <div class="flex justify-between items-center mb-2 px-2">
-                        <span class="pixel-font text-xl text-cyan-400">${isBossFloor ? '⚠️ PISO DE JEFE' : 'TORRE: PISO ' + game.floor}</span>
+                        <span class="pixel-font text-xl text-cyan-400">${isBossFloor ? (bossCleared ? '✅ PISO DE JEFE SUPERADO' : '⚠️ PISO DE JEFE') : 'TORRE: PISO ' + game.floor}</span>
                         <span class="text-xs text-yellow-400 font-bold">${game.player.hp}/${game.player.maxHp} PV</span>
                     </div>
 
@@ -1108,7 +1257,7 @@
                         <button onclick="openTowerInventoryOverlay(false)" aria-label="Abrir inventario" title="Inventario" class="pixel-card bg-slate-900 hover:bg-slate-800 text-purple-300 px-4 py-4 rounded pixel-font text-3xl pixel-btn border-2 border-purple-500/60">🎒</button>
                     </div>
 
-                    <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn">REGRESAR AL LOBBY</button>
+                    <div class="flex gap-2"><button onclick="openSettingsModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-cyan-300 py-2 rounded pixel-font text-sm pixel-btn">⚙️ AJUSTES</button><button onclick="game.screen='lobby'; renderScreen();" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn">REGRESAR AL LOBBY</button></div>
                 </div>
             `;
         }
@@ -1126,7 +1275,7 @@
                             <div class="flex-1 min-w-0 text-left">
                                 <span class="text-[10px] text-red-300 pixel-font">ENEMIGO</span>
                                 <h4 class="pixel-font text-base text-red-400 leading-tight">${e.name}</h4>
-                                <p class="text-[10px] text-slate-400">PV: ${e.hp} / ${e.maxHp}</p>
+                                <p class="text-[10px] text-slate-400">Nv. ${e.level || game.floor} · PV: ${e.hp} / ${e.maxHp}</p>
                                 <div class="h-2 bg-slate-800 border border-slate-700 rounded overflow-hidden mt-1"><div class="h-full bg-red-500" style="width:${enemyPct}%"></div></div>
                             </div>
                             <div class="shrink-0">${generateMonsterSVG(e.type, 68)}</div>
@@ -1152,6 +1301,7 @@
                         <button onclick="combatAction('skill')" class="bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 rounded pixel-font text-lg pixel-btn">HABILIDAD</button>
                         <button onclick="openTowerInventoryOverlay(true)" class="bg-blue-600 hover:bg-blue-500 text-black font-bold py-3 rounded pixel-font text-lg pixel-btn">MOCHILA</button>
                         <button onclick="combatAction('flee')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 rounded pixel-font text-lg pixel-btn">HUIR</button>
+                        <button onclick="openSettingsModal()" class="col-span-2 bg-slate-900 hover:bg-slate-800 text-cyan-300 font-bold py-2 rounded pixel-font text-sm pixel-btn border border-cyan-500/40">⚙️ AJUSTES</button>
                     </div>
                 </div>
             `;
@@ -1206,16 +1356,18 @@
                 p.gold += rewardGold;
                 p.exp += rewardExp;
 
-                let expNeeded = p.level * 100;
-                if (p.exp >= expNeeded) {
+                let levelsGained = 0;
+                while (p.exp >= xpToNextLevel(p.level)) {
+                    p.exp -= xpToNextLevel(p.level);
                     p.level++;
+                    levelsGained++;
                     p.skillPoints += 2;
                     p.maxHp += 20;
                     p.hp = p.maxHp;
                     p.maxMp += 10;
                     p.mp = p.maxMp;
-                    showToast('¡SUBES DE NIVEL!', `¡Has alcanzado el Nivel ${p.level}! Recibiste +2 SP para entrenar.`);
                 }
+                if (levelsGained > 0) showToast('¡SUBES DE NIVEL!', `¡Has alcanzado el Nivel ${p.level}! Ganaste ${levelsGained * 2} SP para entrenar.`);
 
                 if (e.drop) {
                     p.inventory.push({
@@ -1226,6 +1378,16 @@
                         icon: '💎',
                         desc: 'Objeto valioso obtenido de un monstruo derrotado.'
                     });
+                }
+
+                if (e.type === 'boss' || String(e.id || '').startsWith('boss_')) {
+                    if (!p.bossesDefeated) p.bossesDefeated = {};
+                    p.bossesDefeated[game.floor] = true;
+                    if (game.floorsState[game.floor]) game.floorsState[game.floor].bossDefeated = true;
+                    if (game.bossPos && game.grid[game.bossPos.y]) game.grid[game.bossPos.y][game.bossPos.x] = 'empty';
+                    game.bossPos = null;
+                    game.enemy = null;
+                    game.combatLogText = `¡Victoria del jefe! El sello del Piso ${game.floor} ha sido roto.`;
                 }
 
                 game.quests.forEach(q => {
@@ -1322,7 +1484,7 @@
                         </div>
                         <div class="text-xs space-y-1">
                             <p class="text-yellow-400 font-bold">${p.name} (${p.className})</p>
-                            <p class="text-slate-300">Nivel ${p.level} | EXP: ${p.exp}/${p.level * 100}</p>
+                            <p class="text-slate-300">Nivel ${p.level} | EXP: ${p.exp}/${xpToNextLevel(p.level)}</p>
                             <p class="text-slate-300">PV: ${p.hp}/${p.maxHp} | PM: ${p.mp}/${p.maxMp}</p>
                             <p class="text-slate-300">ATK: ${p.str} | DEF: ${p.def} | MAG: ${p.mag}</p>
                         </div>
@@ -1366,6 +1528,22 @@
             renderScreen();
         }
 
+        function getSellPrice(item) {
+            const reference = Number(item.price ?? item.dropValue ?? 0);
+            return Math.max(1, Math.floor(reference * 0.35));
+        }
+        function sellInventoryItem(index) {
+            const p = game.player;
+            const item = p.inventory[index];
+            if (!item) return;
+            const price = getSellPrice(item);
+            p.inventory.splice(index, 1);
+            p.gold += price;
+            playSound('coin');
+            showToast('VENTA REALIZADA', `Vendiste ${item.name} por ${price}g.`);
+            save();
+            renderScreen();
+        }
         function renderShopScreen(container) {
             const p = game.player;
             let itemsHtml = '';
@@ -1373,38 +1551,36 @@
                 const canBuy = p.gold >= item.price;
                 itemsHtml += `
                     <div class="pixel-card p-3 rounded mb-2 border border-slate-700 text-xs flex justify-between items-center">
-                        <div class="flex items-center space-x-2">
-                            <span class="text-2xl">${item.icon}</span>
-                            <div>
-                                <span class="pixel-font text-base text-yellow-300">${item.name}</span>
-                                <p class="text-[10px] text-slate-300">${item.desc}</p>
-                                <p class="text-[10px] text-yellow-400">Precio: ${item.price}g</p>
-                            </div>
-                        </div>
+                        <div class="flex items-center space-x-2"><span class="text-2xl">${item.icon}</span><div><span class="pixel-font text-base text-yellow-300">${item.name}</span><p class="text-[10px] text-slate-300">${item.desc}</p><p class="text-[10px] text-yellow-400">Precio: ${item.price}g</p></div></div>
                         <button onclick="buyShopItem(${idx})" class="${canBuy ? 'bg-yellow-600 hover:bg-yellow-500 text-black' : 'bg-slate-800 text-slate-600 pointer-events-none'} px-3 py-1.5 rounded font-bold pixel-font pixel-btn">COMPRAR</button>
-                    </div>
-                `;
+                    </div>`;
             });
-
+            let sellHtml = '';
+            if (!p.inventory.length) sellHtml = '<p class="text-xs text-slate-500 text-center py-4">Tu inventario está vacío.</p>';
+            else p.inventory.forEach((item, idx) => {
+                const sellPrice = getSellPrice(item);
+                sellHtml += `
+                    <div class="pixel-card p-2 rounded mb-2 flex items-center justify-between border border-slate-700 text-xs">
+                        <div class="flex items-center gap-2 min-w-0"><span class="text-xl">${item.icon || '📦'}</span><div class="min-w-0"><b class="text-cyan-300">${item.name}</b><p class="text-[10px] text-slate-400">Venta: ${sellPrice}g · ${item.desc || ''}</p></div></div>
+                        <button onclick="sellInventoryItem(${idx})" class="bg-emerald-600 hover:bg-emerald-500 text-black px-2 py-1 rounded text-[10px] font-bold pixel-btn shrink-0">VENDER</button>
+                    </div>`;
+            });
             container.innerHTML = `
                 <div class="w-full max-w-md">
-                    <div class="flex justify-between items-center mb-3">
-                        <h3 class="pixel-font text-2xl text-yellow-400">TIENDA GENERAL</h3>
-                        <span class="text-xs text-yellow-400 font-bold">${p.gold}g 💰</span>
-                    </div>
-                    <div class="space-y-2 mb-4 max-h-60 overflow-y-auto">${itemsHtml}</div>
+                    <div class="flex justify-between items-center mb-3"><h3 class="pixel-font text-2xl text-yellow-400">TIENDA GENERAL</h3><span class="text-xs text-yellow-400 font-bold">${p.gold}g 💰</span></div>
+                    <h4 class="pixel-font text-lg text-yellow-300 mb-2">🛒 COMPRAR</h4>
+                    <div class="space-y-2 mb-4 max-h-52 overflow-y-auto">${itemsHtml}</div>
+                    <h4 class="pixel-font text-lg text-emerald-300 mb-2">💰 VENDER · 35%</h4>
+                    <div class="space-y-2 mb-4 max-h-52 overflow-y-auto">${sellHtml}</div>
                     <button onclick="game.screen='lobby'; renderScreen();" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded pixel-font text-sm pixel-btn">VOLVER AL LOBBY</button>
-                </div>
-            `;
+                </div>`;
         }
 
         function buyShopItem(index) {
             const p = game.player;
             const item = SHOP_ITEMS[index];
-            if (p.gold < item.price) {
-                showToast('ORO INSUFICIENTE', 'No tienes suficiente oro para comprar este objeto.');
-                return;
-            }
+            if (!item) return;
+            if (p.gold < item.price) { showToast('ORO INSUFICIENTE', 'No tienes suficiente oro para comprar este objeto.'); return; }
             p.gold -= item.price;
             p.inventory.push(JSON.parse(JSON.stringify(item)));
             playSound('victory');
@@ -1687,8 +1863,17 @@
             } catch(e) {}
         }
 
+        window.addEventListener('keydown', function(ev) {
+            if (game.screen !== 'floor') return;
+            const key = ev.key.toLowerCase();
+            const map = { w:[0,-1], arrowup:[0,-1], s:[0,1], arrowdown:[0,1], a:[-1,0], arrowleft:[-1,0], d:[1,0], arrowright:[1,0] };
+            if (map[key]) { ev.preventDefault(); movePlayer(map[key][0], map[key][1]); }
+        });
+
         window.onload = function() {
+            loadSettings();
             loadSavesFromStorage();
+            applySettingsUI();
             renderScreen();
         };
     </script>
